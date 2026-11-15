@@ -643,7 +643,8 @@
   "nisar_sep_pct": 99.6,
   "nisar_min_pct": 97.2,
   "nisar_n_dates": 8,
-  "repeat_text": "on a 12-day repeat (one 24-day gap, 17 Jul\u201310 Aug: cycle 026 not available)"
+  "repeat_text": "on a 12-day repeat (one 24-day gap, 17 Jul\u201310 Aug: cycle 026 not available)",
+  "sep_gap_text": "no HLS/DSWx product exists for tile 21KVV on 2 Sep (Sentinel-2B covered the neighbouring tiles)"
  },
  "before": "2026-07-17",
  "after": "2026-10-21",
@@ -663,9 +664,9 @@
   "name": "Lad\u00e1rio (Base Naval)",
   "code": "66825000",
   "river": "Paraguay",
-  "lat": -19.005,
-  "lon": -57.602,
-  "coord_source": "approximate: Lad\u00e1rio town centre (Wikipedia); gauge is at the Naval Base on the river"
+  "lat": -19.0,
+  "lon": -57.6,
+  "coord_source": "approximate (\u00b11 km): Lad\u00e1rio gauge site 19.00\u00b0S 57.60\u00b0W, Frontiers in Water 2021, doi:10.3389/frwa.2021.639204"
  },
  "jul_aug_loss": {
   "lost_km2": 107.56,
@@ -686,7 +687,7 @@
   "success": false
  },
  "wind": {
-  "verdict": "HH in the permanent-water zone changed only +0.4 dB (HV +0.2 dB) between 17 July and August after removing the stable-reference offset, so wind does not explain it; the drop remains unexplained. Note the 17 July NISAR scene is paired with the only Landsat-9 DSWx-HLS product (19 July); all other pairs are Sentinel-2.",
+  "verdict": "HH in the permanent-water zone changed only +0.4 dB (HV +0.2 dB) between 17 July and August after removing the stable-reference offset, so wind does not explain it; the drop remains unexplained.",
   "d_hh": 0.3528370361,
   "d_hv": 0.2221646423,
   "wind": false

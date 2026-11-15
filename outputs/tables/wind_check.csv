@@ -1,2 +1,2 @@
 verdict,d_hh,d_hv,wind
-"HH in the permanent-water zone changed only +0.4 dB (HV +0.2 dB) between 17 July and August after removing the stable-reference offset, so wind does not explain it; the drop remains unexplained. Note the 17 July NISAR scene is paired with the only Landsat-9 DSWx-HLS product (19 July); all other pairs are Sentinel-2.",0.3528370361328125,0.22216464233398436,False
+"HH in the permanent-water zone changed only +0.4 dB (HV +0.2 dB) between 17 July and August after removing the stable-reference offset, so wind does not explain it; the drop remains unexplained.",0.3528370361328125,0.22216464233398436,False
