@@ -15,7 +15,7 @@ In 2026 the Paraguay River at Ladário fell ~1.3 m between July and October. Usi
 images, we mapped open water on the Pantanal floodplain from Corumbá–Ladário to the Mandioré lagoon and validated it
 against NASA OPERA optical water maps and the river gauge. NISAR maps open water with precision 0.92–1.00. Open water
 (channel and lagoons) stayed stable; the water that left was shallow, partly vegetated water, which tracks the river
-(r = 0.90, p = 0.006) but is not captured by an L-band open-water rule. An interactive web page shows the change map,
+(r = 0.89, p = 0.008) but is not captured by an L-band open-water rule. An interactive web page shows the change map,
 hydroperiod and time series.
 
 ## Project details
@@ -25,15 +25,15 @@ on a 12-day repeat (one 24-day gap, 17 Jul–10 Aug: cycle 026 not available), m
 DSWx-HLS (Landsat/Sentinel-2) and the Paraguay River stage at Ladário (ANA station 66825000).
 
 **Results.**
-- Open water from NISAR agrees with DSWx-HLS: precision 0.92–1.00, recall 0.65–0.82, IoU 0.62–0.81 (8 pairs).
-- Open water stayed stable (257 → 258 km²); open + partial water declined 948 → 580 km² and follows the river (r = 0.90, p = 0.006).
-- The July→August drop in NISAR open water concentrates on DSWx partial-water pixels (×3.3 vs the plain), which
+- Open water from NISAR agrees with DSWx-HLS: precision 0.92–1.00, recall 0.65–0.78, IoU 0.62–0.78 (8 pairs).
+- Open water stayed stable (270 → 267 km²); open + partial water declined 1001 → 603 km² and follows the river (r = 0.89, p = 0.008).
+- The July→August drop in NISAR open water concentrates on DSWx partial-water pixels (×3.2 vs the plain), which
   optics still saw wet in August: consistent with vegetation emerging over shallow water, not with water loss.
   About a third remains unexplained.
 - Full coverage on a fixed schedule: NISAR imaged at least 97.2% of the floodplain on all dates; on 2 Sep the
   optical product covered 27.5% (the rest was not imaged that day).
 - Negative result, reported: a pre-registered classifier could not map partial water from backscatter alone
-  (F1 0.25 (target ≥ 0.50)).
+  (F1 0.26 (target ≥ 0.50)).
 
 **Why it matters.** The Pantanal's dry-season shallow wetlands are where fish, birds and cattle depend on water, and
 they are what an open-water map misses. Knowing what L-band radar does and does not see helps design NISAR-based

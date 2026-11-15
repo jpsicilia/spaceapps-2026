@@ -4,7 +4,7 @@ Everything below runs on a laptop (tested: Ubuntu, 16 GB RAM, no GPU). Total pro
 
 ## Environment
 
-- Python: `{{PYTHON_VERSION}}`
+- Python: `Python 3.14.4`
 - Exact package versions: [`requirements-lock.txt`](../requirements-lock.txt) (`pip freeze` of the environment that produced the results).
 - Minimal install: `python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt`
 

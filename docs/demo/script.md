@@ -12,17 +12,17 @@ NISAR imaged at least 97.2% of the floodplain every time; on 2 September the opt
 27.5% [F30, F33].
 
 **Slide 3 — Accuracy (15 s).** When NISAR says open water, the optical maps agree: precision 0.92–1.00 [F07],
-and NISAR recovers 87% of the optical open-water area [F11].
+and NISAR recovers 85% of the optical open-water area [F11].
 
-**Slide 4 — The finding (20 s).** The river channel and lagoons barely changed: 257 → 258 km² [F12].
-What declined was shallow, partly vegetated water: 948 → 580 km², closely following the river, r = 0.90, p = 0.006 [F14, F15].
+**Slide 4 — The finding (20 s).** The river channel and lagoons barely changed: 270 → 267 km² [F12].
+What declined was shallow, partly vegetated water: 1001 → 603 km², closely following the river, r = 0.89, p = 0.008 [F14, F15].
 
 **Slide 5 — July to August (15 s).** NISAR lost 108 km² of open water in three weeks, but 58% of it was
 vegetated shallow water that the optical maps still saw wet in August [F19–F23]. Vegetation emerged; the water
 was still there. About a third remains unexplained [F25].
 
 **Slide 6 — Honest limits (15 s).** A pre-registered classifier could not map that vegetated water from radar
-backscatter alone, F1 0.25 (target ≥ 0.50) [F27], and we report it as a negative result. Products are provisional.
+backscatter alone, F1 0.26 (target ≥ 0.50) [F27], and we report it as a negative result. Products are provisional.
 
 **Slide 7 — Explore (10 s).** Everything is open: the interactive map, the code, and a register with the source
 of every number. Thank you.

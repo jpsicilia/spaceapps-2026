@@ -13,28 +13,28 @@ Every number and claim shown in the README, the web page, the demo slides, the d
 | F05 | NISAR revisit | on a 12-day repeat (one 24-day gap, 17 Jul–10 Aug: cycle 026 not available) | — | README coverage paragraph; Web card 4, §2 lead; Slide 2; Script; Submission | `outputs/tables/area_series.csv: date (differences); cycle 026 status from docs/data_inventory.md` |
 | F06 | Open-water thresholds | HV < -22 dB and HH < -16 dB | -22, -16 | README Results intro; Web §1 lead; Slide 2; Submission | `config/thresholds.yaml: water_hv_max, water_hh_max` |
 | F07 | Precision of NISAR open water vs DSWx-HLS (range) | 0.92–1.00 | 0.919, 0.999 | README 1; Web card 1; Slide 3; Script; Submission | `outputs/tables/dswx_agreement_all_pairs.csv: precision (min–max)` |
-| F08 | Recall (range) | 0.65–0.82 | 0.647, 0.817 | README 1; Slide 3 | `outputs/tables/dswx_agreement_all_pairs.csv: recall (min–max)` |
-| F09 | IoU (range) | 0.62–0.81 | 0.618, 0.814 | README 1; Web card 1; Slide 3; Submission | `outputs/tables/dswx_agreement_all_pairs.csv: iou (min–max)` |
+| F08 | Recall (range) | 0.65–0.78 | 0.647, 0.784 | README 1; Slide 3 | `outputs/tables/dswx_agreement_all_pairs.csv: recall (min–max)` |
+| F09 | IoU (range) | 0.62–0.78 | 0.618, 0.783 | README 1; Web card 1; Slide 3; Submission | `outputs/tables/dswx_agreement_all_pairs.csv: iou (min–max)` |
 | F10 | Number of NISAR–DSWx pairs | 8 | 8 | README 1; Web card 1; Slide 3 | `outputs/tables/dswx_agreement_all_pairs.csv: row count` |
-| F11 | Share of DSWx open-water area recovered by NISAR (mean) | 87% | 0.8669 | README 1; Slide 3; Script | `outputs/tables/dswx_comparison.csv: mean(series_nisar_km2 / series_dswx_open_km2)` |
-| F12 | DSWx open water, first → last common date | 257 → 258 km² | 256.8, 257.8 | README 2; Web card 2; Slide 4; Script; Submission | `outputs/tables/dswx_comparison.csv: series_dswx_open_km2, first and last row` |
-| F13 | DSWx open water vs Ladário (Pearson) | r = 0.32, p = 0.49 | 0.3178, 0.4873 | README 2; Web card 2; Slide 4 | `outputs/tables/dswx_comparison.csv: pearsonr(stage_at_dswx_cm, series_dswx_open_km2)` |
-| F14 | DSWx open + partial water, first → last | 948 → 580 km² | 948.4, 579.8 | README 2; Web card 3; Slide 4; Script; Submission | `outputs/tables/dswx_comparison.csv: series_dswx_open_partial_km2, first and last row` |
-| F15 | DSWx open + partial vs Ladário (Pearson) | r = 0.90, p = 0.006 | 0.8984, 0.005979 | README 2; Web card 3; Slide 4; Script; Submission | `outputs/tables/dswx_comparison.csv: pearsonr(stage_at_dswx_cm, series_dswx_open_partial_km2)` |
-| F16 | NISAR open water vs Ladário (Pearson) | r = 0.25, p = 0.58 | 0.2545, 0.5818 | README 2; Slide 4 | `outputs/tables/dswx_comparison.csv: pearsonr(stage_at_dswx_cm, series_nisar_km2)` |
+| F11 | Share of DSWx open-water area recovered by NISAR (mean) | 85% | 0.8474 | README 1; Slide 3; Script | `outputs/tables/dswx_comparison.csv: mean(series_nisar_km2 / series_dswx_open_km2)` |
+| F12 | DSWx open water, first → last common date | 270 → 267 km² | 269.9, 266.8 | README 2; Web card 2; Slide 4; Script; Submission | `outputs/tables/dswx_comparison.csv: series_dswx_open_km2, first and last row` |
+| F13 | DSWx open water vs Ladário (Pearson) | r = 0.11, p = 0.81 | 0.1121, 0.8108 | README 2; Web card 2; Slide 4 | `outputs/tables/dswx_comparison.csv: pearsonr(stage_at_dswx_cm, series_dswx_open_km2)` |
+| F14 | DSWx open + partial water, first → last | 1001 → 603 km² | 1001, 602.7 | README 2; Web card 3; Slide 4; Script; Submission | `outputs/tables/dswx_comparison.csv: series_dswx_open_partial_km2, first and last row` |
+| F15 | DSWx open + partial vs Ladário (Pearson) | r = 0.89, p = 0.008 | 0.8854, 0.008018 | README 2; Web card 3; Slide 4; Script; Submission | `outputs/tables/dswx_comparison.csv: pearsonr(stage_at_dswx_cm, series_dswx_open_partial_km2)` |
+| F16 | NISAR open water vs Ladário (Pearson) | r = 0.25, p = 0.59 | 0.2462, 0.5945 | README 2; Slide 4 | `outputs/tables/dswx_comparison.csv: pearsonr(stage_at_dswx_cm, series_nisar_km2)` |
 | F17 | Number of dates in the common cloud-free series | 7 | 7 | README 2; Slide 4 | `outputs/tables/dswx_comparison.csv: row count (pairs with ≥ 80% clear)` |
 | F18 | NISAR open water 17 Jul → 10 Aug | 375 → 283 km² | 375.1, 282.8 | Slide 5 | `outputs/tables/area_series.csv: water_km2, rows 1–2` |
 | F19 | NISAR open water lost 17 Jul → 10 Aug | 108 km² | 107.6 | README 3 (lost on clear pixels); Slide 5; Script | `outputs/tables/jul_aug_loss.csv: lost_km2` |
-| F20 | …of which on DSWx-clear pixels | 103 km² | 103.4 | README 3; Slide 5 | `outputs/tables/jul_aug_loss.csv: lost_clear_km2` |
-| F21 | Share of the loss on DSWx partial water (19 Jul) | 58% | 58.11 | Slide 5; Script | `outputs/tables/jul_aug_loss.csv: lost_partial_pct (pre-registered rule: > 50%)` |
-| F22 | Partial-water enrichment on lost pixels vs plain | ×3.3 | 3.33 | README 3; Slide 5 | `outputs/tables/jul_aug_loss.csv: enrichment` |
-| F23 | Lost pixels still partial water in DSWx 8 Aug | 41 km² | 41.1 | README 3; Slide 5; Script | `outputs/tables/jul_aug_loss_dswx_transitions.csv: row partial, column partial` |
-| F24 | Lost pixels still open water in DSWx 8 Aug | 34 km² | 34.23 | README 3; Slide 5 | `outputs/tables/jul_aug_loss_dswx_transitions.csv: row open, column open` |
-| F25 | Unexplained share of the drop | 33% (about a third) | 0.331 | README 3; Slide 5; Script | `F24 / F20` |
+| F20 | …of which on DSWx-clear pixels | 107 km² | 106.6 | README 3; Slide 5 | `outputs/tables/jul_aug_loss.csv: lost_clear_km2` |
+| F21 | Share of the loss on DSWx partial water (19 Jul) | 58% | 57.5 | Slide 5; Script | `outputs/tables/jul_aug_loss.csv: lost_partial_pct (pre-registered rule: > 50%)` |
+| F22 | Partial-water enrichment on lost pixels vs plain | ×3.2 | 3.23 | README 3; Slide 5 | `outputs/tables/jul_aug_loss.csv: enrichment` |
+| F23 | Lost pixels still partial water in DSWx 8 Aug | 42 km² | 41.76 | README 3; Slide 5; Script | `outputs/tables/jul_aug_loss_dswx_transitions.csv: row partial, column partial` |
+| F24 | Lost pixels still open water in DSWx 8 Aug | 36 km² | 35.99 | README 3; Slide 5 | `outputs/tables/jul_aug_loss_dswx_transitions.csv: row open, column open` |
+| F25 | Unexplained share of the drop | 34% (about a third) | 0.3377 | README 3; Slide 5; Script | `F24 / F20` |
 | F26 | Wind check: HH change in permanent water, Aug vs 17 Jul (offset-corrected) | HH +0.4 dB, HV +0.2 dB | 0.3528, 0.2222 | README 3; Slide 5 | `outputs/tables/wind_check.csv: d_hh, d_hv (pre-registered rule: ≥ +1.0 dB)` |
-| F27 | Partial-water classifier: mean F1 on other dates | 0.25 (target ≥ 0.50) | 0.2535 | README 4; Web (Validation); Slide 6; Script; Submission | `outputs/tables/partial_clf_summary.csv: f1_partial_mean` |
+| F27 | Partial-water classifier: mean F1 on other dates | 0.26 (target ≥ 0.50) | 0.2562 | README 4; Web (Validation); Slide 6; Script; Submission | `outputs/tables/partial_clf_summary.csv: f1_partial_mean` |
 | F28 | Partial-water classifier: series vs Ladário | r = 0.01 (target ≥ 0.70) | 0.01424 | README 4; Slide 6; Submission | `outputs/tables/partial_clf_summary.csv: r_partial` |
-| F29 | Classifier partial F1 by date (range) | 0.18–0.38 | 0.184, 0.383 | Slide 6 | `outputs/tables/partial_clf_metrics.csv: f1_partial_model` |
+| F29 | Classifier partial F1 by date (range) | 0.18–0.39 | 0.184, 0.387 | Slide 6 | `outputs/tables/partial_clf_metrics.csv: f1_partial_model` |
 | F30 | Optical (DSWx) coverage of the floodplain on 2 Sep | 27.5% | 27.5 | README coverage; Web card 4, §2 lead; Slide 2; Script; Submission | `outputs/tables/sep_optical_coverage.csv: clear_pct` |
 | F31 | …not imaged that day | 72.5% | 72.5 | README coverage; Web §2 lead and legend; Slide 2 | `outputs/tables/sep_optical_coverage.csv: not_acquired_pct (DSWx code 255/254); per-file check: outputs/tables/dswx_coverage_files.csv` |
 | F32 | …cloud or shadow | 0.0% | 0 | README coverage (only if ≥ 1%); Web §2 lead (only if ≥ 1%) | `outputs/tables/sep_optical_coverage.csv: cloud_pct` |
