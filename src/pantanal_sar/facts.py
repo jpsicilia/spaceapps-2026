@@ -154,6 +154,12 @@ def load_facts(root: Path) -> dict:
     wet = float(trans[["open", "partial"]].sum().sum()) / float(trans.sum().sum())
     add("F38", "Share of the lost area (clear on 19 Jul and 8 Aug) still wet in DSWx on 8 Aug", wet, f"{100 * wet:.0f}%",
         f"{T}/jul_aug_loss_dswx_transitions.csv: (columns open + partial) / all cells")
+    c0, c1 = area["ctrl90_water_pct"].iloc[0], area["ctrl90_water_pct"].iloc[-1]
+    add("F39", "Permanent-water zone (JRC > 90%) classified as open water, 17 Jul / 21 Oct", (c0, c1),
+        f"{c0:.1f}% on 17 Jul, {c1:.1f}% on 21 Oct", f"{T}/area_series.csv: ctrl90_water_pct, first and last row")
+    lo, hi = 100 - area["ctrl90_water_pct"].max(), 100 - area["ctrl90_water_pct"].min()
+    add("F40", "Share of permanent-water pixels classified as non-water on any date (range over dates)", (lo, hi),
+        f"{lo:.0f}–{hi:.0f}%", f"{T}/area_series.csv: 100 − ctrl90_water_pct (min–max over the 8 dates)")
     sd0, sd1 = comp.stage_at_dswx_cm.iloc[0], comp.stage_at_dswx_cm.iloc[-1]
     add("F37", "Ladário stage at first / last DSWx date", (sd0, sd1), f"{sd0:.0f} → {sd1:.0f} cm",
         f"{T}/dswx_comparison.csv: stage_at_dswx_cm, first and last row")
@@ -174,6 +180,8 @@ QUALITATIVE = [
     ("Q9", "On 2 Sep most of the floodplain has no optical data because no HLS/DSWx product exists for tile 21KVV "
            "that day (Sentinel-2B covered the neighbouring tiles); not cloud", "F30–F32"),
     ("Q10", "Full coverage on a fixed schedule", "F05, F33, F34"),
+    ("Q11", "Scattered ‘lost’/‘gained’ pixels in the main river channel are most likely classification noise near the "
+            "thresholds, not channel drying", "F39, F40 (pixel-level flips between dates not computed)"),
 ]
 
 WITHDRAWN = [
@@ -196,3 +204,11 @@ def agreement_figure(root: Path) -> str:
     agr = pd.read_csv(Path(root) / T / "dswx_agreement_all_pairs.csv", dtype={"nisar_date": str, "dswx_date": str})
     b = agr.sort_values("clear_pct", ascending=False).iloc[0]
     return f"outputs/figures/agreement_{b.nisar_date}_dswx_{b.dswx_date}.png"
+
+
+def channel_note(F: dict) -> str:
+    """Note shown under the change map (web); numbers F39, F40."""
+    return ("In the main river channel, scattered ‘lost’/‘gained’ pixels are most likely classification noise near the "
+            "thresholds, not channel drying: in the permanent-water zone (JRC occurrence > 90%), "
+            f"{F['F40']['shown']} of pixels are classified as non-water on any date "
+            f"({F['F39']['shown'].replace('% on', '% classified as water on', 1)}).")

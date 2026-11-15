@@ -48,13 +48,13 @@ WHERE = {
     "F31": "README coverage; Web card 4, §2 lead and legend; Slide 2; Script; Submission", "F32": "README coverage (only if ≥ 1%); Web §2 lead (only if ≥ 1%)",
     "F33": "README coverage; Web card 4; Slide 2; Submission", "F34": "README coverage; Web §2 lead",
     "F35": "Web change legend (“not detected”); Slide 6", "F36": "Claims only (supports Q2)",
-    "F37": "README 2; Web card 2; Slide 4", "F38": "Slide 5; Script",
+    "F37": "README 2; Web card 2; Slide 4", "F38": "Slide 5; Script", "F39": "Web change note", "F40": "Web change note",
 }
 QWHERE = {"Q1": "README 1; Web card 1; Slide 3", "Q2": "README 2; Web card 2; Slide 4; Script",
           "Q3": "README 2; Web card 3, chart note; Slide 4; Script; Submission", "Q4": "README 2; Slide 4",
           "Q5": "README 3; Web change note, chart note; Slide 5; Script; Submission", "Q6": "README 3; Slide 5",
           "Q7": "Web change legend; Slide 6", "Q8": "README 4; Web (Validation); Slide 6; Script; Submission",
-          "Q9": "README coverage; Web §2; Slide 2", "Q10": "README coverage; Web card 4, §2 title; Slide 2; Submission"}
+          "Q9": "README coverage; Web §2; Slide 2", "Q11": "Web change note", "Q10": "README coverage; Web card 4, §2 title; Slide 2; Submission"}
 METHOD = [
     ("Working resolution", "40 m (2×2 multilook of 20 m, linear power)", "scripts/01_preprocess_gcov.py --res"),
     ("Speckle filter", "Lee 5×5, ENL 11.3 fixed for all dates", "scripts/02a_preprocess_all.sh (ENL), 01 --lee-size"),

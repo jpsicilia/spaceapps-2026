@@ -173,7 +173,7 @@ def main():
     import sys
     sys.path.insert(0, str(ROOT / "src"))
     from pantanal_sar.classify import load_ladario_daily
-    from pantanal_sar.facts import load_facts, repeat_text
+    from pantanal_sar.facts import channel_note, load_facts, repeat_text
     daily, _ = load_ladario_daily(ROOT / "data/external/ladario_gauge/ladario_stage_raw_telemetria.csv",
                                   verbose=False)
     t0 = pd.Timestamp(area["date"].iloc[0]) - pd.Timedelta(days=20)
@@ -226,6 +226,7 @@ def main():
             "nisar_n_dates": int(cov["nisar_n_dates"]),
             "repeat_text": repeat_text(area["date"]),
             "sep_gap_text": load_facts(ROOT)["F31"]["shown"],
+            "channel_note": channel_note(load_facts(ROOT)),
         },
         "before": ymd(BEFORE), "after": ymd(AFTER), "sep_nisar": ymd(SEP_N), "sep_dswx": ymd(SEP_D),
         "aoi_bounds": aoi_bounds, "gauge": gauge,

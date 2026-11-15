@@ -81,6 +81,7 @@
   <div class="maphost"><div id="map1" class="map"></div><div class="hint">click to zoom with scroll</div></div>
   <div class="legend" id="leg1"></div>
   <p class="note" id="chgNote">Most ‘open water lost’ is shallow water where vegetation emerged; optics still saw it wet (see chart).</p>
+  <p class="note" id="chgNote2"></p>
 </section>
 
 <section>
@@ -179,6 +180,7 @@ const dmy = s => { const d = new Date(s+"T12:00:00Z"); return `${d.getUTCDate()}
 Promise.all([fetch("data/data.json").then(r=>r.json()), fetch("data/layers.json").then(r=>r.json())])
 .then(([D, LY]) => {
   const M = D.metrics;
+  $("#chgNote2").textContent = M.channel_note || "";
   $("#sepTitle").textContent = "Full coverage on a fixed schedule";
   const REST = (M.sep_cloud_pct ?? 0) < 1 ? M.sep_gap_text
              : `${M.sep_gap_text}; ${M.sep_cloud_pct}% cloud or shadow`;
@@ -207,6 +209,7 @@ Promise.all([fetch("data/data.json").then(r=>r.json()), fetch("data/layers.json"
     watch(ov, $("#leg1"));
     legend($("#leg1"), name);
     $("#chgNote").style.display = name === "change" ? "" : "none";
+    $("#chgNote2").style.display = name === "change" ? "" : "none";
   }
   document.querySelectorAll('input[name=lyr]').forEach(r => r.addEventListener("change", e => show(e.target.value)));
   $("#op").addEventListener("input", e => ov && ov.setOpacity(+e.target.value));
