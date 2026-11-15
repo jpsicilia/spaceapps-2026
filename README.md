@@ -112,7 +112,7 @@ Study area: Paraguay River floodplain, Corumbá–Ladário to Mandioré lagoon. 
 
 **4. Can NISAR alone see the receding shallow water?** Not with backscatter alone (pre-registered test failed): a classifier on HH, HV and HH−HV trained on DSWx-HLS labels of 23 Aug reached a mean partial-water F1 of 0.26 on other dates (target ≥ 0.5) and its partial-water series gave r = 0.01 with Ladário (target ≥ 0.7). Next steps: texture, coherence (GUNW) and multi-date features.
 
-**Full coverage on a fixed schedule.** NISAR imaged at least 97.2% of the floodplain on all 8 dates, on a 12-day repeat (one 24-day gap, 17 Jul–10 Aug: cycle 026 not available); on 2 Sep the optical product covered 27.5% (no HLS/DSWx product exists for tile 21KVV on 2 Sep (Sentinel-2B covered the neighbouring tiles)).
+**Full coverage on a fixed schedule.** NISAR imaged at least 97.2% of the floodplain on all 8 dates, on a 12-day repeat (one 24-day gap, 17 Jul–10 Aug: cycle 026 not available); on 2 Sep the optical product covered 27.5%: no HLS/DSWx product exists for tile 21KVV on 2 Sep (Sentinel-2B covered the neighbouring tiles).
 
 **Caveats.** Seven to eight dates, consecutive and not independent: p-values are indicative. NISAR products are provisional (CRID P05023). Thresholds adapted from Evans et al. 2010 (PALSAR sigma0, converted to gamma0) and were checked, not tuned, against the JRC permanent-water zone. The Copernicus DEM is a surface model.
 
