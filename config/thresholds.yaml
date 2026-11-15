@@ -1,0 +1,10 @@
+# Fixed thresholds calibrated on 2026-07-17 (scripts/02b_calibrate.py); applied to ALL dates.
+# water: HV < water_hv_max AND HH < water_hh_max  (p99 of JRC occurrence>90% zone, capped at HV -22.0 / HH -16.0)
+# flooded vegetation: HH > floodveg_hh_min AND HH-HV > floodveg_diff_min (median + 1.5 sigma_MAD over non-water plain)
+water_hv_max: -22.0
+water_hh_max: -16.0
+floodveg_hh_min: -3.65
+floodveg_diff_min: 8.49
+max_height_m: 135.0
+mmu_ha: 1.0
+mmu_px: 7

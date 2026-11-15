@@ -1,0 +1,8 @@
+code,transition,km2
+0,stable land,4807.77
+1,water both,268.89
+2,water lost,106.16
+3,water gained,18.64
+4,flooded veg lost,0.45
+5,flooded veg gained,0.35
+6,flooded veg both,0.82

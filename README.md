@@ -65,3 +65,27 @@ NASA Earthdata credentials go in `~/.netrc` (never in this repository).
 ## License
 
 MIT. Data © NASA/JPL/ISRO (NISAR), ESA (Sentinel-1), NASA (OPERA, FIRMS), ANA (gauge data), OpenStreetMap contributors.
+
+<!-- RESULTS:START -->
+## Results
+
+Study area: Paraguay River floodplain, Corumbá–Ladário to Mandioré lagoon. NISAR L2 GCOV (L-band, HH+HV), 8 acquisitions from 2026-07-17 to 2026-10-21, 40 m, Lee-filtered. Open water = HV < −22 dB and HH < −16 dB (gamma0), thresholds fixed for all dates and shifted per date by the backscatter change of a stable reference (forested hills > 200 m). Validation against OPERA DSWx-HLS (optical, independent) and the Paraguay River stage at Ladário (ANA 66825000, daily mean).
+
+**1. NISAR maps open water reliably.** Against DSWx-HLS on near-simultaneous dates (≤ 2 days), precision is 0.92–1.00, recall 0.65–0.82 and IoU 0.62–0.81 (8 pairs). NISAR recovers on average 87% of the DSWx open-water area on common cloud-free pixels; missed water is mostly along shorelines.
+
+**2. Open water stayed stable; the water that left was shallow, vegetated water.** On pixels cloud-free in all paired dates (7 dates), DSWx open water went from 257 to 258 km² (r = 0.32 with Ladário stage, p = 0.49), while open + partial surface water fell from 948 to 580 km² and tracks the river (r = 0.90, p = 0.006). Ladário fell from 253 to 124 cm. The river channel and permanent lagoons held their extent; what dried out were marshes and floating or emergent vegetation over shallow water, which an L-band open-water rule does not capture (NISAR open water vs stage: r = 0.25, p = 0.58).
+
+**3. The July→August drop in NISAR open water is not confirmed by DSWx** (DSWx open water did not decrease). We treat it as a limitation of the fixed-threshold rule in that scene, not as a hydrological signal.
+
+**Radar sees through fire-season smoke and cloud.** On 2026-09-02 only 25% of the floodplain was usable in DSWx-HLS; the NISAR acquisition of 2026-09-03 covered 100% of it.
+
+**Caveats.** Seven to eight dates, consecutive and not independent: p-values are indicative. NISAR products are provisional (CRID P05023). Thresholds come from published L-band values (Evans et al. 2010, Pantanal) and were checked, not tuned, against the JRC permanent-water zone. The Copernicus DEM is a surface model.
+
+| Figure | |
+|---|---|
+| Open water NISAR vs DSWx-HLS vs Ladário | ![](outputs/figures/nisar_vs_dswx_series.png) |
+| Agreement map | ![](outputs/figures/agreement_20260822_dswx_20260823.png) |
+| NISAR area vs stage | ![](outputs/figures/area_vs_stage.png) |
+| Hydroperiod (dates as open water) | ![](outputs/figures/hydroperiod.png) |
+
+<!-- RESULTS:END -->
