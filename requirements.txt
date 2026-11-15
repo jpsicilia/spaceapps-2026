@@ -23,3 +23,5 @@ python-dotenv
 # Plots / notebooks
 matplotlib
 jupyterlab
+scikit-learn
+pillow

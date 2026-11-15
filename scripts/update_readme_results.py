@@ -68,14 +68,23 @@ def main():
     wind = T / "wind_check.csv"
     lo = pd.read_csv(loss).iloc[0] if loss.exists() else None
     if lo is not None and bool(lo["supports"]):
-        lines += ["**3. NISAR captures shallow vegetated water while submerged and loses it as vegetation emerges.** "
-                  f"Of the {lo['lost_km2']:.0f} km² NISAR classified as open water on 17 July but not on 10 August, "
-                  f"{lo['lost_partial_pct']:.0f}% fall on DSWx-HLS partial surface water of 19 July "
-                  f"(x{lo['enrichment']:.1f} the plain-wide share), and {lo['jul_water_on_partial_pct']:.0f}% of all "
-                  "NISAR open water on 17 July lies on DSWx partial water. The July→August drop is therefore a real "
-                  "change in surface condition (vegetation emerging from shallow water), not a hydrological loss of "
-                  "open water — DSWx open water did not decrease."
-                  + (f" Wind is ruled out: {str(pd.read_csv(wind)['verdict'].iloc[0])}" if wind.exists() else ""), ""]
+        tr = pd.read_csv(T / "jul_aug_loss_dswx_transitions.csv", index_col=0)
+        pp = float(tr.loc["partial", "partial"]) if "partial" in tr.index and "partial" in tr.columns else float("nan")
+        oo = float(tr.loc["open", "open"]) if "open" in tr.index and "open" in tr.columns else float("nan")
+        third = 100 * oo / lo["lost_clear_km2"]
+        wtxt = ""
+        if wind.exists():
+            w = pd.read_csv(wind).iloc[0]
+            wtxt = (f" Wind is not supported: in the permanent-water zone HH changed {w['d_hh']:+.1f} dB "
+                    f"(HV {w['d_hv']:+.1f} dB) after removing the stable-reference offset.")
+        lines += ["**3. The July→August drop is not water loss.** "
+                  "The July→August drop in NISAR open water concentrates on DSWx partial-water pixels "
+                  f"(×{lo['enrichment']:.1f} vs the plain), which DSWx still classifies as wet in August "
+                  f"(partial→partial {pp:.0f} km², open→open {oo:.0f} km² of the {lo['lost_clear_km2']:.0f} km² "
+                  "lost on cloud-free pixels): consistent with vegetation emerging over shallow water and raising "
+                  "L-band backscatter, not with water loss. "
+                  f"About a third of the drop ({oo:.0f} km², {third:.0f}%) falls on water that DSWx kept as open "
+                  "and remains unexplained." + wtxt, ""]
     elif wind.exists():
         w = pd.read_csv(wind)
         verdict = str(w["verdict"].iloc[0])

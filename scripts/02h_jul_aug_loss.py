@@ -75,7 +75,7 @@ def main():
 
     supports = s_lost["partial"] > 50
     print(f"[3/3] PRE-REGISTERED: partial share of lost area = {s_lost['partial']:.1f}% (> 50%) -> "
-          f"{'SUPPORTS hypothesis (drop is real)' if supports else 'does NOT support hypothesis'}")
+          f"{'SUPPORTS hypothesis (drop concentrates on DSWx partial water)' if supports else 'does NOT support hypothesis'}")
     pd.DataFrame([dict(lost_km2=lost.sum() * pix, lost_clear_km2=a_lost,
                        lost_partial_pct=s_lost["partial"], lost_open_pct=s_lost["open"],
                        lost_notwater_pct=s_lost["not water"], jul_water_on_partial_pct=s_wj["partial"],

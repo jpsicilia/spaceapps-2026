@@ -1,15 +1,14 @@
 # Pantanal 2026: Water Leaving, Seen by Radar
 
 **NASA Space Apps Challenge 2026 · Challenge: _Dancing with the SARs_**
-Local event: Ciudad del Este, Paraguay · Team: _[team name]_
+Local event: Ciudad del Este, Paraguay · Team: Pantanal
 
-> 🚧 Work in progress. Project development starts on **14 Nov 2026, 09:00 (local time)**, following the hackathon rules.
-> Everything in this repository before that moment is planning and setup only (folder structure, environment, documentation).
+**Interactive map and charts:** https://jpsicilia.github.io/spaceapps-2026/
 
 ## Question
 
-Where, and how much, did the Paraguay River floodplain dry out between July and October 2026,
-which NISAR polarization shows it best, and what drove it?
+Where, and how much, did surface water change on the Paraguay River floodplain between July and October 2026,
+and what can L-band NISAR see of it?
 
 ## Study area
 
@@ -21,29 +20,39 @@ Paraguay River floodplain from Corumbá / Ladário (Brazil) north to Lake Mandio
 
 | Dataset | Use |
 |---|---|
-| NISAR L2 GCOV (PROVISIONAL), track 132 ascending, frame 168, HH+HV, 8 dates (17 Jul → 21 Oct 2026) | Open water / flooded vegetation mapping, hydroperiod |
-| NISAR L2 GUNW (PROVISIONAL), 7 consecutive 12-day pairs | Coherence change; water-level change under vegetation (stretch goal) |
-| Sentinel-1 RTC (C-band) | L-band vs C-band comparison |
-| OPERA DSWx-HLS | Independent optical validation (open water only) |
-| Paraguay River stage at Ladário (ANA station 66825000) | Validation and stage–area relationship |
-| NASA FIRMS active fires | Fire layer validation |
-| OpenStreetMap urban boundaries | Urban mask |
+| NISAR L2 GCOV (PROVISIONAL, CRID P05023), track 132 ascending, frame 168, HH+HV, 8 dates (17 Jul → 21 Oct 2026) | Open water / flooded vegetation mapping, change, hydroperiod |
+| OPERA DSWx-HLS (Version 1), 30 m | Independent optical validation (open and partial surface water) |
+| Paraguay River stage at Ladário (ANA station 66825000), 15-min telemetry | Validation (daily mean) |
+| JRC Global Surface Water, occurrence | Permanent-water control zone (occurrence > 90%) |
+| Copernicus DEM GLO-30 | Mask of terrain above the floodplain (> 135 m); stable reference (> 200 m) |
+| OpenStreetMap urban areas and buildings | Urban mask |
 
+Downloaded but not used in this version: NISAR L2 GUNW, Sentinel-1 RTC, NASA FIRMS.
 Full inventory: [`docs/data_inventory.md`](docs/data_inventory.md)
 
 ## Method
 
-_To be completed during the hackathon._ Plan: [`docs/project_plan.md`](docs/project_plan.md)
+1. `scripts/01_preprocess_gcov.py`, `02a_preprocess_all.sh`: clip each GCOV to the study area, multilook 20 → 40 m
+   in linear power, Lee filter (5×5, fixed ENL), convert to dB (gamma0).
+2. `02b_calibrate.py`: masks (urban, DEM > 135 m), JRC control zone, open-water thresholds
+   (HV < −22 dB and HH < −16 dB, adapted from Evans et al. 2010 and checked against the JRC zone).
+3. `02d_stability.py`, `02c_timeseries.py --normalize`: per-date threshold shift from a stable reference
+   (forested hills > 200 m); classification of all dates, 1 ha minimum mapping unit, area series vs Ladário,
+   change map 17 Jul → 21 Oct, hydroperiod.
+4. `02e_dswx_compare.py`, `02f_wind_check.py`, `02h_jul_aug_loss.py`: validation against DSWx-HLS, wind check,
+   July→August loss analysis. `02g_partial_clf.py`: pre-registered partial-water classifier (negative result).
+5. `03_export_web.py`: web layers and data for the GitHub Pages site (`web/`).
+   `update_readme_results.py` writes the Results section below from the output tables.
 
 ## Repository structure
 
 ```
-config/      study area and project settings
-data/        raw / external / interim / processed (not versioned)
+config/      study area, project settings, thresholds
+data/        raw / external / processed (not versioned)
 docs/        plan, data inventory, decisions, logbook, references
-notebooks/   exploration and figures
-src/         processing code
-web/         interactive web application
+scripts/     processing pipeline (run in numeric order)
+src/         reusable processing code (pantanal_sar)
+web/         interactive web application (GitHub Pages)
 outputs/     figures, maps, tables
 ```
 
@@ -59,12 +68,24 @@ NASA Earthdata credentials go in `~/.netrc` (never in this repository).
 
 ## Team
 
-- Pablo Pérez Cicilia — radar data processing, analysis, validation
-- _[teammate]_ — web application, design, storytelling, video
+Team Pantanal (one person): José Pablo Pérez Cicilia — data processing, analysis, validation, web application, demo
 
-## License
+## License and credits
 
-MIT. Data © NASA/JPL/ISRO (NISAR), ESA (Sentinel-1), NASA (OPERA, FIRMS), ANA (gauge data), OpenStreetMap contributors.
+Code: MIT.
+
+Data:
+- NISAR L2 GCOV: NASA/JPL and ISRO, distributed by the ASF DAAC (provisional products).
+- OPERA. 2023. OPERA Dynamic Surface Water Extent from Harmonized Landsat Sentinel-2 (Version 1). Ver. 1.0.
+  PO.DAAC, CA, USA. https://doi.org/10.5067/OPDSW-PL3V1. Contains modified Copernicus Sentinel data.
+- Pekel, J.-F., Cottam, A., Gorelick, N., Belward, A. S. (2016). High-resolution mapping of global surface water
+  and its long-term changes. Nature 540, 418–422. (JRC Global Surface Water)
+- Copernicus DEM GLO-30: produced using Copernicus WorldDEM-30 © DLR e.V. 2010–2014 and © Airbus Defence and
+  Space GmbH 2014–2018 provided under COPERNICUS by the European Union and ESA; all rights reserved.
+- Paraguay River stage at Ladário: Agência Nacional de Águas e Saneamento Básico (ANA), station 66825000.
+- © OpenStreetMap contributors (ODbL).
+
+This project is not endorsed by NASA.
 
 <!-- RESULTS:START -->
 ## Results
@@ -75,7 +96,9 @@ Study area: Paraguay River floodplain, Corumbá–Ladário to Mandioré lagoon. 
 
 **2. Open water stayed stable; the decline is in shallow, partly vegetated water.** On pixels cloud-free in all paired dates (7 dates), DSWx open water went from 257 to 258 km² (r = 0.32 with Ladário stage, p = 0.49), while open + partial surface water fell from 948 to 580 km² and tracks the river (r = 0.90, p = 0.006). Ladário fell from 253 to 124 cm. The river channel and permanent lagoons held their extent; the decline is consistent with drying of shallow, partly vegetated water (DSWx partial class), which an L-band open-water rule does not capture (NISAR open water vs stage: r = 0.25, p = 0.58).
 
-**3. NISAR captures shallow vegetated water while submerged and loses it as vegetation emerges.** Of the 108 km² NISAR classified as open water on 17 July but not on 10 August, 58% fall on DSWx-HLS partial surface water of 19 July (x3.3 the plain-wide share), and 23% of all NISAR open water on 17 July lies on DSWx partial water. The July→August drop is therefore a real change in surface condition (vegetation emerging from shallow water), not a hydrological loss of open water — DSWx open water did not decrease. Wind is ruled out: HH in the permanent-water zone changed only +0.4 dB (HV +0.2 dB) between 17 July and August after removing the stable-reference offset, so wind does not explain it; the drop remains unexplained. Note the 17 July NISAR scene is paired with the only Landsat-9 DSWx-HLS product (19 July); all other pairs are Sentinel-2.
+**3. The July→August drop is not water loss.** The July→August drop in NISAR open water concentrates on DSWx partial-water pixels (×3.3 vs the plain), which DSWx still classifies as wet in August (partial→partial 41 km², open→open 34 km² of the 103 km² lost on cloud-free pixels): consistent with vegetation emerging over shallow water and raising L-band backscatter, not with water loss. About a third of the drop (34 km², 33%) falls on water that DSWx kept as open and remains unexplained. Wind is not supported: in the permanent-water zone HH changed +0.4 dB (HV +0.2 dB) after removing the stable-reference offset.
+
+**4. Can NISAR alone see the receding shallow water?** Not with backscatter alone (pre-registered test failed): a classifier on HH, HV and HH−HV trained on DSWx-HLS labels of 23 Aug reached a mean partial-water F1 of 0.25 on other dates (target ≥ 0.5) and its partial-water series gave r = 0.01 with Ladário (target ≥ 0.7). Next steps: texture, coherence (GUNW) and multi-date features.
 
 **Radar sees through cloud (and likely smoke) in the fire season.** On 2026-09-02 only 25% of the floodplain was usable in DSWx-HLS; the NISAR acquisition of 2026-09-03 covered 100% of it.
 
