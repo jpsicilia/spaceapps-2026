@@ -25,4 +25,4 @@ data/**
 
 # Practice material before the hackathon (not part of the project)
 _practica/
-data/
+/data/

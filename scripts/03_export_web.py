@@ -54,8 +54,11 @@ def save(name, rgba, src_transform, src_crs, layers, resampling=Resampling.neare
         im.save(WEB / "img" / fn, "WEBP", quality=80, method=6)
     else:
         im.save(WEB / "img" / fn, optimize=True)
-    layers[name] = {"url": f"img/{fn}", "bounds": bounds}
-    print(f"      img/{fn}  {img.shape[1]}x{img.shape[0]}  {(WEB / 'img' / fn).stat().st_size / 1e6:.1f} MB")
+    import time
+    layers[name] = {"url": f"img/{fn}?v={int(time.time())}", "bounds": bounds}
+    vis = 100 * (img[..., 3] > 0).mean()
+    print(f"      img/{fn}  {img.shape[1]}x{img.shape[0]}  {(WEB / 'img' / fn).stat().st_size / 1e6:.1f} MB  "
+          f"non-transparent {vis:.0f}%")
 
 
 def palette_rgba(arr, colors, alpha_zero=()):
@@ -78,8 +81,7 @@ def main():
             return hh - stab.loc[d, "d_hh_stable"], hv - stab.loc[d, "d_hv_stable"], r.transform, r.crs
 
     hh0, hv0, tr, crs = load(BEFORE)
-    lim = {"hh": np.nanpercentile(hh0, [2, 98]), "hv": np.nanpercentile(hv0, [2, 98]),
-           "df": np.nanpercentile(hh0 - hv0, [2, 98])}
+    lim = {"hh": (-20.0, -2.0), "hv": (-28.0, -8.0), "df": (0.0, 12.0)}   # fixed stretch, all dates (dB)
     for d in (BEFORE, AFTER, SEP_N):
         hh, hv, tr, crs = load(d)
         ok = np.isfinite(hh) & np.isfinite(hv)
@@ -101,8 +103,8 @@ def main():
     hh3, _, _, _ = load(SEP_N)
     w[~np.isfinite(hh3)] = 255
     save(f"dswx_{SEP_D}", palette_rgba(w, {0: (226, 214, 180, 255), 1: (31, 78, 156, 255),
-                                         2: (120, 180, 230, 255), 253: (250, 250, 250, 255),
-                                         252: (250, 250, 250, 255)}), tr, crs, layers)
+                                         2: (120, 180, 230, 255), 253: (205, 205, 205, 215),
+                                         252: (205, 205, 205, 215)}), tr, crs, layers)
 
     # --- classes
     for d in (BEFORE, AFTER):
@@ -113,15 +115,19 @@ def main():
     # --- change & hydroperiod
     with rasterio.open(ROOT / f"outputs/maps/change_{BEFORE}_{AFTER}.tif") as r:
         c, tr, crs = r.read(1), r.transform, r.crs
-    save("change", palette_rgba(c, {1: (31, 78, 156, 255), 2: (230, 85, 13, 255), 3: (107, 174, 214, 255),
-                                    4: (253, 174, 107, 255), 5: (116, 196, 118, 255), 6: (35, 139, 69, 255)}),
+    # bright colours for contrast over satellite imagery; analysed land as a faint veil so the extent is visible
+    save("change", palette_rgba(c, {0: (255, 255, 255, 60), 1: (0, 200, 255, 255), 2: (255, 127, 0, 255),
+                                    3: (255, 0, 200, 255), 4: (255, 255, 255, 60), 5: (255, 255, 255, 60),
+                                    6: (255, 255, 255, 60)}),
          tr, crs, layers)
     with rasterio.open(ROOT / "outputs/maps/hydroperiod.tif") as r:
         h, tr, crs = r.read(1), r.transform, r.crs
     import matplotlib
-    cmap = matplotlib.colormaps["Blues"]
+    cmap = matplotlib.colormaps["plasma"]
     n = int(h[h != 255].max())
-    cols = {k: tuple(int(255 * v) for v in cmap(0.25 + 0.75 * k / n)[:3]) + (255,) for k in range(1, n + 1)}
+    cols = {k: tuple(int(255 * v) for v in cmap(0.15 + 0.85 * (k - 1) / max(n - 1, 1))[:3]) + (255,)
+            for k in range(1, n + 1)}
+    cols[0] = (255, 255, 255, 60)
     save("hydroperiod", palette_rgba(h, cols), tr, crs, layers)
 
     # --- data.json

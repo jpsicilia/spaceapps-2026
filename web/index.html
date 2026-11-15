@@ -31,7 +31,7 @@
   .legend { display:flex; flex-wrap:wrap; gap:6px 16px; font-size:13px; color:var(--muted); margin-top:8px; min-height:22px; }
   .sw { display:inline-block; width:14px; height:14px; border-radius:3px; vertical-align:-2px; margin-right:5px; border:1px solid rgba(0,0,0,.15); }
   .grad { display:inline-block; width:160px; height:12px; border-radius:3px; vertical-align:-1px;
-          background:linear-gradient(90deg,#c6dbef,#6baed6,#2171b5,#08306b); margin:0 6px; }
+          background:linear-gradient(90deg,#6a00a8,#b12a90,#e16462,#fca636,#f0f921); margin:0 6px; }
   .swipe-wrap { position:relative; }
   .swipe { position:absolute; left:0; right:0; top:50%; width:100%; margin:0; z-index:1000;
            -webkit-appearance:none; appearance:none; background:transparent; pointer-events:none; height:34px; margin-top:-17px; }
@@ -59,7 +59,7 @@
   <p class="sub">NISAR L-band radar follows the 2026 dry season on the Paraguay River floodplain, from
     Corumbá–Ladário to the Mandioré lagoon (Brazil–Bolivia), and is checked against optical satellite water maps
     and the river gauge at Ladário.</p>
-  <p class="meta">NASA Space Apps Challenge 2026 · <i>Dancing with the SARs</i> · José Pablo Pérez Cicilia ·
+  <p class="meta">NASA Space Apps Challenge 2026 · <i>Dancing with the SARs</i> · Team Pantanal: José Pablo Pérez Cicilia ·
     <a href="https://github.com/jpsicilia/spaceapps-2026">code &amp; data on GitHub</a></p>
 </header>
 
@@ -132,16 +132,17 @@
 <script>
 const $ = s => document.querySelector(s);
 const LEG = {
-  change: [["#1f4e9c","open water both dates"],["#e6550d","open water lost"],["#6baed6","open water gained"],
-           ["#74c476","flooded vegetation gained"],["#fdae6b","flooded vegetation lost"]],
+  change: [["#00c8ff","open water both dates"],["#ff7f00","open water lost"],["#ff00c8","open water gained"],
+           ["rgba(255,255,255,.5)","analysed, no open water"]],
   composite: [["#ff0000","HH"],["#00ff00","HV"],["#0000ff","HH − HV"]],
   dswx: [["#e2d6b4","not water"],["#1f4e9c","open water"],["#78b4e6","partial surface water"],["#fafafa","cloud / shadow"]],
 };
 function legend(el, key){
-  if (key === "hydroperiod") { el.innerHTML = 'dates as open water: 1<span class="grad"></span>8'; return; }
+  if (key === "hydroperiod") { el.innerHTML = 'dates as open water (of 8): 1<span class="grad"></span>8'; return; }
   const items = LEG[key.startsWith("composite") ? "composite" : key] || [];
   el.innerHTML = items.map(([c,t]) => `<span><span class="sw" style="background:${c}"></span>${t}</span>`).join("")
-    + (key.startsWith("composite") ? '<span>(radar false colour: dark = smooth water)</span>' : "");
+    + (key.startsWith("composite") ? '<span>(radar false colour: dark = smooth water)</span>' : "")
+    + (key === "change" ? '<span>flooded vegetation: not detected</span>' : "");
 }
 function basemap(map){
   const esri = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
@@ -151,6 +152,10 @@ function basemap(map){
   L.control.layers({"Satellite": esri, "OpenStreetMap": osm}, null, {position:"topright"}).addTo(map);
 }
 const fmt = (v,d=2) => Number(v).toFixed(d);
+function watch(layer, el){   // make a failed image visible instead of silently blank
+  layer.on("error", () => el.insertAdjacentHTML("beforeend",
+    `<span style="color:#b00020"><b>Layer failed to load:</b> ${layer._url}</span>`));
+}
 const dmy = s => new Date(s+"T12:00:00Z").toLocaleDateString("en-GB",{day:"numeric",month:"short"});
 
 Promise.all([fetch("data/data.json").then(r=>r.json()), fetch("data/layers.json").then(r=>r.json())])
@@ -163,7 +168,7 @@ Promise.all([fetch("data/data.json").then(r=>r.json()), fetch("data/layers.json"
     [`${M.open_first} → ${M.open_last} km²`, "open water stayed stable",
      `River channel and permanent lagoons held their extent while Ladário fell from ${M.stage_first} to ${M.stage_last} cm (r = ${fmt(M.r_open)}).`],
     [`${M.op_first} → ${M.op_last} km²`, "shallow, vegetated water declined",
-     `Open + partial water (DSWx) tracks the river: r = ${fmt(M.r_open_partial)}, p = ${fmt(M.p_open_partial,3)}. This is the water that left.`],
+     `Open + partial water (DSWx) tracks the river: r = ${fmt(M.r_open_partial)}, p = ${fmt(M.p_open_partial,3)}. The water that left is mostly shallow, vegetated water.`],
     [`${M.sep_clear_pct}% vs 100%`, "usable floodplain, optical vs radar",
      `On ${dmy(D.sep_dswx)} clouds left ${M.sep_clear_pct}% of the floodplain visible to optics; NISAR (${dmy(D.sep_nisar)}) saw all of it.`],
   ];
@@ -177,6 +182,7 @@ Promise.all([fetch("data/data.json").then(r=>r.json()), fetch("data/layers.json"
   function show(name){
     if (ov) m1.removeLayer(ov);
     ov = L.imageOverlay(LY[name].url, LY[name].bounds, {opacity:+$("#op").value}).addTo(m1);
+    watch(ov, $("#leg1"));
     legend($("#leg1"), name);
   }
   document.querySelectorAll('input[name=lyr]').forEach(r => r.addEventListener("change", e => show(e.target.value)));
@@ -217,6 +223,7 @@ Promise.all([fetch("data/data.json").then(r=>r.json()), fetch("data/layers.json"
     }
     oL = L.imageOverlay(LY[l].url, LY[l].bounds, {pane:"left"}).addTo(m2);
     oR = L.imageOverlay(LY[r].url, LY[r].bounds, {pane:"right"}).addTo(m2);
+    watch(oL, $("#leg2")); watch(oR, $("#leg2"));
     $("#tagL").textContent = tl; $("#tagR").textContent = tr;
     clip();
   }
