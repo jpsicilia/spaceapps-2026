@@ -324,34 +324,39 @@ of every number. Thank you.
 
 # --------------------------------------------------------------------------- submission.md
 def write_submission():
-    txt = f"""# Space Apps 2026 — project submission draft
+    txt = f"""# Space Apps 2026 — project submission (copy field by field)
 
-> Draft for the project page. Fields marked [TODO] must be completed or checked against the 2026 submission form.
-> Every number is in `docs/claims.md`.
+> One block per field of the project form, in English. Team members, team name and local event come from the
+> Space Apps team page, not from this text. Every number is in `docs/claims.md`. Check the field names against the
+> 2026 Project Submission Guide on the form itself before pasting.
 
-**Project name:** Pantanal 2026: Water Leaving, Seen by Radar
+## Project Title
+Pantanal 2026: Water Leaving, Seen by Radar
 
-**Team:** Team Pantanal (one person) — José Pablo Pérez Cicilia · [TODO: Space Apps username]
-
-**Challenge:** Dancing with the SARs · **Local event:** Ciudad del Este, Paraguay [TODO: confirm event name]
-
-## High-level summary
-
+## High-Level Project Summary
 In 2026 the Paraguay River at Ladário fell {S['F03']} between July and October. Using {S['F04']} NISAR L-band radar
 images, we mapped open water on the Pantanal floodplain from Corumbá–Ladário to the Mandioré lagoon and validated it
-against NASA OPERA optical water maps and the river gauge. NISAR maps open water with precision {S['F07']}. Open water
-(channel and lagoons) stayed stable; the water that left was shallow, partly vegetated water, which tracks the river
-({S['F15']}) but is not captured by an L-band open-water rule. An interactive web page shows the change map,
-hydroperiod and time series.
+against NASA OPERA optical water maps (DSWx-HLS) and the river gauge. NISAR maps open water with precision {S['F07']}.
+Open water (channel and lagoons) stayed stable; the decline is in shallow, partly vegetated water (DSWx partial class),
+which tracks the river ({S['F15']}) but is not captured by an L-band open-water rule. An interactive web page shows the change map,
+hydroperiod and time series, and every number is traceable to its source.
 
-## Project details
+## Link to Final Project
+{WEB}
 
-**What it does.** The project turns NISAR GCOV backscatter (HH and HV) into open-water maps for eight dates
+(Code, data tables and documentation: {REPO})
+
+## Link to Project Demo
+{REPO}/blob/main/docs/demo/slides.pdf
+
+## Project Details
+**What it does.** The project turns NISAR GCOV backscatter (HH and HV) into open-water maps for {S['F04']} dates
 {S['F05']}, measures how open water changed, and tests the result against two independent references: OPERA
 DSWx-HLS (Landsat/Sentinel-2) and the Paraguay River stage at Ladário (ANA station 66825000). Open water is
-{S['F06']} (gamma0), adapted from Evans (2013), who reports median L-band σ0 of ≈ −23 dB HH / −30 dB HV for brackish lakes without
-vegetation (salinas) and ≈ −14 dB HH / −23 dB HV for fresh-water lakes with floating or emergent vegetation (baías);
-our HH threshold lies between the two classes and our HV threshold is close to the vegetated-lake value.
+{S['F06']} (gamma0), adapted from Evans (2013), who reports median L-band σ0 of ≈ −23 dB HH / −30 dB HV for brackish
+lakes without vegetation (salinas) and ≈ −14 dB HH / −23 dB HV for fresh-water lakes with floating or emergent
+vegetation (baías); our HH threshold lies between the two classes and our HV threshold is close to the vegetated-lake
+value.
 
 **Results.**
 - Open water from NISAR agrees with DSWx-HLS: precision {S['F07']}, recall {S['F08']}, IoU {S['F09']} ({S['F10']} pairs).
@@ -364,40 +369,55 @@ our HH threshold lies between the two classes and our HV threshold is close to t
 - Negative result, reported: a pre-registered classifier could not map partial water from backscatter alone
   (F1 {S['F27']}).
 
-**Why it matters.** The Pantanal's dry-season shallow wetlands are where fish, birds and cattle depend on water, and
-they are what an open-water map misses. Knowing what L-band radar does and does not see helps design NISAR-based
-wetland monitoring.
+**Why it matters.** In our study area, shallow, partly vegetated water covered more area than open water in July
+(DSWx open + partial {S['F14'].split(' → ')[0]} km² vs open {S['F12'].split(' → ')[0]} km²), and it is what an open-water map misses.
+Knowing what L-band radar does and does not see helps design NISAR-based wetland monitoring.
 
 **How we built it.** Python (h5py, rasterio, numpy, scipy, scikit-learn, pandas, matplotlib), Leaflet and Chart.js for
-the web page, GitHub Pages for hosting. Pipeline and order: `docs/reproduce.md`.
+the web page, GitHub Pages for hosting. Pipeline and order: docs/reproduce.md. Claims register: docs/claims.md.
 
-## Use of NASA data
-- NISAR L2 GCOV (NASA/JPL–ISRO), track 132 ascending, frame 168, via the ASF DAAC — main data.
+## Use of NASA Data
+- NISAR L2 GCOV (NASA/JPL–ISRO, provisional), track 132 ascending, frame 168, HH and HV, 8 dates, via the ASF DAAC —
+  main data.
 - OPERA DSWx-HLS v1 (PO.DAAC) — independent optical validation (open and partial surface water).
 
-## Use of other space agency and open data
-- Copernicus DEM GLO-30 (ESA/EU) — floodplain mask and stable reference.
-- JRC Global Surface Water (Pekel et al. 2016) — permanent-water control zone.
-- ANA telemetry, station 66825000 — river stage. · OpenStreetMap — urban mask.
+## Use of Space Agency Partner Data
+- Copernicus DEM GLO-30 (ESA / European Union) — floodplain mask and stable reference.
+- Sentinel-2 (ESA/Copernicus) enters through HLS and DSWx-HLS (modified Copernicus Sentinel data).
 
 ## References
+Data
+- NISAR L2 GCOV: NASA/JPL and ISRO, distributed by the ASF DAAC.
+- OPERA. 2023. OPERA Dynamic Surface Water Extent from Harmonized Landsat Sentinel-2 (Version 1). PO.DAAC.
+  https://doi.org/10.5067/OPDSW-PL3V1
+- Copernicus DEM GLO-30: © DLR e.V. 2010–2014 and © Airbus Defence and Space GmbH 2014–2018, provided under COPERNICUS
+  by the European Union and ESA.
+- Pekel, J.-F., Cottam, A., Gorelick, N., Belward, A. S. (2016). High-resolution mapping of global surface water and
+  its long-term changes. Nature 540, 418–422 (JRC Global Surface Water).
+- ANA (Agência Nacional de Águas e Saneamento Básico), telemetry of station 66825000, Ladário.
+- © OpenStreetMap contributors (ODbL): urban mask and web basemap option.
+
+Literature
 - Evans, T. L. (2013). Habitat mapping of the Brazilian Pantanal using synthetic aperture radar imagery and object
-  based image analysis. MSc thesis, Department of Geography, University of Victoria. http://hdl.handle.net/1828/4671
-- Sentinel-2 data enter through HLS/DSWx (modified Copernicus Sentinel data).
+  based image analysis. MSc thesis, University of Victoria. http://hdl.handle.net/1828/4671
 
-## Use of artificial intelligence
-An AI coding assistant (Claude, Anthropic) was used to write and debug the processing code, draft documentation,
-web text and these slides, under the author's specifications and review. Scientific decisions, acceptance criteria
-and checks were the author's. Full statement: `docs/ai_use.md`.
+Software and web
+- Python: numpy, scipy, pandas, h5py, rasterio, pyproj, shapely, geopandas, scikit-learn, matplotlib, Pillow.
+- Leaflet 1.9.4 (BSD-2-Clause), Chart.js 4.4.1 (MIT), GitHub Pages.
+- Basemap: Esri World Imagery (Imagery © Esri, Maxar, Earthstar Geographics), shown with attribution.
 
-## Links
-- Web: {WEB}
-- Repository: {REPO}
-- Demo slides: {REPO}/blob/main/docs/demo/slides.pdf
-- Demo video: [TODO, if required]
-- Claims register: {REPO}/blob/main/docs/claims.md
+## Use of Artificial Intelligence
+An AI assistant (Claude, Anthropic) was used to write and debug the processing code and to draft the documentation,
+web text and slides, from the author's specifications; a second, separate Claude chat acted as an independent
+reviewer. The author approved every change and ran all the code. No data, labels, images or results were generated by
+AI. Every code file carries an "AI-assisted" header. Full statement: {REPO}/blob/main/docs/ai_use.md
 
-**Tags:** [TODO] NISAR, SAR, L-band, wetlands, Pantanal, surface water, hydrology, OPERA
+## Tags
+NISAR, SAR, L-band, Pantanal, wetlands, surface water, flood dynamics, OPERA DSWx, hydrology, remote sensing
+
+## Before pressing Submit
+- Open both links in a private window and check they load without signing in.
+- Check the box on the form agreeing to the submission requirements and the Participant Terms and Conditions.
 """
     (ROOT / "docs/submission.md").write_text(txt)
 
