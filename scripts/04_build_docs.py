@@ -143,7 +143,7 @@ def write_claims():
           "`scripts/02b_calibrate.py` | Script |",
           f"| Definition of DSWx-HLS partial surface water (class 2): “{PARTIAL_QUOTE}”; 30 m pixels | {PARTIAL_SRC} "
           "(10 Jul 2024), Section 4.1, p. 10; PO.DAAC OPERA_L3_DSWX-HLS_V1 (30 m) | Coding assistant (web fetch of the "
-          "PO.DAAC PDF); author to confirm against the PDF |",
+          "PO.DAAC PDF); confirmed by the author with pdftotext |",
           "| GCOV layer rtcGammaToSigmaFactor converts the GCOV terms from gamma0 to sigma0 | ASF NISAR GCOV "
           "documentation (nisar-docs.asf.alaska.edu/gcov); NISAR L2 GCOV Product Specification, JPL D-102274 | Coding "
           "assistant, web search; sign checked in data by scripts/02k_gamma_sigma.py (factor < 1 on flat terrain) |"]

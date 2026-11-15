@@ -1,0 +1,2 @@
+date,layer,file,n_px,factor_median,offset_median_db,offset_p2_db,offset_p98_db,offset_min_db,offset_max_db,incidence_median_deg
+20260717,rtcGammaToSigmaFactor,NISAR_L2_PR_GCOV_025_132_A_168_2005_DHDH_A_20260717T094153_20260717T094228_P05023_N_F_J_001.h5,3345246,0.7703,1.1336,0.8757,1.4556,0.0360,10.0577,39.6230

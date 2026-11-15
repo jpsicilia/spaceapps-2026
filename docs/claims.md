@@ -48,6 +48,9 @@ Every number and claim shown in the README, the web page, the demo slides, the d
 | F41 | Median InSAR coherence (10→22 Aug) by DSWx class: not water / open / partial | 0.55 / 0.25 / 0.32 | 0.5517, 0.2461, 0.3216 | README extension | `outputs/tables/coherence_test.csv: kind=descriptive, median` |
 | F42 | Partial-water F1 without coherence (same pixels, spatial-block CV, 22 Aug) | 0.35 | 0.3499 | README extension; Slide 6 | `outputs/tables/coherence_test.csv: kind=verdict, f1_partial_without` |
 | F43 | Partial-water F1 with coherence (pre-registered target ≥ 0.50) | 0.45 | 0.4487 | README extension; Slide 6 | `outputs/tables/coherence_test.csv: kind=verdict, f1_partial (label=negative)` |
+| F44 | Measured gamma0 − sigma0 offset, 17 Jul floodplain (median, GCOV rtcGammaToSigmaFactor) | +1.1 dB | 1.134 | README caveats | `outputs/tables/gamma_sigma_factor.csv: offset_median_db (−10·log10 factor; scripts/02k_gamma_sigma.py)` |
+| F45 | Measured gamma0 − sigma0 offset, p2–p98 (used in the physical check) | +0.9 to +1.5 dB | 0.8757, 1.456 | README caveats; physical check | `outputs/tables/gamma_sigma_factor.csv: offset_p2_db, offset_p98_db` |
+| F46 | Physical check of the water thresholds vs Evans (2013), measured offset | HH OK, HV OK | HH OK, HV OK | README caveats | `src/pantanal_sar/classify.py physical_check with F45 and config/thresholds.yaml` |
 | F37 | Ladário stage at first / last DSWx date | 253 → 124 cm | 253.1, 123.5 | README 2; Web card 2; Slide 4 | `outputs/tables/dswx_comparison.csv: stage_at_dswx_cm, first and last row` |
 
 ## Qualitative claims
@@ -56,9 +59,9 @@ Every number and claim shown in the README, the web page, the demo slides, the d
 |---|---|---|---|
 | Q1 | NISAR maps open water reliably | F07, F09, F11 | README 1; Web card 1; Slide 3 |
 | Q2 | Open water (channel and permanent lagoons) stayed stable | F12, F13, F36 | README 2; Web card 2; Slide 4; Script |
-| Q3 | The decline is in shallow, partly vegetated water (DSWx partial class) | F14, F15 | README 2; Web card 3, chart note; Slide 4; Script; Submission |
+| Q3 | The decline is in DSWx partial surface water (≥ 20% and < 100% open water within a 30 m pixel; JPL D-107395 Rev B, Table 4-1), not in open water | F14, F15 | README 2; Web card 3, chart note; Slide 4; Script; Submission |
 | Q4 | An L-band open-water rule does not capture that decline | F16 | README 2; Slide 4 |
-| Q5 | The 17 Jul → 10 Aug NISAR drop is not water loss; consistent with vegetation emerging over shallow water | F19–F24, F38 (pre-registered rule in scripts/02h_jul_aug_loss.py: > 50% on partial) | README 3; Web change note, chart note; Slide 5; Script; Submission |
+| Q5 | The 17 Jul → 10 Aug NISAR drop is not water loss; consistent with vegetation emerging | F19–F24, F38 (pre-registered rule in scripts/02h_jul_aug_loss.py: > 50% on partial) | README 3; Web change note, chart note; Slide 5; Script; Submission |
 | Q6 | About a third of that drop remains unexplained; wind is not supported | F25, F26 | README 3; Slide 5 |
 | Q7 | Flooded vegetation (double bounce) not detected | F35 | Web change legend; Slide 6 |
 | Q8 | Radar backscatter alone could not map partial water (negative result) | F27, F28 (pre-registered criteria in scripts/02g_partial_clf.py) | README 4; Web (Validation); Slide 6; Script; Submission |
@@ -89,11 +92,13 @@ Every number and claim shown in the README, the web page, the demo slides, the d
 | “The July→August drop is real / drop is real” | Replaced by Q5 after the DSWx 8 Aug transition table (F23, F24). |
 | “Missed water is mostly along shorelines” | Never measured; removed. |
 | “Every 12 days” | One 24-day gap (F05). |
-| “What dried out were marshes…” (causal wording) | Softened to “consistent with drying of shallow, partly vegetated water”. |
+| “What dried out were marshes…” (causal wording) | Softened, then reworded with the official DSWx partial-water definition (see below). |
 | “Wind is ruled out” | Softened to “wind is not supported” (F26 is a test against one rule, not proof). |
 | “Not imaged / not acquired that day” (2 Sep) | Per-file check: the gap is one missing HLS/DSWx tile, 21KVV (F31). |
 | “Cloud-free pixels” | Renamed “valid (clear)”: DSWx codes 0/1/2, which also excludes missing products. |
 | “Adapted from Evans et al. 2010”; “flooded forest ≈ −4 dB”; “vegetated ≈ −23 dB” as an HH value | Values not found as cited; replaced by verified Evans (2013) values for open and vegetated lakes. |
+| “Shallow, partly vegetated water”; “shallow water”; “vegetated water” for the DSWx partial class | Depth was never measured; replaced by the official DSWx-HLS definition of partial surface water (JPL D-107395 Rev B, Table 4-1). |
+| σ0 → γ0 “+0.5 to 1.5 dB” (assumption) | Replaced by the offset measured from the GCOV rtcGammaToSigmaFactor layer on 17 Jul (F44, F45). |
 | “Only Landsat-9 pair” note in the wind verdict | After completing the DSWx tiles the 19 Jul pair is L9+S2C; note removed. |
 
 ## Verified against external sources
@@ -102,10 +107,17 @@ Every number and claim shown in the README, the web page, the demo slides, the d
 |---|---|---|
 | Median L-band σ0 (ALOS PALSAR, Lower Nhecolândia): brackish lakes without vegetation (salinas) ≈ −23 dB HH (flood and dry season) and −30 dB HV (dry season); fresh-water lakes with floating and emergent vegetation (baías) ≈ −14 dB HH (flood and dry) and −23 dB HV — basis of the thresholds (F06) | Evans, T. L. (2013), MSc thesis, Department of Geography, University of Victoria, ch. 2, section 2.4, pp. 52–53; http://hdl.handle.net/1828/4671 | Author and coding assistant, from the thesis text |
 | HH threshold (−16 dB) lies between the two classes; HV threshold (−22 dB) is close to the vegetated-lake value | F06 vs the values above; `src/pantanal_sar/classify.py` PHYS_REF, printed by `scripts/02b_calibrate.py` | Script |
+| Definition of DSWx-HLS partial surface water (class 2): “an inundated area that is at least 20% and less than 100% open water”; 30 m pixels | OPERA DSWx-HLS Product Specification, JPL D-107395 Rev B, Table 4-1 (10 Jul 2024), Section 4.1, p. 10; PO.DAAC OPERA_L3_DSWX-HLS_V1 (30 m) | Coding assistant (web fetch of the PO.DAAC PDF); confirmed by the author with pdftotext |
+| GCOV layer rtcGammaToSigmaFactor converts the GCOV terms from gamma0 to sigma0 | ASF NISAR GCOV documentation (nisar-docs.asf.alaska.edu/gcov); NISAR L2 GCOV Product Specification, JPL D-102274 | Coding assistant, web search; sign checked in data by scripts/02k_gamma_sigma.py (factor < 1 on flat terrain) |
+| Coherence combined with backscatter for wetland classification (L-, C-, X-band, Newfoundland); temporal baseline the most influential factor for coherence in herbaceous wetlands | Mohammadimanesh et al. (2018), ISPRS J. Photogramm. Remote Sens. 142, 78–93, doi:10.1016/j.isprsjprs.2018.05.009 (abstract) | Coding assistant, web search; author to confirm |
+| The Shallow Open Water class has the lowest coherence (Sentinel-1, Alberta); lower coherence in the leaf-on season | Amani et al. (2021), Remote Sens. 13, 3315, doi:10.3390/rs13163315 (abstract) | Coding assistant, web search; author to confirm |
+| Open water without emergent vegetation generally lacks usable coherence; herbaceous wetlands high but variable coherence | Brisco et al. (2017), Remote Sens. 9(2), 158, doi:10.3390/rs9020158 (abstract) | Coding assistant, web search; author to confirm |
+| Space-averaged sample coherence magnitude is biased toward higher values | Touzi et al. (1999), IEEE TGRS 37(1), 135–149, doi:10.1109/36.739146 (abstract) | Coding assistant, web search; author to confirm |
+| Combining L-band InSAR with backscatter-based methods can improve flooded-vegetation detection; relevant for NISAR | Hübinger et al. (2026), Remote Sens. Environ. 332, 115086, doi:10.1016/j.rse.2025.115086 (abstract) | Coding assistant, web search; author to confirm |
 
 ## Not verified
 
-- Conversion σ0 → γ0 (+0.5 to 1.5 dB at our incidence angles) used to compare thresholds with Evans (2013): an assumption, not taken from that source.
 - Reference value for flooded vegetation (double bounce): none verified; the flooded-vegetation check is reported as NOT VERIFIED.
 - Gauge marker position on the web map: approximate (±1 km), taken from Frontiers in Water 2021 (doi:10.3389/frwa.2021.639204) by the author; not the official ANA station coordinates.
 - “Unverified observation” in the README (river HH drop in late Sep–Oct): interpretation not tested.
+- Coherence bias narrowing the gap between open and partial water (README extension): our interpretation of Touzi et al. (1999), not tested on our data.
