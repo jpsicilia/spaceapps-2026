@@ -45,7 +45,7 @@ WHERE = {
     "F26": "README 3; Slide 5", "F27": "README 4; Web (Validation); Slide 6; Script; Submission",
     "F28": "README 4; Slide 6; Submission", "F29": "Slide 6", "F30": "README coverage; Web card 4, §2 lead; Slide 2; Script; Submission",
     "F31": "README coverage; Web card 4, §2 lead and legend; Slide 2; Script; Submission", "F32": "README coverage (only if ≥ 1%); Web §2 lead (only if ≥ 1%)",
-    "F33": "README coverage; Web card 4; Slide 2; Submission", "F34": "Web §2 lead",
+    "F33": "README coverage; Web card 4; Slide 2; Submission", "F34": "README coverage; Web §2 lead",
     "F35": "Web change legend (“not detected”); Slide 6", "F36": "Claims only (supports Q2)",
     "F37": "README 2; Web card 2; Slide 4", "F38": "Slide 5; Script",
 }

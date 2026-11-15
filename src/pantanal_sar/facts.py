@@ -134,8 +134,8 @@ def load_facts(root: Path) -> dict:
     if len(missing) != 1 or sensors != ["S2B"]:
         raise ValueError(f"2 Sep tile check changed: missing={missing}, sensors with valid data={sensors}; "
                          "update the F31 wording")
-    gap = (f"no HLS/DSWx product exists for tile {missing[0][1:]} on 2 Sep "
-           f"(Sentinel-2B covered the neighbouring tiles)")
+    gap = (f"no HLS/DSWx product exists that day for tile {missing[0][1:]}, "
+           f"although Sentinel-2B covered the neighbouring tiles")
     add("F31", "Why the rest of the floodplain has no optical data on 2 Sep", cov.not_acquired_pct, gap,
         f"{T}/dswx_coverage_files.csv: tiles present {', '.join(present)}, no {missing[0]}; files with valid data: "
         f"{', '.join(sensors)}; share of floodplain: {T}/sep_optical_coverage.csv not_acquired_pct = "

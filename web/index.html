@@ -196,7 +196,8 @@ Promise.all([fetch("data/data.json").then(r=>r.json()), fetch("data/layers.json"
 
   // ---------- map 1
   const b = D.aoi_bounds || LY.change.bounds;
-  const m1 = L.map("map1", {scrollWheelZoom:false}).fitBounds(b);
+  const FIT = {padding:[12,12]};
+  const m1 = L.map("map1", {scrollWheelZoom:false}).fitBounds(b, FIT);
   basemap(m1); scrollOnClick(m1); gaugeMarker(m1, D.gauge);
   let ov = null;
   function show(name){
@@ -211,7 +212,7 @@ Promise.all([fetch("data/data.json").then(r=>r.json()), fetch("data/layers.json"
   show("change");
 
   // ---------- map 2 (swipe)
-  const m2 = L.map("map2", {scrollWheelZoom:false, zoomAnimation:false}).fitBounds(b);
+  const m2 = L.map("map2", {scrollWheelZoom:false, zoomAnimation:false}).fitBounds(b, FIT);
   basemap(m2); scrollOnClick(m2); gaugeMarker(m2, D.gauge);
   const pl = m2.createPane("left"), pr = m2.createPane("right");
   pl.style.zIndex = 450; pr.style.zIndex = 450;
@@ -226,7 +227,13 @@ Promise.all([fetch("data/data.json").then(r=>r.json()), fetch("data/layers.json"
     pr.style.clip = `rect(${nw.y}px, ${se.x}px, ${se.y}px, ${x}px)`;
     $("#div2").style.left = `calc(${(+sw.value)*100}% - 1px)`;
   }
+  function centerSwipe(){   // handle starts at the horizontal centre of the study area, not of the map
+    const x = m2.latLngToContainerPoint(L.latLngBounds(b).getCenter()).x;
+    sw.value = Math.min(0.98, Math.max(0.02, x / m2.getSize().x));
+  }
   function pair(kind){
+    m2.fitBounds(b, Object.assign({animate:false}, FIT));
+    centerSwipe();
     [oL,oR].forEach(o => o && m2.removeLayer(o));
     let l, r, tl, tr;
     if (kind === "sep") {
@@ -237,7 +244,7 @@ Promise.all([fetch("data/data.json").then(r=>r.json()), fetch("data/layers.json"
       legend(tmp, "dswx");
       if ((M.sep_cloud_pct ?? 0) > 0) tmp.insertAdjacentHTML("beforeend", '<span><span class="sw" style="background:#464646"></span>cloud / shadow</span>');
       $("#leg2").insertAdjacentHTML("beforeend", "<span style='margin-left:12px'><b>Right:</b></span>" + tmp.innerHTML);
-      $("#cloudLead").textContent = `On ${dmy(D.sep_dswx)} the optical product covered ${M.sep_clear_cov_pct}% of the floodplain: ${REST}. NISAR imaged ${M.nisar_sep_pct}% of it on ${dmy(D.sep_nisar)}, ${M.repeat_text}. Drag the handle.`;
+      $("#cloudLead").textContent = `On ${dmy(D.sep_dswx)} the optical product covered ${M.sep_clear_cov_pct}% of the floodplain: ${REST}. NISAR imaged ${M.nisar_sep_pct}% of it on ${dmy(D.sep_nisar)}.`;
     } else {
       l = "composite_" + D.before.replaceAll("-",""); r = "composite_" + D.after.replaceAll("-","");
       tl = `NISAR · ${dmy(D.before)}`; tr = `NISAR · ${dmy(D.after)}`;
@@ -251,6 +258,13 @@ Promise.all([fetch("data/data.json").then(r=>r.json()), fetch("data/layers.json"
     clip();
   }
   m2.on("move zoom resize", clip); sw.addEventListener("input", clip);
+  // keep both maps framed on the study area if the page layout changes size (fonts, scrollbar, window)
+  let lastW = {m1: 0, m2: 0};
+  new ResizeObserver(() => {
+    const w1 = m1.getContainer().clientWidth, w2 = m2.getContainer().clientWidth;
+    if (w1 !== lastW.m1) { lastW.m1 = w1; m1.invalidateSize(false); m1.fitBounds(b, FIT); }
+    if (w2 !== lastW.m2) { lastW.m2 = w2; m2.invalidateSize(false); m2.fitBounds(b, Object.assign({animate:false}, FIT)); centerSwipe(); clip(); }
+  }).observe(document.body);
   document.querySelectorAll('input[name=sw]').forEach(r => r.addEventListener("change", e => pair(e.target.value)));
   pair("sep");
 
