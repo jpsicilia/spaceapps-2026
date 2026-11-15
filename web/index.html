@@ -31,7 +31,10 @@
   .legend { display:flex; flex-wrap:wrap; gap:6px 16px; font-size:13px; color:var(--muted); margin-top:8px; min-height:22px; }
   .sw { display:inline-block; width:14px; height:14px; border-radius:3px; vertical-align:-2px; margin-right:5px; border:1px solid rgba(0,0,0,.15); }
   .grad { display:inline-block; width:160px; height:12px; border-radius:3px; vertical-align:-1px;
-          background:linear-gradient(90deg,#6a00a8,#b12a90,#e16462,#fca636,#f0f921); margin:0 6px; }
+          background:linear-gradient(90deg,#9ecae1,#6baed6,#3182bd,#08519c,#08306b); margin:0 6px; }
+  .hint { position:absolute; top:10px; left:50%; transform:translateX(-50%); z-index:1001; background:rgba(27,36,48,.75);
+          color:#fff; font-size:12px; padding:3px 8px; border-radius:6px; pointer-events:none; transition:opacity .2s; }
+  .maphost { position:relative; }
   .swipe-wrap { position:relative; }
   .swipe { position:absolute; left:0; right:0; top:50%; width:100%; margin:0; z-index:1000;
            -webkit-appearance:none; appearance:none; background:transparent; pointer-events:none; height:34px; margin-top:-17px; }
@@ -72,12 +75,11 @@
   <div class="controls" id="mapCtl">
     <label><input type="radio" name="lyr" value="change" checked> Change 17 Jul → 21 Oct</label>
     <label><input type="radio" name="lyr" value="hydroperiod"> Hydroperiod (dates as open water)</label>
-    <label><input type="radio" name="lyr" value="composite_20260717"> Radar 17 Jul</label>
-    <label><input type="radio" name="lyr" value="composite_20261021"> Radar 21 Oct</label>
     <label>Opacity <input type="range" id="op" min="0" max="1" step="0.05" value="0.9"></label>
   </div>
-  <div id="map1" class="map"></div>
+  <div class="maphost"><div id="map1" class="map"></div><div class="hint">click to zoom with scroll</div></div>
   <div class="legend" id="leg1"></div>
+  <p class="note" id="chgNote">Most ‘open water lost’ is shallow water where vegetation emerged; optics still saw it wet (see chart).</p>
 </section>
 
 <section>
@@ -88,7 +90,7 @@
     <label><input type="radio" name="sw" value="ba"> Radar: 17 Jul vs 21 Oct</label>
   </div>
   <div class="swipe-wrap">
-    <div id="map2" class="map"></div>
+    <div id="map2" class="map"></div><div class="hint">click to zoom with scroll</div>
     <div class="divider" id="div2"></div>
     <div class="tag l" id="tagL"></div><div class="tag r" id="tagR"></div>
     <input class="swipe" id="swipe" type="range" min="0" max="1" step="0.001" value="0.5">
@@ -135,14 +137,25 @@ const LEG = {
   change: [["#00c8ff","open water both dates"],["#ff7f00","open water lost"],["#ff00c8","open water gained"],
            ["rgba(255,255,255,.5)","analysed, no open water"]],
   composite: [["#ff0000","HH"],["#00ff00","HV"],["#0000ff","HH − HV"]],
-  dswx: [["#e2d6b4","not water"],["#1f4e9c","open water"],["#78b4e6","partial surface water"],["#fafafa","cloud / shadow"]],
+  dswx: [["#e2d6b4","not water"],["#1f4e9c","open water"],["#78b4e6","partial surface water"],["#969696","cloud — optical blind"]],
+  hvgrey: [["#000","water (smooth, dark)"],["#fff","land / vegetation (bright)"]],
 };
 function legend(el, key){
   if (key === "hydroperiod") { el.innerHTML = 'dates as open water (of 8): 1<span class="grad"></span>8'; return; }
-  const items = LEG[key.startsWith("composite") ? "composite" : key] || [];
+  const items = LEG[key.startsWith("composite") ? "composite" : key.startsWith("hvgrey") ? "hvgrey" : key] || [];
   el.innerHTML = items.map(([c,t]) => `<span><span class="sw" style="background:${c}"></span>${t}</span>`).join("")
     + (key.startsWith("composite") ? '<span>(radar false colour: dark = smooth water)</span>' : "")
     + (key === "change" ? '<span>flooded vegetation: not detected</span>' : "");
+}
+function scrollOnClick(map){
+  const hint = map.getContainer().parentElement.querySelector(".hint");
+  map.on("click focus", () => { map.scrollWheelZoom.enable(); if (hint) hint.style.opacity = 0; });
+  map.on("mouseout", () => { map.scrollWheelZoom.disable(); if (hint) hint.style.opacity = 1; });
+}
+function gaugeMarker(map, G){
+  if (!G) return;
+  L.circleMarker([G.lat, G.lon], {radius:7, color:"#fff", weight:2, fillColor:"#d62728", fillOpacity:1})
+   .addTo(map).bindPopup(`<b>${G.name}</b> (ANA ${G.code})<br>River gauge — grey line in the chart`);
 }
 function basemap(map){
   const esri = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
@@ -175,15 +188,16 @@ Promise.all([fetch("data/data.json").then(r=>r.json()), fetch("data/layers.json"
   $("#cards").innerHTML = cards.map(([k,t,p]) => `<div class="card"><div class="k">${k}</div><div class="t">${t}</div><p>${p}</p></div>`).join("");
 
   // ---------- map 1
-  const b = LY.change.bounds;
+  const b = D.aoi_bounds || LY.change.bounds;
   const m1 = L.map("map1", {scrollWheelZoom:false}).fitBounds(b);
-  basemap(m1);
+  basemap(m1); scrollOnClick(m1); gaugeMarker(m1, D.gauge);
   let ov = null;
   function show(name){
     if (ov) m1.removeLayer(ov);
     ov = L.imageOverlay(LY[name].url, LY[name].bounds, {opacity:+$("#op").value}).addTo(m1);
     watch(ov, $("#leg1"));
     legend($("#leg1"), name);
+    $("#chgNote").style.display = name === "change" ? "" : "none";
   }
   document.querySelectorAll('input[name=lyr]').forEach(r => r.addEventListener("change", e => show(e.target.value)));
   $("#op").addEventListener("input", e => ov && ov.setOpacity(+e.target.value));
@@ -191,7 +205,7 @@ Promise.all([fetch("data/data.json").then(r=>r.json()), fetch("data/layers.json"
 
   // ---------- map 2 (swipe)
   const m2 = L.map("map2", {scrollWheelZoom:false, zoomAnimation:false}).fitBounds(b);
-  basemap(m2);
+  basemap(m2); scrollOnClick(m2); gaugeMarker(m2, D.gauge);
   const pl = m2.createPane("left"), pr = m2.createPane("right");
   pl.style.zIndex = 450; pr.style.zIndex = 450;
   let oL = null, oR = null;
@@ -209,11 +223,12 @@ Promise.all([fetch("data/data.json").then(r=>r.json()), fetch("data/layers.json"
     [oL,oR].forEach(o => o && m2.removeLayer(o));
     let l, r, tl, tr;
     if (kind === "sep") {
-      l = "composite_" + D.sep_nisar.replaceAll("-",""); r = "dswx_" + D.sep_dswx.replaceAll("-","");
-      tl = `NISAR radar · ${dmy(D.sep_nisar)}`; tr = `Optical DSWx-HLS · ${dmy(D.sep_dswx)}`;
-      $("#leg2").innerHTML = "";
-      legend($("#leg2"), "dswx");
-      $("#leg2").insertAdjacentHTML("afterbegin", "<span><b>Right:</b></span>");
+      l = "hvgrey_" + D.sep_nisar.replaceAll("-",""); r = "dswx_" + D.sep_dswx.replaceAll("-","");
+      tl = `NISAR radar HV · ${dmy(D.sep_nisar)}`; tr = `Optical DSWx-HLS · ${dmy(D.sep_dswx)}`;
+      const tmp = document.createElement("div"); legend(tmp, "hvgrey");
+      $("#leg2").innerHTML = "<span><b>Left:</b></span>" + tmp.innerHTML;
+      legend(tmp, "dswx");
+      $("#leg2").insertAdjacentHTML("beforeend", "<span style='margin-left:12px'><b>Right:</b></span>" + tmp.innerHTML);
       $("#cloudLead").textContent = `In the fire season, clouds left ${M.sep_clear_pct}% of the floodplain visible to optical sensors on ${dmy(D.sep_dswx)}. NISAR, one day later, imaged all of it. Drag the handle.`;
     } else {
       l = "composite_" + D.before.replaceAll("-",""); r = "composite_" + D.after.replaceAll("-","");

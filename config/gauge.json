@@ -1,0 +1,8 @@
+{
+  "name": "Ladário (Base Naval)",
+  "code": "66825000",
+  "river": "Paraguay",
+  "lat": null,
+  "lon": null,
+  "coord_source": "fill from ANA HidroWeb station metadata (Inventário), decimal degrees"
+}

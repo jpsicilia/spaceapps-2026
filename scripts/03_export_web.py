@@ -93,6 +93,13 @@ def main():
         rgba[~ok] = 0
         save(f"composite_{d}", rgba, tr, crs, layers, Resampling.bilinear, webp=True)
 
+    # --- NISAR HV greyscale for the fire-season panel (water black): HV -28..-8 dB -> 0..255
+    hh3, hv3, tr, crs = load(SEP_N)
+    ok3 = np.isfinite(hv3)
+    g = np.nan_to_num(np.clip((hv3 + 28.0) / 20.0 * 255, 0, 255))
+    save(f"hvgrey_{SEP_N}", np.dstack([g, g, g, np.where(ok3, 255, 0)]).astype("uint8"), tr, crs, layers,
+         Resampling.bilinear, webp=True)
+
     # --- DSWx-HLS 2 Sep (cloudy) on the NISAR 3 Sep footprint
     import importlib.util
     spec = importlib.util.spec_from_file_location("dswx", ROOT / "scripts/02e_dswx_compare.py")
@@ -103,8 +110,8 @@ def main():
     hh3, _, _, _ = load(SEP_N)
     w[~np.isfinite(hh3)] = 255
     save(f"dswx_{SEP_D}", palette_rgba(w, {0: (226, 214, 180, 255), 1: (31, 78, 156, 255),
-                                         2: (120, 180, 230, 255), 253: (205, 205, 205, 215),
-                                         252: (205, 205, 205, 215)}), tr, crs, layers)
+                                         2: (120, 180, 230, 255), 253: (150, 150, 150, 255),
+                                         252: (150, 150, 150, 255)}), tr, crs, layers)
 
     # --- classes
     for d in (BEFORE, AFTER):
@@ -123,10 +130,10 @@ def main():
     with rasterio.open(ROOT / "outputs/maps/hydroperiod.tif") as r:
         h, tr, crs = r.read(1), r.transform, r.crs
     import matplotlib
-    cmap = matplotlib.colormaps["plasma"]
+    cmap = matplotlib.colormaps["Blues"]
     n = int(h[h != 255].max())
-    cols = {k: tuple(int(255 * v) for v in cmap(0.15 + 0.85 * (k - 1) / max(n - 1, 1))[:3]) + (255,)
-            for k in range(1, n + 1)}
+    cols = {k: tuple(int(255 * v) for v in cmap(0.30 + 0.70 * (k - 1) / max(n - 1, 1))[:3]) + (255,)
+            for k in range(1, n + 1)}           # 1 = light blue ... n = dark blue
     cols[0] = (255, 255, 255, 60)
     save("hydroperiod", palette_rgba(h, cols), tr, crs, layers)
 
@@ -147,6 +154,15 @@ def main():
     def ymd(s):
         return f"{s[:4]}-{s[4:6]}-{s[6:]}" if "-" not in s else s
 
+    from shapely.geometry import shape
+    gj = json.loads((ROOT / "config/aoi.geojson").read_text())
+    geom = gj["features"][0]["geometry"] if gj.get("type") == "FeatureCollection" else gj.get("geometry", gj)
+    w_, s_, e_, n_ = shape(geom).bounds
+    aoi_bounds = [[s_, w_], [n_, e_]]
+    gauge = json.loads((ROOT / "config/gauge.json").read_text()) if (ROOT / "config/gauge.json").exists() else None
+    if not gauge or gauge.get("lat") is None or gauge.get("lon") is None:
+        print("      [WARN] config/gauge.json has no lat/lon -> no gauge marker on the map")
+        gauge = None
     r_par, p_par = stats.pearsonr(comp["stage_at_dswx_cm"], comp["series_dswx_open_partial_km2"])
     r_op, p_op = stats.pearsonr(comp["stage_at_dswx_cm"], comp["series_dswx_open_km2"])
     cloudy = agr.sort_values("clear_pct").iloc[0]
@@ -177,6 +193,7 @@ def main():
             "sep_clear_pct": round(float(agr.loc[agr["dswx_date"] == SEP_D, "clear_pct"].iloc[0])),
         },
         "before": ymd(BEFORE), "after": ymd(AFTER), "sep_nisar": ymd(SEP_N), "sep_dswx": ymd(SEP_D),
+        "aoi_bounds": aoi_bounds, "gauge": gauge,
     }
     for name, key in (("jul_aug_loss.csv", "jul_aug_loss"), ("partial_clf_summary.csv", "classifier"),
                       ("wind_check.csv", "wind")):

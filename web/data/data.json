@@ -642,6 +642,17 @@
  "after": "2026-10-21",
  "sep_nisar": "2026-09-03",
  "sep_dswx": "2026-09-02",
+ "aoi_bounds": [
+  [
+   -19.08,
+   -57.95
+  ],
+  [
+   -17.95,
+   -57.3
+  ]
+ ],
+ "gauge": null,
  "jul_aug_loss": {
   "lost_km2": 107.56,
   "lost_clear_km2": 103.42,
