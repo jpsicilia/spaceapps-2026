@@ -20,6 +20,7 @@ if grep -q "\[ALERT\]" /tmp/coverage_check.txt; then
 fi
 
 echo "== 3/6 regenerate wind check, web, documents and README from the tables"
+python scripts/02e_dswx_compare.py > /dev/null
 python scripts/02f_wind_check.py | tail -2
 python scripts/03_export_web.py
 python scripts/04_build_docs.py

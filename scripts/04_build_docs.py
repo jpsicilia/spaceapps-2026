@@ -121,7 +121,7 @@ def write_claims():
 NAVY, INK, MUTED, ACC = "#0b2545", "#1b2430", "#5b6675", "#0f766e"
 
 
-def slide(pdf, n, title, bullets, img=None, draw=None, note=None):
+def slide(pdf, n, title, bullets, img=None, draw=None, note=None, legend=None, caption=None, bg=None):
     fig = plt.figure(figsize=(13.333, 7.5))
     fig.patch.set_facecolor("white")
     fig.text(0.05, 0.89, title, fontsize=30, fontweight="bold", color=NAVY, va="bottom")
@@ -137,9 +137,18 @@ def slide(pdf, n, title, bullets, img=None, draw=None, note=None):
         fig.text(0.06, 0.10, "\n".join(textwrap.wrap(note, width + 14)), fontsize=12, color=MUTED, va="bottom")
     if img:
         im = Image.open(ROOT / img)
-        ax = fig.add_axes([0.52, 0.10, 0.44, 0.74])
-        ax.imshow(im)
+        ax = fig.add_axes([0.52, 0.12 if (legend or caption) else 0.10, 0.44, 0.72])
+        if bg:
+            base = Image.new("RGBA", im.size, bg)
+            im = Image.alpha_composite(base, im.convert("RGBA"))
+        ax.imshow(im, interpolation="lanczos")
         ax.set_axis_off()
+        if legend:
+            from matplotlib.patches import Patch
+            fig.legend(handles=[Patch(facecolor=c, edgecolor="#999", label=t) for c, t in legend],
+                       loc="lower center", bbox_to_anchor=(0.72, 0.055), ncol=len(legend), fontsize=10, frameon=False)
+        if caption:
+            fig.text(0.74, 0.085, caption, fontsize=11, color=MUTED, ha="center")
     if draw:
         ax = fig.add_axes([0.60, 0.27, 0.32, 0.54])
         draw(ax)
@@ -255,7 +264,8 @@ def write_slides():
                "Validation: OPERA DSWx-HLS (optical) and the Ladário river gauge.",
                f"Coverage: NISAR ≥ {S['F33']} of the floodplain on every date; optics on 2 Sep: {S['F30']}, "
                f"as {S['F31']}."],
-              img="outputs/figures/quicklook_20260717.png")
+              img="web/img/composite_20260717.webp", bg="#ffffff",
+              caption="NISAR, 17 Jul 2026 — red HH, green HV, blue HH−HV (dark = open water)")
         slide(pdf, 3, "NISAR maps open water reliably",
               [f"Precision {S['F07']} against DSWx-HLS on {S['F10']} near-simultaneous dates.",
                f"Recall {S['F08']}; IoU {S['F09']}.",
@@ -284,8 +294,13 @@ def write_slides():
               [f"Interactive map and charts: {WEB}",
                f"Code, data tables and claims register: {REPO}",
                "Every number in this deck is listed with its source in docs/claims.md."],
-              img="outputs/figures/change_20260717_20261021.png")
-    print(f"      {out}")
+              img="web/img/change.png", bg="#dfe5ec",
+              legend=[("#00c8ff", "open water both dates"), ("#ff7f00", "open water lost"),
+                      ("#ff00c8", "open water gained")])
+    import shutil
+    (ROOT / "web/demo").mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(out, ROOT / "web/demo/slides.pdf")      # served by GitHub Pages with the browser PDF viewer
+    print(f"      {out} (+ web/demo/slides.pdf)")
 
 
 # --------------------------------------------------------------------------- script.md
@@ -347,7 +362,7 @@ hydroperiod and time series, and every number is traceable to its source.
 (Code, data tables and documentation: {REPO})
 
 ## Link to Project Demo
-{REPO}/blob/main/docs/demo/slides.pdf
+{WEB}demo/slides.pdf
 
 ## Project Details
 **What it does.** The project turns NISAR GCOV backscatter (HH and HV) into open-water maps for {S['F04']} dates

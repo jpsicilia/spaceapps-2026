@@ -199,7 +199,7 @@ def main():
     ax.legend(handles=[Patch(color=cm(k), label=labels[k]) for k in range(1, 7)], loc="lower left", fontsize=8)
     ax.set_title(f"Agreement NISAR {nd} vs DSWx-HLS {dd}  (IoU {best['iou']:.2f})")
     ax.set_axis_off()
-    fig.savefig(figs / f"agreement_{nd}_dswx_{dd}.png", dpi=120)
+    fig.savefig(figs / f"agreement_{nd}_dswx_{dd}.png", dpi=220)
     plt.close(fig)
     print(f"[4/4] figures: {figs}/nisar_vs_dswx_series.png, agreement_{nd}_dswx_{dd}.png")
 

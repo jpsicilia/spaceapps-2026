@@ -47,7 +47,7 @@ The numbers in the file names group the steps; **02d must run before 02c**, beca
 | 8 | `python scripts/02h_jul_aug_loss.py` | `class_<date>.tif`, DSWx | `outputs/tables/jul_aug_loss.csv`, `jul_aug_loss_dswx_transitions.csv` |
 | 9 | `python scripts/02i_dswx_coverage_check.py` | DSWx 2 Sep, GCOV grid | `outputs/tables/dswx_coverage_files.csv` (per-file audit of the 2 Sep optical coverage) |
 | 10 | `python scripts/03_export_web.py` | all of the above | `web/img/*`, `web/data/*.json`, `outputs/tables/sep_optical_coverage.csv` |
-| 11 | `python scripts/04_build_docs.py` | `outputs/tables/`, `config/`, `outputs/figures/` | `docs/claims.md`, `docs/demo/slides.pdf`, `docs/demo/script.md`, `docs/submission.md` |
+| 11 | `python scripts/04_build_docs.py` | `outputs/tables/`, `config/`, `outputs/figures/`, `web/img/` | `docs/claims.md`, `docs/demo/slides.pdf` (copied to `web/demo/slides.pdf`), `docs/demo/script.md`, `docs/submission.md` |
 | 12 | `python scripts/update_readme_results.py` | `outputs/tables/` | Results section of `README.md` |
 
 `scripts/00_init_repo.sh` only created the GitHub repository and is not part of the pipeline.
