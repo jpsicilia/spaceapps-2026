@@ -15,6 +15,13 @@ from scipy import stats
 
 T = "outputs/tables"
 EXPECTED_TILES = ["T21KUA", "T21KUU", "T21KUV", "T21KVA", "T21KVU", "T21KVV"]   # docs/data_inventory.md (6 MGRS tiles)
+# OPERA DSWx-HLS Product Specification, JPL D-107395 Rev B (10 Jul 2024), Section 4.1, Table 4-1, WTR class 2.
+PARTIAL_SRC = "OPERA DSWx-HLS Product Specification, JPL D-107395 Rev B, Table 4-1"
+PARTIAL_QUOTE = "an inundated area that is at least 20% and less than 100% open water"
+PARTIAL_SHORT = "≥ 20% and < 100% open water within a 30 m pixel"
+PARTIAL_DEF = (f"Partial surface water (DSWx-HLS class 2) is defined as “{PARTIAL_QUOTE}” ({PARTIAL_SRC}): "
+               "sub-pixel water such as wetlands, water with emergent vegetation or mixed shoreline pixels. "
+               "Water depth is not measured.")
 MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
 
@@ -174,6 +181,24 @@ def load_facts(root: Path) -> dict:
             float(v.f1_partial_without), f"{v.f1_partial_without:.2f}", f"{T}/coherence_test.csv: kind=verdict, f1_partial_without")
         add("F43", "Partial-water F1 with coherence (pre-registered target ≥ 0.50)", float(v.f1_partial),
             f"{v.f1_partial:.2f}", f"{T}/coherence_test.csv: kind=verdict, f1_partial (label={v.label})")
+    gs_path = r / T / "gamma_sigma_factor.csv"
+    if gs_path.exists():
+        g = pd.read_csv(gs_path).iloc[0]
+        add("F44", "Measured gamma0 − sigma0 offset, 17 Jul floodplain (median, GCOV rtcGammaToSigmaFactor)",
+            float(g.offset_median_db), f"{g.offset_median_db:+.1f} dB",
+            f"{T}/gamma_sigma_factor.csv: offset_median_db (−10·log10 factor; scripts/02k_gamma_sigma.py)")
+        add("F45", "Measured gamma0 − sigma0 offset, p2–p98 (used in the physical check)",
+            (float(g.offset_p2_db), float(g.offset_p98_db)), f"{g.offset_p2_db:+.1f} to {g.offset_p98_db:+.1f} dB",
+            f"{T}/gamma_sigma_factor.csv: offset_p2_db, offset_p98_db")
+        import sys as _sys
+        _sys.path.insert(0, str(r / "src"))
+        from pantanal_sar.classify import physical_check
+        th = {k.strip(): float(v) for k, v in (ln.split(":", 1) for ln in (r / "config/thresholds.yaml").read_text()
+              .splitlines() if ":" in ln and not ln.lstrip().startswith("#"))}
+        chk = {k: flag for k, _, _, flag, _ in physical_check(th, offsets=(g.offset_p2_db, g.offset_p98_db))}
+        add("F46", "Physical check of the water thresholds vs Evans (2013), measured offset",
+            f"HH {chk['water_hh_max']}, HV {chk['water_hv_max']}", f"HH {chk['water_hh_max']}, HV {chk['water_hv_max']}",
+            "src/pantanal_sar/classify.py physical_check with F45 and config/thresholds.yaml")
     sd0, sd1 = comp.stage_at_dswx_cm.iloc[0], comp.stage_at_dswx_cm.iloc[-1]
     add("F37", "Ladário stage at first / last DSWx date", (sd0, sd1), f"{sd0:.0f} → {sd1:.0f} cm",
         f"{T}/dswx_comparison.csv: stage_at_dswx_cm, first and last row")
@@ -183,9 +208,9 @@ def load_facts(root: Path) -> dict:
 QUALITATIVE = [
     ("Q1", "NISAR maps open water reliably", "F07, F09, F11"),
     ("Q2", "Open water (channel and permanent lagoons) stayed stable", "F12, F13, F36"),
-    ("Q3", "The decline is in shallow, partly vegetated water (DSWx partial class)", "F14, F15"),
+    ("Q3", "The decline is in DSWx partial surface water (≥ 20% and < 100% open water within a 30 m pixel; JPL D-107395 Rev B, Table 4-1), not in open water", "F14, F15"),
     ("Q4", "An L-band open-water rule does not capture that decline", "F16"),
-    ("Q5", "The 17 Jul → 10 Aug NISAR drop is not water loss; consistent with vegetation emerging over shallow water",
+    ("Q5", "The 17 Jul → 10 Aug NISAR drop is not water loss; consistent with vegetation emerging",
      "F19–F24, F38 (pre-registered rule in scripts/02h_jul_aug_loss.py: > 50% on partial)"),
     ("Q6", "About a third of that drop remains unexplained; wind is not supported", "F25, F26"),
     ("Q7", "Flooded vegetation (double bounce) not detected", "F35"),
@@ -203,12 +228,17 @@ WITHDRAWN = [
     ("“The July→August drop is real / drop is real”", "Replaced by Q5 after the DSWx 8 Aug transition table (F23, F24)."),
     ("“Missed water is mostly along shorelines”", "Never measured; removed."),
     ("“Every 12 days”", "One 24-day gap (F05)."),
-    ("“What dried out were marshes…” (causal wording)", "Softened to “consistent with drying of shallow, partly vegetated water”."),
+    ("“What dried out were marshes…” (causal wording)", "Softened, then reworded with the official DSWx partial-water definition (see below)."),
     ("“Wind is ruled out”", "Softened to “wind is not supported” (F26 is a test against one rule, not proof)."),
     ("“Not imaged / not acquired that day” (2 Sep)", "Per-file check: the gap is one missing HLS/DSWx tile, 21KVV (F31)."),
     ("“Cloud-free pixels”", "Renamed “valid (clear)”: DSWx codes 0/1/2, which also excludes missing products."),
     ("“Adapted from Evans et al. 2010”; “flooded forest ≈ −4 dB”; “vegetated ≈ −23 dB” as an HH value",
      "Values not found as cited; replaced by verified Evans (2013) values for open and vegetated lakes."),
+    ("“Shallow, partly vegetated water”; “shallow water”; “vegetated water” for the DSWx partial class",
+     "Depth was never measured; replaced by the official DSWx-HLS definition of partial surface water "
+     "(JPL D-107395 Rev B, Table 4-1)."),
+    ("σ0 → γ0 “+0.5 to 1.5 dB” (assumption)",
+     "Replaced by the offset measured from the GCOV rtcGammaToSigmaFactor layer on 17 Jul (F44, F45)."),
     ("“Only Landsat-9 pair” note in the wind verdict", "After completing the DSWx tiles the 19 Jul pair is L9+S2C; note removed."),
 ]
 

@@ -17,7 +17,7 @@ between the two sessions and ran all the code on his own machine.
 ## 2. Independent reviewer (Claude, Anthropic — a separate chat session)
 - Audited the outputs, the repository and the published page without access to the coding session.
 - Proposed most of the scientific corrections: calibrating the water thresholds on the JRC permanent-water zone
-  instead of Otsu, the interpretation of the July→August drop (vegetation emerging over shallow water), the coverage
+  instead of Otsu, the interpretation of the July→August drop (vegetation emerging), the coverage
   interpretation for 2 Sep (a missing HLS/DSWx tile, not cloud), the 24-day gap, and the acceptance criteria of the
   tests (wind check, July→August loss test, partial-water classifier), which were fixed before each test was run.
 

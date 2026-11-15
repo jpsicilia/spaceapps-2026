@@ -80,7 +80,7 @@
   </div>
   <div class="maphost"><div id="map1" class="map"></div><div class="hint">click to zoom with scroll</div></div>
   <div class="legend" id="leg1"></div>
-  <p class="note" id="chgNote">Most ‘open water lost’ is shallow water where vegetation emerged; optics still saw it wet (see chart).</p>
+  <p class="note" id="chgNote">Most ‘open water lost’ is DSWx partial surface water, consistent with vegetation emerging; optics still saw it wet (see chart).</p>
   <p class="note" id="chgNote2"></p>
 </section>
 
@@ -121,10 +121,11 @@
     <p class="note">Independent: OPERA DSWx-HLS (Harmonized Landsat–Sentinel-2, 30 m) on the nearest date (≤ 2 days),
       and the Paraguay River stage at Ladário (ANA station 66825000, 15-min telemetry averaged per day).
       Control zone: JRC Global Surface Water occurrence &gt; 90%. A pre-registered test of a classifier for
-      partial (vegetated) water from radar backscatter alone failed and is reported as a negative result.</p></details>
+      partial surface water from radar backscatter alone failed and is reported as a negative result.</p>
+    <p class="note">Partial surface water (DSWx-HLS class 2) is defined as “an inundated area that is at least 20% and less than 100% open water” (OPERA DSWx-HLS Product Specification, JPL D-107395 Rev B, Table 4-1): sub-pixel water within a 30 m pixel, such as wetlands, water with emergent vegetation or mixed shoreline pixels. Water depth is not measured.</p></details>
   <details><summary>Limitations</summary>
     <p class="note">Seven to eight dates, consecutive and not independent: p-values are indicative. NISAR products are
-      provisional. An L-band open-water rule does not capture shallow water under emergent or floating vegetation.
+      provisional. An L-band open-water rule does not capture partial surface water (sub-pixel water, e.g. with emergent vegetation).
       The Copernicus DEM is a surface model (includes canopy).</p></details>
 </section>
 
@@ -190,8 +191,8 @@ Promise.all([fetch("data/data.json").then(r=>r.json()), fetch("data/layers.json"
      `Against optical DSWx-HLS on ${M.n_pairs} near-simultaneous dates (IoU ${fmt(M.iou[0])}–${fmt(M.iou[1])}). When radar says water, optics agree.`],
     [`${M.open_first} → ${M.open_last} km²`, "open water stayed stable",
      `River channel and permanent lagoons held their extent while Ladário fell from ${M.stage_first} to ${M.stage_last} cm (r = ${fmt(M.r_open)}).`],
-    [`${M.op_first} → ${M.op_last} km²`, "shallow, vegetated water declined",
-     `Open + partial water (DSWx) tracks the river: r = ${fmt(M.r_open_partial)}, p = ${fmt(M.p_open_partial,3)}. The water that left is mostly shallow, vegetated water.`],
+    [`${M.op_first} → ${M.op_last} km²`, "partial surface water declined",
+     `Open + partial water (DSWx) tracks the river: r = ${fmt(M.r_open_partial)}, p = ${fmt(M.p_open_partial,3)}. The water that left is mostly DSWx partial surface water (≥ 20% and < 100% open water in a 30 m pixel).`],
     [`${M.nisar_min_pct >= 100 ? "100%" : "≥ " + M.nisar_min_pct + "%"}`, "of the floodplain imaged on every NISAR pass",
      `NISAR imaged ${M.nisar_min_pct >= 100 ? "the whole floodplain" : "at least " + M.nisar_min_pct + "% of the floodplain"} on all ${M.nisar_n_dates} dates, ${M.repeat_text}; on ${dmy(D.sep_dswx)} the optical product covered ${M.sep_clear_cov_pct}%: ${REST}.`],
   ];
@@ -297,8 +298,8 @@ Promise.all([fetch("data/data.json").then(r=>r.json()), fetch("data/layers.json"
   });
   const loss = D.jul_aug_loss;
   $("#chartNote").textContent =
-    `Open water barely moves; the decline is in shallow, partly vegetated water (DSWx partial class).` +
-    (loss ? ` The NISAR drop between 17 July and 10 August concentrates on DSWx partial-water pixels (×${fmt(loss.enrichment,1)} vs the plain) that optics still classify as wet in August: consistent with vegetation emerging over shallow water, not with water loss.` : "");
+    `Open water barely moves; the decline is in DSWx partial surface water (≥ 20% and < 100% open water in a 30 m pixel).` +
+    (loss ? ` The NISAR drop between 17 July and 10 August concentrates on DSWx partial-water pixels (×${fmt(loss.enrichment,1)} vs the plain) that optics still classify as wet in August: consistent with vegetation emerging, not with water loss.` : "");
 })
 .catch(err => { document.body.insertAdjacentHTML("afterbegin",
   `<p style="background:#fee;padding:12px">Could not load data (${err}). If you opened the file directly, serve it: python -m http.server -d web 8000</p>`); });

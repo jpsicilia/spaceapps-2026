@@ -23,7 +23,7 @@ sys.path.insert(0, str(ROOT / "src"))
 from pantanal_sar.classify import (  # noqa: E402
     FLOODVEG, LAND, WATER, bimodal_tiles, class_areas_km2, classify, control_water_pct,
     dem_on_grid, jrc_permanent_on_grid, load_ladario_daily, otsu, physical_check, ref_grid,
-    remove_small, robust_upper, urban_on_grid,
+    remove_small, robust_upper, sigma0_to_gamma0, urban_on_grid,
 )
 
 DATES = ["20260717", "20260810", "20260822", "20260903", "20260915",
@@ -123,8 +123,9 @@ def main():
     )
     (ROOT / "config/thresholds.yaml").write_text(yaml_txt)
 
+    lo_off, hi_off, off_src = sigma0_to_gamma0()
     print("      Physical check vs Evans (2013) L-band sigma0, open vs vegetated lakes "
-          "(assumption: gamma0 = sigma0 + 0.5–1.5 dB):")
+          f"(gamma0 − sigma0 = {lo_off:+.2f} to {hi_off:+.2f} dB, {off_src}):")
     for key, v, ref, flag, note in physical_check(th):
         print(f"        {flag:4} {key:18} = {v:7.2f} dB   expected {ref:16}  {note}")
 

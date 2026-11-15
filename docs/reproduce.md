@@ -46,6 +46,7 @@ The numbers in the file names group the steps; **02d must run before 02c**, beca
 | 6 | `python scripts/02f_wind_check.py` | GCOV, masks, `stability.csv`, DSWx | `outputs/tables/wind_check.csv`, `wind_check_by_date.csv` |
 | 7 | `python scripts/02g_partial_clf.py` | GCOV, masks, `stability.csv`, DSWx, gauge | `outputs/tables/partial_clf_*.csv`, figures (pre-registered, negative result) |
 | 7b | `python scripts/02j_coherence.py` (exploratory, optional) | GUNW 10→22 Aug, GCOV 22 Aug, masks, `stability.csv`, DSWx 23 Aug | `outputs/tables/coherence_test.csv`, `outputs/figures/coherence_test.png` |
+| 7c | `python scripts/02k_gamma_sigma.py` | GCOV 17 Jul (`.h5`, layer rtcGammaToSigmaFactor), DEM and urban masks | `outputs/tables/gamma_sigma_factor.csv` (measured γ0 − σ0 offset used in the physical check) |
 | 8 | `python scripts/02h_jul_aug_loss.py` | `class_<date>.tif`, DSWx | `outputs/tables/jul_aug_loss.csv`, `jul_aug_loss_dswx_transitions.csv` |
 | 9 | `python scripts/02i_dswx_coverage_check.py` | DSWx 2 Sep, GCOV grid | `outputs/tables/dswx_coverage_files.csv` (per-file audit of the 2 Sep optical coverage) |
 | 10 | `python scripts/03_export_web.py` | all of the above | `web/img/*`, `web/data/*.json`, `outputs/tables/sep_optical_coverage.csv` |

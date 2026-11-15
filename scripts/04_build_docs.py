@@ -14,7 +14,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
-from pantanal_sar.facts import QUALITATIVE, WITHDRAWN, agreement_figure, agreement_pair, load_facts  # noqa: E402
+from pantanal_sar.facts import (  # noqa: E402
+    PARTIAL_DEF, PARTIAL_QUOTE, PARTIAL_SHORT, PARTIAL_SRC, QUALITATIVE, WITHDRAWN, agreement_figure, agreement_pair,
+    load_facts,
+)
 
 import matplotlib  # noqa: E402
 matplotlib.use("Agg")
@@ -72,7 +75,7 @@ WHERE = {
     "F33": "README coverage; Web card 4; Slide 2; Submission", "F34": "README coverage; Web §2 lead",
     "F35": "Web change legend (“not detected”); Slide 6", "F36": "Claims only (supports Q2)",
     "F37": "README 2; Web card 2; Slide 4", "F38": "Slide 5; Script", "F41": "README extension", "F42": "README extension; Slide 6",
-    "F43": "README extension; Slide 6", "F39": "Web change note", "F40": "Web change note",
+    "F43": "README extension; Slide 6", "F44": "README caveats", "F45": "README caveats; physical check", "F46": "README caveats", "F39": "Web change note", "F40": "Web change note",
 }
 QWHERE = {"Q1": "README 1; Web card 1; Slide 3", "Q2": "README 2; Web card 2; Slide 4; Script",
           "Q3": "README 2; Web card 3, chart note; Slide 4; Script; Submission", "Q4": "README 2; Slide 4",
@@ -137,13 +140,19 @@ def write_claims():
           "http://hdl.handle.net/1828/4671 | Author and coding assistant, from the thesis text |",
           "| HH threshold (−16 dB) lies between the two classes; HV threshold (−22 dB) is close to the "
           "vegetated-lake value | F06 vs the values above; `src/pantanal_sar/classify.py` PHYS_REF, printed by "
-          "`scripts/02b_calibrate.py` | Script |"]
+          "`scripts/02b_calibrate.py` | Script |",
+          f"| Definition of DSWx-HLS partial surface water (class 2): “{PARTIAL_QUOTE}”; 30 m pixels | {PARTIAL_SRC} "
+          "(10 Jul 2024), Section 4.1, p. 10; PO.DAAC OPERA_L3_DSWX-HLS_V1 (30 m) | Coding assistant (web fetch of the "
+          "PO.DAAC PDF); author to confirm against the PDF |",
+          "| GCOV layer rtcGammaToSigmaFactor converts the GCOV terms from gamma0 to sigma0 | ASF NISAR GCOV "
+          "documentation (nisar-docs.asf.alaska.edu/gcov); NISAR L2 GCOV Product Specification, JPL D-102274 | Coding "
+          "assistant, web search; sign checked in data by scripts/02k_gamma_sigma.py (factor < 1 on flat terrain) |"]
     if "F43" in F:
         L += ["| Coherence combined with backscatter for wetland classification (L-, C-, X-band, Newfoundland); temporal "
               "baseline the most influential factor for coherence in herbaceous wetlands | Mohammadimanesh et al. (2018), "
               "ISPRS J. Photogramm. Remote Sens. 142, 78–93, doi:10.1016/j.isprsjprs.2018.05.009 (abstract) | Coding "
               "assistant, web search; author to confirm |",
-              "| Shallow open water has the lowest coherence (Sentinel-1, Alberta); lower coherence in the leaf-on season "
+              "| The Shallow Open Water class has the lowest coherence (Sentinel-1, Alberta); lower coherence in the leaf-on season "
               "| Amani et al. (2021), Remote Sens. 13, 3315, doi:10.3390/rs13163315 (abstract) | Coding assistant, web "
               "search; author to confirm |",
               "| Open water without emergent vegetation generally lacks usable coherence; herbaceous wetlands high but "
@@ -156,8 +165,8 @@ def write_claims():
               "(abstract) | Coding assistant, web search; author to confirm |"]
     L += [""]
     L += ["## Not verified", "",
-          "- Conversion σ0 → γ0 (+0.5 to 1.5 dB at our incidence angles) used to compare thresholds with Evans (2013): "
-          "an assumption, not taken from that source.",
+          *([] if "F44" in F else ["- Conversion σ0 → γ0 (+0.5 to 1.5 dB) used to compare thresholds with Evans (2013): "
+             "an assumption; run scripts/02k_gamma_sigma.py to measure it."]),
           "- Reference value for flooded vegetation (double bounce): none verified; the flooded-vegetation check is "
           "reported as NOT VERIFIED.",
           "- Gauge marker position on the web map: approximate (±1 km), taken from Frontiers in Water 2021 "
@@ -346,13 +355,14 @@ def write_slides():
                f"Recall {S['F08']}; IoU {S['F09']}.",
                f"NISAR recovers {S['F11']} of the optical open-water area on common valid (clear) pixels."],
               **slide3_map())
-        slide(pdf, 4, "Open water stable, vegetated water declined",
+        slide(pdf, 4, "Open water stable, partial water declined",
               [f"DSWx open water: {S['F12']} ({S['F13']} with the river).",
                f"DSWx open + partial water: {S['F14']}, tracking the river ({S['F15']}).",
                f"Ladário over the same dates: {S['F37']}.",
                f"The L-band open-water rule does not capture this decline ({S['F16']})."],
-              draw=series_plot,
-              note=f"{S['F17']} dates with ≥ 80% valid (clear) pixels; dates are consecutive, so p-values are indicative.")
+              draw=series_plot, compact=True,
+              note=f"Partial = DSWx class 2: {PARTIAL_SHORT} (JPL D-107395 Rev B). "
+                   f"{S['F17']} dates with ≥ 80% valid (clear) pixels; p-values indicative (consecutive dates).")
         slide(pdf, 5, "Jul → Aug: vegetation emerging, not water loss",
               [f"NISAR open water fell {S['F18']} ({S['F19']} lost).",
                f"{S['F21']} of the lost area was DSWx partial water on 19 Jul ({S['F22']} the plain-wide share).",
@@ -397,13 +407,13 @@ NISAR imaged at least {S['F33']} of the floodplain every time; on 2 September th
 and NISAR recovers {S['F11']} of the optical open-water area [F11].
 
 **Slide 4 — The finding (20 s).** The river channel and lagoons barely changed: {S['F12']} [F12].
-What declined was shallow, partly vegetated water: {S['F14']}, closely following the river, {S['F15']} [F14, F15].
+What declined was partial surface water — pixels only partly covered by water: {S['F14']}, closely following the river, {S['F15']} [F14, F15].
 
 **Slide 5 — July to August (15 s).** Between 17 July and 10 August NISAR lost {S['F19']} of open water,
-but {S['F21']} of it sat on vegetated shallow water, and most of the lost area was still wet in the optical maps in
+but {S['F21']} of it sat on partial surface water, and most of the lost area was still wet in the optical maps in
 August [F19–F24, F38]. About a third remains unexplained [F25].
 
-**Slide 6 — Honest limits (15 s).** A pre-registered classifier could not map that vegetated water from radar
+**Slide 6 — Honest limits (15 s).** A pre-registered classifier could not map that partial surface water from radar
 backscatter alone, F1 {S['F27']} [F27], and we report it as a negative result. Products are provisional.
 
 **Slide 7 — Explore (10 s).** Everything is open: the interactive map, the code, and a register with the source
@@ -432,7 +442,7 @@ Pantanal 2026: Water Leaving, Seen by Radar
 In 2026 the Paraguay River at Ladário fell {S['F03']} between July and October. Using {S['F04']} NISAR L-band radar
 images, we mapped open water on the Pantanal floodplain from Corumbá–Ladário to the Mandioré lagoon and validated it
 against NASA OPERA optical water maps (DSWx-HLS) and the river gauge. NISAR maps open water with precision {S['F07']}.
-Open water (channel and lagoons) stayed stable; the decline is in shallow, partly vegetated water (DSWx partial class),
+Open water (channel and lagoons) stayed stable; the decline is in partial surface water (DSWx: {PARTIAL_SHORT}),
 which tracks the river ({S['F15']}) but is not captured by an L-band open-water rule. An interactive web page shows the change map,
 hydroperiod and time series, and every number is traceable to its source.
 
@@ -456,15 +466,16 @@ value.
 **Results.**
 - Open water from NISAR agrees with DSWx-HLS: precision {S['F07']}, recall {S['F08']}, IoU {S['F09']} ({S['F10']} pairs).
 - Open water stayed stable ({S['F12']}); open + partial water declined {S['F14']} and follows the river ({S['F15']}).
+  {PARTIAL_DEF}
 - The July→August drop in NISAR open water concentrates on DSWx partial-water pixels ({S['F22']} vs the plain), which
-  optics still saw wet in August: consistent with vegetation emerging over shallow water, not with water loss.
+  optics still saw wet in August: consistent with vegetation emerging, not with water loss.
   About a third remains unexplained.
 - Full coverage on a fixed schedule: NISAR imaged at least {S['F33']} of the floodplain on all dates, {S['F05']};
   on 2 Sep the optical product covered {S['F30']}: {S['F31']}.
 - Negative result, reported: a pre-registered classifier could not map partial water from backscatter alone
   (F1 {S['F27']}).
 
-**Why it matters.** In our study area, shallow, partly vegetated water covered more area than open water in July
+**Why it matters.** In our study area, partial surface water covered more area than open water in July
 (DSWx open + partial {S['F14'].split(' → ')[0]} km² vs open {S['F12'].split(' → ')[0]} km²), and it is what an open-water map misses.
 Knowing what L-band radar does and does not see helps design NISAR-based wetland monitoring.
 

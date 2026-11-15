@@ -52,7 +52,11 @@ def main():
     first, last = ser.iloc[0], ser.iloc[-1]
     cloudy = agr.sort_values("clear_pct").iloc[0]
     sys.path.insert(0, str(ROOT / "src"))
-    from pantanal_sar.facts import agreement_figure
+    from pantanal_sar.facts import PARTIAL_DEF, agreement_figure, load_facts
+    FF = {k: v["shown"] for k, v in load_facts(ROOT).items()}
+    gs_txt = (f"Evans reports σ0 and our thresholds are in γ0; the γ0 − σ0 offset measured from the GCOV "
+              f"rtcGammaToSigmaFactor layer on 17 Jul inside the floodplain is {FF['F44']} (p2–p98 {FF['F45']}), and "
+              f"with it the physical check gives {FF['F46']}. " if "F44" in FF else "")
     agree_rel = agreement_figure(ROOT) if (ROOT / agreement_figure(ROOT)).exists() else ""
 
     lines = [
@@ -70,15 +74,15 @@ def main():
         f"{fmt_range(agr['iou'])} ({len(agr)} pairs). NISAR recovers on average {100 * ratio:.0f}% of the "
         "DSWx open-water area on common valid (clear) pixels.",
         "",
-        "**2. Open water stayed stable; the decline is in shallow, partly vegetated water.** On pixels valid (clear) "
+        "**2. Open water stayed stable; the decline is in partial surface water.** On pixels valid (clear) "
         f"in all paired dates ({len(ser)} dates), DSWx open water went from {first['series_dswx_open_km2']:.0f} to "
         f"{last['series_dswx_open_km2']:.0f} km² (r = {r_op:.2f} with Ladário stage, p = {p_op:.2f}), while "
         f"open + partial surface water fell from {first['series_dswx_open_partial_km2']:.0f} to "
         f"{last['series_dswx_open_partial_km2']:.0f} km² and tracks the river (r = {r_par:.2f}, p = {p_par:.3f}). "
         f"Ladário fell from {first['stage_at_dswx_cm']:.0f} to {last['stage_at_dswx_cm']:.0f} cm. "
-        "The river channel and permanent lagoons held their extent; the decline is consistent with drying of "
-        "shallow, partly vegetated water (DSWx partial class), which an L-band open-water rule does not capture "
-        f"(NISAR open water vs stage: r = {r_nis:.2f}, p = {p_nis:.2f}).",
+        "The river channel and permanent lagoons held their extent; the decline is in DSWx partial surface water, "
+        "which an L-band open-water rule does not capture "
+        f"(NISAR open water vs stage: r = {r_nis:.2f}, p = {p_nis:.2f}). " + PARTIAL_DEF,
         "",
     ]
 
@@ -99,7 +103,7 @@ def main():
                   "The July→August drop in NISAR open water concentrates on DSWx partial-water pixels "
                   f"(×{lo['enrichment']:.1f} vs the plain), which DSWx still classifies as wet in August "
                   f"(partial→partial {pp:.0f} km², open→open {oo:.0f} km² of the {lo['lost_clear_km2']:.0f} km² "
-                  "lost on valid (clear) pixels): consistent with vegetation emerging over shallow water and raising "
+                  "lost on valid (clear) pixels): consistent with vegetation emerging and raising "
                   "L-band backscatter, not with water loss. "
                   f"About a third of the drop ({oo:.0f} km², {third:.0f}%) falls on water that DSWx kept as open "
                   "and remains unexplained." + wtxt, ""]
@@ -116,7 +120,7 @@ def main():
     clf = T / "partial_clf_summary.csv"
     if clf.exists():
         c = pd.read_csv(clf)
-        lines += ["**4. Can NISAR alone see the receding shallow water?** " + str(c["summary"].iloc[0]), ""]
+        lines += ["**4. Can NISAR alone see the receding partial surface water?** " + str(c["summary"].iloc[0]), ""]
 
     coh = T / "coherence_test.csv"
     if coh.exists():
@@ -155,7 +159,7 @@ def main():
         sep_sentence(cloudy),
         "",
         "**Caveats.** Seven to eight dates, consecutive and not independent: p-values are indicative. NISAR products "
-        "are provisional (CRID P05023). Thresholds adapted from Evans (2013), who reports median L-band σ0 of ≈ −23 dB HH / −30 dB HV for brackish lakes without vegetation (salinas) and ≈ −14 dB HH / −23 dB HV for fresh-water lakes with floating or emergent vegetation (baías) (Lower Nhecolândia, ch. 2, pp. 52–53); our gamma0 HH threshold (−16 dB) lies between the two classes and our HV threshold (−22 dB) is close to the vegetated-lake value. They "
+        "are provisional (CRID P05023). Thresholds adapted from Evans (2013), who reports median L-band σ0 of ≈ −23 dB HH / −30 dB HV for brackish lakes without vegetation (salinas) and ≈ −14 dB HH / −23 dB HV for fresh-water lakes with floating or emergent vegetation (baías) (Lower Nhecolândia, ch. 2, pp. 52–53). " + gs_txt + "Our gamma0 HH threshold (−16 dB) lies between the two classes and our HV threshold (−22 dB) is close to the vegetated-lake value. They "
         "were checked, not tuned, against the JRC permanent-water zone. The Copernicus DEM is a surface model.",
         "",
         "*Unverified observation:* in late September–October HH over the river (JRC permanent-water zone) drops by "

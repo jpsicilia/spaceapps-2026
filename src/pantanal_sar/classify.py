@@ -125,9 +125,22 @@ def control_water_pct(cls, perm):
 
 # Physical sanity check against Evans (2013), MSc thesis, Univ. of Victoria, ch. 2 (Lower Nhecolândia), pp. 52-53,
 # median ALOS PALSAR sigma0: brackish lakes without vegetation (salinas) HH -23 / HV -30 dB (HV dry season);
-# fresh-water lakes with floating and emergent vegetation (baias) HH -14 / HV -23 dB. ASSUMPTION (not from Evans): gamma0 = sigma0 + 0.5..1.5 dB at our incidence angles.
+# fresh-water lakes with floating and emergent vegetation (baias) HH -14 / HV -23 dB.
+# sigma0 -> gamma0 offset: MEASURED from the GCOV layer rtcGammaToSigmaFactor on 17 Jul inside the floodplain
+# (scripts/02k_gamma_sigma.py -> outputs/tables/gamma_sigma_factor.csv, p2..p98 of gamma0 − sigma0 in dB).
+# The earlier assumption (+0.5..+1.5 dB) is kept only as a fallback if that table is missing, and is labelled as such.
 # A water threshold should lie between the open-lake and the vegetated-lake value (gamma0-adjusted).
-SIGMA0_TO_GAMMA0 = (0.5, 1.5)
+SIGMA0_TO_GAMMA0_ASSUMED = (0.5, 1.5)
+GAMMA_SIGMA_CSV = Path(__file__).resolve().parents[2] / "outputs/tables/gamma_sigma_factor.csv"
+
+
+def sigma0_to_gamma0():
+    """(low, high, source) offset gamma0 − sigma0 in dB: measured p2..p98 if available, else the old assumption."""
+    if GAMMA_SIGMA_CSV.exists():
+        import pandas as pd
+        r = pd.read_csv(GAMMA_SIGMA_CSV).iloc[0]
+        return float(r.offset_p2_db), float(r.offset_p98_db), "measured (rtcGammaToSigmaFactor, p2–p98)"
+    return (*SIGMA0_TO_GAMMA0_ASSUMED, "ASSUMED (+0.5..+1.5 dB; run scripts/02k_gamma_sigma.py)")
 PHYS_REF = [
     # key, open-lake sigma0, vegetated-lake sigma0, note, verified
     ("water_hh_max", -23.0, -14.0, "HH: salinas -23 dB, baias -14 dB (Evans 2013, median sigma0)", True),
@@ -136,9 +149,9 @@ PHYS_REF = [
 ]
 
 
-def physical_check(th):
+def physical_check(th, offsets=None):
     rows = []
-    lo_off, hi_off = SIGMA0_TO_GAMMA0
+    lo_off, hi_off = offsets if offsets is not None else sigma0_to_gamma0()[:2]
     for key, s_open, s_veg, note, verified in PHYS_REF:
         v = th[key]
         if not verified:
