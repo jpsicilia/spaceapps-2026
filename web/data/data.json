@@ -644,7 +644,7 @@
   "nisar_min_pct": 97.2,
   "nisar_n_dates": 8,
   "repeat_text": "on a 12-day repeat (one 24-day gap, 17 Jul\u201310 Aug: cycle 026 not available)",
-  "sep_gap_text": "no HLS/DSWx product exists for tile 21KVV on 2 Sep (Sentinel-2B covered the neighbouring tiles)"
+  "sep_gap_text": "no HLS/DSWx product exists that day for tile 21KVV, although Sentinel-2B covered the neighbouring tiles"
  },
  "before": "2026-07-17",
  "after": "2026-10-21",

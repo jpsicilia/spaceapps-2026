@@ -9,7 +9,7 @@ and what can NISAR's L-band radar see of it?
 **Slide 2 — Data and method (15 s).** We used 8 NISAR images, on a 12-day repeat (one 24-day gap, 17 Jul–10 Aug: cycle 026 not available) [F04, F05], at 40 metres,
 with fixed thresholds, and checked them against NASA's optical water maps, OPERA DSWx-HLS, and the river gauge.
 NISAR imaged at least 97.2% of the floodplain every time; on 2 September the optical product covered
-27.5%, because no HLS/DSWx product exists for tile 21KVV on 2 Sep (Sentinel-2B covered the neighbouring tiles) [F30, F31, F33].
+27.5%, because no HLS/DSWx product exists that day for tile 21KVV, although Sentinel-2B covered the neighbouring tiles [F30, F31, F33].
 
 **Slide 3 — Accuracy (15 s).** When NISAR says open water, the optical maps agree: precision 0.92–1.00 [F07],
 and NISAR recovers 85% of the optical open-water area [F11].
