@@ -173,7 +173,7 @@ def main():
     import sys
     sys.path.insert(0, str(ROOT / "src"))
     from pantanal_sar.classify import load_ladario_daily
-    from pantanal_sar.facts import channel_note, load_facts, repeat_text
+    from pantanal_sar.facts import IN_SHORT, TITLE, channel_note, load_facts, repeat_text
     daily, _ = load_ladario_daily(ROOT / "data/external/ladario_gauge/ladario_stage_raw_telemetria.csv",
                                   verbose=False)
     t0 = pd.Timestamp(area["date"].iloc[0]) - pd.Timedelta(days=20)
@@ -221,7 +221,11 @@ def main():
             "cloudy_nisar_date": ymd(cloudy["nisar_date"]),
             "sep_clear_pct": round(float(agr.loc[agr["dswx_date"] == SEP_D, "clear_pct"].iloc[0])),
             "sep_cloud_pct": round(cov["cloud_pct"], 1), "sep_not_acquired_pct": round(cov["not_acquired_pct"], 1),
-            "sep_clear_cov_pct": round(cov["clear_pct"], 1),
+            "sep_clear_cov_pct": round(load_facts(ROOT)["F30"]["value"]),     # same base as optics_range (F30, F47)
+            "optics_range_text": load_facts(ROOT)["F47"]["shown"],
+            "sep_gap_short": load_facts(ROOT)["F31"]["short"],
+            "in_short": IN_SHORT.format(fall=load_facts(ROOT)["F03"]["shown"].lstrip("~")),
+            "title": TITLE,
             "nisar_sep_pct": round(cov["nisar_sep_pct"], 1), "nisar_min_pct": round(cov["nisar_min_pct"], 1),
             "nisar_n_dates": int(cov["nisar_n_dates"]),
             "repeat_text": repeat_text(area["date"]),
@@ -231,6 +235,11 @@ def main():
         "before": ymd(BEFORE), "after": ymd(AFTER), "sep_nisar": ymd(SEP_N), "sep_dswx": ymd(SEP_D),
         "aoi_bounds": aoi_bounds, "gauge": gauge,
     }
+    FF = load_facts(ROOT)
+    if "F43" in FF:
+        v = pd.read_csv(tabs / "coherence_test.csv").query("kind == 'verdict'").iloc[0]
+        data["coherence"] = {"f1_without": FF["F42"]["shown"], "f1_with": FF["F43"]["shown"],
+                             "target": f"{v.target:.2f}", "met": bool(v.label == "success")}
     for name, key in (("jul_aug_loss.csv", "jul_aug_loss"), ("partial_clf_summary.csv", "classifier"),
                       ("wind_check.csv", "wind")):
         f = tabs / name

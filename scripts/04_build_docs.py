@@ -15,8 +15,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 from pantanal_sar.facts import (  # noqa: E402
-    PARTIAL_DEF, PARTIAL_QUOTE, PARTIAL_SHORT, PARTIAL_SRC, QUALITATIVE, WITHDRAWN, agreement_figure, agreement_pair,
-    load_facts,
+    BASES, PARTIAL_DEF, PARTIAL_QUOTE, PARTIAL_SHORT, PARTIAL_SRC, QUALITATIVE, TAKEAWAYS, TITLE, WITHDRAWN,
+    agreement_figure, agreement_pair, load_facts,
 )
 
 import matplotlib  # noqa: E402
@@ -74,8 +74,8 @@ WHERE = {
     "F31": "README coverage; Web card 4, §2 lead and legend; Slide 2; Script; Submission", "F32": "README coverage (only if ≥ 1%); Web §2 lead (only if ≥ 1%)",
     "F33": "README coverage; Web card 4; Slide 2; Submission", "F34": "README coverage; Web §2 lead",
     "F35": "Web change legend (“not detected”); Slide 6", "F36": "Claims only (supports Q2)",
-    "F37": "README 2; Web card 2; Slide 4", "F38": "Slide 5; Script", "F41": "README extension", "F42": "README extension; Slide 6",
-    "F43": "README extension; Slide 6", "F44": "README caveats", "F45": "README caveats; physical check", "F46": "README caveats", "F39": "Web change note", "F40": "Web change note",
+    "F37": "README 2; Web card 2; Slide 4", "F38": "Slide 5; Script", "F41": "README extension", "F42": "README extension; Slide 6 (body and takeaway); Web card 5",
+    "F43": "README extension; Slide 6 (body and takeaway); Web card 5", "F47": "README coverage; Web card 4, §2 lead; Slide 2; Script; Submission", "F44": "README caveats", "F45": "README caveats; physical check", "F46": "README caveats", "F39": "Web change note", "F40": "Web change note",
 }
 QWHERE = {"Q1": "README 1; Web card 1; Slide 3", "Q2": "README 2; Web card 2; Slide 4; Script",
           "Q3": "README 2; Web card 3, chart note; Slide 4; Script; Submission", "Q4": "README 2; Slide 4",
@@ -129,6 +129,10 @@ def write_claims():
                  + "; Slide 6 |")
     L += ["", "## Method parameters", "", "| Parameter | Value | Where set |", "|---|---|---|"]
     L += [f"| {a} | {b} | `{c}` |" for a, b, c in METHOD]
+    L += ["", "## Bases (denominators)", "",
+          "Two floodplain bases are used; each shown number states which. No quantity is shown on both bases.", "",
+          "| Base | Definition | Used for |", "|---|---|---|"]
+    L += [f"| {a} | {b} | {c} |" for a, b, c in BASES]
     L += ["", "## Withdrawn or corrected claims", "", "| Earlier wording | Why it changed |", "|---|---|"]
     L += [f"| {a} | {b} |" for a, b in WITHDRAWN]
     L += ["", "## Verified against external sources", "",
@@ -184,25 +188,45 @@ NAVY, INK, MUTED, ACC = "#0b2545", "#1b2430", "#5b6675", "#0f766e"
 
 
 def slide(pdf, n, title, bullets, img=None, draw=None, note=None, legend=None, caption=None, bg=None, compact=False):
+    take = TAKEAWAYS.get(n, "").format(**S) if n in TAKEAWAYS else ""
+    lift = 0.075 if take else 0.0                     # room for the plain-English takeaway band
     fig = plt.figure(figsize=(13.333, 7.5))
     fig.patch.set_facecolor("white")
     fig.text(0.05, 0.89, title, fontsize=30, fontweight="bold", color=NAVY, va="bottom")
     fig.add_artist(plt.Line2D([0.05, 0.95], [0.875, 0.875], color=ACC, lw=2.5))
-    y = 0.80
-    width = 40 if draw else (46 if img else 90)
-    fs, step = (15, 0.046) if compact else (17, 0.052)          # compact only for the optional 5th bullet
-    if fs == 15:
-        width += 4
-    for b in bullets:
-        lines = textwrap.wrap(b, width)
-        fig.text(0.06, y, "•", fontsize=fs + 2, color=ACC, va="top")
-        fig.text(0.08, y, "\n".join(lines), fontsize=fs, color=INK, va="top", linespacing=1.3)
-        y -= step * len(lines) + (0.022 if compact else 0.035)
+    base_w = 40 if draw else (46 if img else 90)
+    tl = textwrap.wrap(take, 126) if take else []
+    band_h = 0.028 * len(tl) + 0.022 if take else 0.0
+    floor = (0.072 + band_h + 0.03) if take else 0.10      # bullets must end above the takeaway band
+    if note and take:
+        floor += 0.05 + 0.022 * len(textwrap.wrap(note, base_w + 14))
+
+    def run(fs, draw_it=False):
+        step = 0.052 * fs / 17
+        gap = (0.022 if (compact or take) else 0.035) * fs / 17
+        width = int(base_w * 17 / fs)
+        y = 0.80
+        for b in bullets:
+            lines = textwrap.wrap(b, width)
+            if draw_it:
+                fig.text(0.06, y, "•", fontsize=fs + 2, color=ACC, va="top")
+                fig.text(0.08, y, "\n".join(lines), fontsize=fs, color=INK, va="top", linespacing=1.3)
+            y -= step * len(lines) + gap
+        return y + gap
+
+    fs = 15 if compact else 17
+    while take and fs > 13 and run(fs) < floor:          # shrink only when the takeaway band needs the room
+        fs -= 1
+    if take and run(fs) < floor:
+        raise ValueError(f"slide {n}: bullets overlap the takeaway band even at {fs} pt")
+    run(fs, draw_it=True)
+    width = int(base_w * 17 / fs)
     if note:
-        fig.text(0.06, 0.10, "\n".join(textwrap.wrap(note, width + 14)), fontsize=12, color=MUTED, va="bottom")
+        fig.text(0.06, 0.10 + lift, "\n".join(textwrap.wrap(note, base_w + 14)), fontsize=12, color=MUTED, va="bottom")
     if img:
         im = Image.open(ROOT / img)
-        ax = fig.add_axes([0.52, 0.12 if (legend or caption) else 0.10, 0.44, 0.68 if caption else 0.72])
+        b0 = (0.12 if (legend or caption) else 0.10) + lift
+        ax = fig.add_axes([0.52, b0, 0.44, (0.68 if caption else 0.72) - lift])
         if bg:
             base = Image.new("RGBA", im.size, bg)
             im = Image.alpha_composite(base, im.convert("RGBA"))
@@ -211,13 +235,18 @@ def slide(pdf, n, title, bullets, img=None, draw=None, note=None, legend=None, c
         if legend:
             from matplotlib.patches import Patch
             fig.legend(handles=[Patch(facecolor=c, edgecolor="#999", label=t) for c, t in legend],
-                       loc="lower center", bbox_to_anchor=(0.72, 0.035), ncol=min(len(legend), 3), fontsize=10,
+                       loc="lower center", bbox_to_anchor=(0.72, 0.035 + lift), ncol=min(len(legend), 3), fontsize=10,
                        frameon=False)
         if caption:
             fig.text(0.74, 0.825, caption, fontsize=11, color=MUTED, ha="center", va="center")
     if draw:
-        ax = fig.add_axes([0.60, 0.27, 0.32, 0.54])
+        ax = fig.add_axes([0.60, 0.27 + 0.8 * lift, 0.32, 0.54 - 0.8 * lift])
         draw(ax)
+    if take:
+        h = band_h
+        fig.add_artist(plt.Rectangle((0.05, 0.072), 0.90, h, color="#e6f2f0", transform=fig.transFigure, zorder=0))
+        fig.text(0.065, 0.072 + h / 2, "\n".join(tl), fontsize=14, fontweight="bold", color=NAVY, va="center",
+                 linespacing=1.25)
     fig.text(0.05, 0.035, "Team Pantanal · NASA Space Apps Challenge 2026 · Dancing with the SARs", fontsize=11, color=MUTED)
     fig.text(0.95, 0.035, f"{n} / 7", fontsize=11, color=MUTED, ha="right")
     pdf.savefig(fig)
@@ -229,10 +258,10 @@ def title_slide(pdf, stage_plot):
     fig = plt.figure(figsize=(13.333, 7.5))
     fig.patch.set_facecolor("white")
     fig.add_artist(plt.Rectangle((0, 0.70), 1, 0.30, color=NAVY, transform=fig.transFigure, zorder=0))
-    fig.text(0.05, 0.875, "Pantanal 2026: Water Leaving, Seen by Radar", fontsize=34, fontweight="bold",
-             color="white", va="center")
-    fig.text(0.05, 0.795, "Team Pantanal — José Pablo Pérez Cicilia", fontsize=18, color="white", va="center")
-    fig.text(0.05, 0.745, "NASA Space Apps 2026 · Dancing with the SARs", fontsize=15, color="#b9d6f2", va="center")
+    fig.text(0.05, 0.893, "\n".join(textwrap.wrap(TITLE, 40)), fontsize=29, fontweight="bold",
+             color="white", va="center", linespacing=1.1)
+    fig.text(0.05, 0.783, "Team Pantanal — José Pablo Pérez Cicilia", fontsize=18, color="white", va="center")
+    fig.text(0.05, 0.737, "NASA Space Apps 2026 · Dancing with the SARs", fontsize=15, color="#b9d6f2", va="center")
     y = 0.60
     for b in [f"The Paraguay River at Ladário fell {S['F03']}: {S['F01']} on 17 Jul → {S['F02']} on 21 Oct 2026.",
               "Where, and how much, did surface water change on the floodplain — and what can L-band NISAR see of it?"]:
@@ -346,8 +375,8 @@ def write_slides():
               [f"NISAR L2 GCOV (provisional), HH + HV, {S['F04']} dates, {REP}.",
                f"40 m, Lee filter, gamma0. Open water: {S['F06']}, same for all dates; urban areas and terrain > 135 m masked.",
                "Validation: OPERA DSWx-HLS (optical) and the Ladário river gauge.",
-               f"Coverage: NISAR ≥ {S['F33']} of the floodplain on every date; optics on 2 Sep: {S['F30']}, "
-               f"as {S['F31']}."],
+               f"Coverage: NISAR ≥ {S['F33']} of the floodplain on every date; optics {S['F47']}, but only "
+               f"{S['F30']} on 2 Sep ({F['F31']['short']})."],
               img="web/img/composite_20260717.webp", bg="#ffffff",
               caption="NISAR, 17 Jul 2026 — red HH, green HV, blue HH−HV (dark = open water)")
         slide(pdf, 3, "NISAR maps open water reliably",
@@ -400,8 +429,8 @@ and what can NISAR's L-band radar see of it?
 
 **Slide 2 — Data and method (15 s).** We used {S['F04']} NISAR images, {S['F05']} [F04, F05], at 40 metres,
 with fixed thresholds, and checked them against NASA's optical water maps, OPERA DSWx-HLS, and the river gauge.
-NISAR imaged at least {S['F33']} of the floodplain every time; on 2 September the optical product covered
-{S['F30']}, because {S['F31']} [F30, F31, F33].
+NISAR imaged at least {S['F33']} of the floodplain every time; optics covered {S['F47']}, but only {S['F30']}
+on 2 September, because {S['F31']} [F30, F31, F33, F47].
 
 **Slide 3 — Accuracy (15 s).** When NISAR says open water, the optical maps agree: precision {S['F07']} [F07],
 and NISAR recovers {S['F11']} of the optical open-water area [F11].
@@ -436,7 +465,7 @@ def write_submission():
 > 2026 Project Submission Guide on the form itself before pasting.
 
 ## Project Title
-Pantanal 2026: Water Leaving, Seen by Radar
+{TITLE}
 
 ## High-Level Project Summary
 In 2026 the Paraguay River at Ladário fell {S['F03']} between July and October. Using {S['F04']} NISAR L-band radar
@@ -470,8 +499,8 @@ value.
 - The July→August drop in NISAR open water concentrates on DSWx partial-water pixels ({S['F22']} vs the plain), which
   optics still saw wet in August: consistent with vegetation emerging, not with water loss.
   About a third remains unexplained.
-- Full coverage on a fixed schedule: NISAR imaged at least {S['F33']} of the floodplain on all dates, {S['F05']};
-  on 2 Sep the optical product covered {S['F30']}: {S['F31']}.
+- Radar vs optical, every date vs most dates: NISAR imaged at least {S['F33']} of the floodplain on all dates,
+  {S['F05']}; optics covered {S['F47']}, but only {S['F30']} on 2 Sep: {S['F31']}.
 - Negative result, reported: a pre-registered classifier could not map partial water from backscatter alone
   (F1 {S['F27']}).
 

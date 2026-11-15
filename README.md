@@ -1,4 +1,4 @@
-# Pantanal 2026: Water Leaving, Seen by Radar
+# Pantanal 2026: What NISAR Sees — and Misses — as the Water Leaves
 
 **NASA Space Apps Challenge 2026 · Challenge: _Dancing with the SARs_**
 Local event: Ciudad del Este, Paraguay · Team: Pantanal

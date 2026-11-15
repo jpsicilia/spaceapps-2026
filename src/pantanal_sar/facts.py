@@ -22,6 +22,23 @@ PARTIAL_SHORT = "≥ 20% and < 100% open water within a 30 m pixel"
 PARTIAL_DEF = (f"Partial surface water (DSWx-HLS class 2) is defined as “{PARTIAL_QUOTE}” ({PARTIAL_SRC}): "
                "sub-pixel water such as wetlands, water with emergent vegetation or mixed shoreline pixels. "
                "Water depth is not measured.")
+TITLE = "Pantanal 2026: What NISAR Sees — and Misses — as the Water Leaves"
+SEP_DSWX = "20260902"
+# Plain-English takeaways (slides 2–6). Numbers inside come from facts (S = shown values).
+TAKEAWAYS = {
+    2: "NISAR imaged ≥ {F33} of the floodplain on all {F04} dates; the optical record has a gap on 2 Sep.",
+    3: "When NISAR says ‘water’, it is almost always right (precision {F07}) — but it misses a quarter to a third of it.",
+    4: "The river channel and lakes held steady. What declined was partial surface water — and a simple radar rule "
+       "doesn’t see it.",
+    5: "Most of NISAR’s July–August drop is consistent with plants emerging over water that optics still saw — not "
+       "water disappearing; a third is unexplained.",
+    6: "Backscatter alone can’t map that water; InSAR coherence helped (F1 {F42} → {F43}) but fell short of the "
+       "target — a next step for NISAR.",
+}
+IN_SHORT = ("The Paraguay River fell about {fall} between July and October 2026. NISAR maps open water reliably, and "
+            "the river channel and lakes held steady. What declined was partial surface water — pixels only partly "
+            "covered by water, such as water with emergent vegetation. A simple radar rule misses it; adding InSAR "
+            "coherence improved detection on one date, but not enough yet.")
 MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
 
@@ -133,8 +150,17 @@ def load_facts(root: Path) -> dict:
         f"{T}/partial_clf_summary.csv: r_partial")
     add("F29", "Classifier partial F1 by date (range)", (clfm.f1_partial_model.min(), clfm.f1_partial_model.max()),
         f"{clfm.f1_partial_model.min():.2f}–{clfm.f1_partial_model.max():.2f}", f"{T}/partial_clf_metrics.csv: f1_partial_model")
-    add("F30", "Optical (DSWx) coverage of the floodplain on 2 Sep", cov.clear_pct, f"{cov.clear_pct:.1f}%",
-        f"{T}/sep_optical_coverage.csv: clear_pct")
+    ad = agr.assign(dd=agr["dswx_date"].astype(str).str.replace("-", "").str[:8])
+    sep_row = ad[ad.dd == SEP_DSWX]
+    if len(sep_row) != 1:
+        raise ValueError("2 Sep DSWx pair not found in dswx_agreement_all_pairs.csv")
+    sep_clear = float(sep_row.clear_pct.iloc[0])
+    others = ad[ad.dd != SEP_DSWX].clear_pct
+    add("F30", "Optical (DSWx) valid (clear) share of the analysed floodplain on 2 Sep", sep_clear, f"{sep_clear:.0f}%",
+        f"{T}/dswx_agreement_all_pairs.csv: clear_pct, row dswx_date={SEP_DSWX} (base: see ‘Bases’ below)")
+    add("F47", "Optical (DSWx) valid (clear) share on the other paired dates (range)", (others.min(), others.max()),
+        f"{others.min():.0f}–{others.max():.0f}% on {len(others)} of {len(ad)} paired dates",
+        f"{T}/dswx_agreement_all_pairs.csv: clear_pct min–max without dswx_date={SEP_DSWX}")
     files = pd.read_csv(r / T / "dswx_coverage_files.csv")
     present = sorted(set(files["tile"]))
     missing = [t_ for t_ in EXPECTED_TILES if t_ not in present]
@@ -144,10 +170,10 @@ def load_facts(root: Path) -> dict:
                          "update the F31 wording")
     gap = (f"no HLS/DSWx product exists that day for tile {missing[0][1:]}, "
            f"although Sentinel-2B covered the neighbouring tiles")
-    add("F31", "Why the rest of the floodplain has no optical data on 2 Sep", cov.not_acquired_pct, gap,
+    add("F31", "Why the rest of the floodplain has no optical data on 2 Sep", missing[0], gap,
         f"{T}/dswx_coverage_files.csv: tiles present {', '.join(present)}, no {missing[0]}; files with valid data: "
-        f"{', '.join(sensors)}; share of floodplain: {T}/sep_optical_coverage.csv not_acquired_pct = "
-        f"{cov.not_acquired_pct:.1f}%")
+        f"{', '.join(sensors)}")
+    F["F31"]["short"] = f"no HLS/DSWx product for tile {missing[0][1:]} that day"
     add("F32", "…cloud or shadow", cov.cloud_pct, f"{cov.cloud_pct:.1f}%", f"{T}/sep_optical_coverage.csv: cloud_pct")
     add("F33", "NISAR coverage of the floodplain, minimum over all dates", cov.nisar_min_pct, f"{cov.nisar_min_pct:.1f}%",
         f"{T}/sep_optical_coverage.csv: nisar_min_pct")
@@ -205,6 +231,15 @@ def load_facts(root: Path) -> dict:
     return F
 
 
+BASES = [
+    ("Analysed floodplain (comparison base)", "pixels classified on all 8 NISAR dates (not urban, DEM ≤ 135 m)",
+     "F07–F11, F30, F47; scripts/02e_dswx_compare.py"),
+    ("Study-area floodplain (coverage base)", "pixels valid on at least one NISAR date (not urban, DEM ≤ 135 m)",
+     "F33, F34 (NISAR coverage by date) and the internal table outputs/tables/sep_optical_coverage.csv "
+     "(its clear_pct = 27.5% for 2 Sep is on this base and is not shown anywhere); scripts/03_export_web.py"),
+]
+
+
 QUALITATIVE = [
     ("Q1", "NISAR maps open water reliably", "F07, F09, F11"),
     ("Q2", "Open water (channel and permanent lagoons) stayed stable", "F12, F13, F36"),
@@ -218,7 +253,7 @@ QUALITATIVE = [
      "F27, F28 (pre-registered criteria in scripts/02g_partial_clf.py)"),
     ("Q9", "On 2 Sep most of the floodplain has no optical data because no HLS/DSWx product exists for tile 21KVV "
            "that day (Sentinel-2B covered the neighbouring tiles); not cloud", "F30–F32"),
-    ("Q10", "Full coverage on a fixed schedule", "F05, F33, F34"),
+    ("Q10", "Radar vs optical: NISAR imaged every date; optics most dates", "F05, F30, F33, F34, F47"),
     ("Q11", "Scattered ‘lost’/‘gained’ pixels in the main river channel are most likely classification noise near the "
             "thresholds, not channel drying", "F39, F40 (pixel-level flips between dates not computed)"),
 ]
@@ -239,6 +274,10 @@ WITHDRAWN = [
      "(JPL D-107395 Rev B, Table 4-1)."),
     ("σ0 → γ0 “+0.5 to 1.5 dB” (assumption)",
      "Replaced by the offset measured from the GCOV rtcGammaToSigmaFactor layer on 17 Jul (F44, F45)."),
+    ("“On 2 Sep the optical product covered 27.5% of the floodplain”",
+     "Same date, different base (pixels valid on any NISAR date). Replaced everywhere by 25% on the base of the "
+     "paired-date comparison (F30), the same base as the 87–100% range (F47)."),
+    ("“Full coverage on a fixed schedule” (section and card title)", "Renamed “Radar vs optical: every date vs most dates”."),
     ("“Only Landsat-9 pair” note in the wind verdict", "After completing the DSWx tiles the 19 Jul pair is L9+S2C; note removed."),
 ]
 

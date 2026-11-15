@@ -27,7 +27,7 @@ python scripts/04_build_docs.py
 python scripts/update_readme_results.py > /dev/null
 
 echo "== 4/6 withdrawn wording must be gone from public texts"
-if grep -niE "smoke|fire season|every 12 days|drop is real|ruled out|along shorelines|not imaged|not acquired|cloud-free|only Landsat|Evans et al\.? \(?2010|flooded forest|shallow,|shallow water|vegetated water declined|\{\{PYTHON" \
+if grep -niE "smoke|fire season|every 12 days|drop is real|ruled out|along shorelines|not imaged|not acquired|cloud-free|only Landsat|Evans et al\.? \(?2010|flooded forest|shallow,|shallow water|vegetated water declined|through cloud|\{\{PYTHON" \
      README.md web/index.html docs/demo/script.md docs/submission.md docs/reproduce.md docs/ai_use.md \
      outputs/tables/wind_check.csv; then
   echo "STOP: withdrawn wording found (lines above)."; exit 3
