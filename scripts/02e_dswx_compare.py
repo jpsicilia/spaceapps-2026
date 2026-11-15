@@ -200,6 +200,11 @@ def main():
     ax.set_title(f"Agreement NISAR {nd} vs DSWx-HLS {dd}  (IoU {best['iou']:.2f})")
     ax.set_axis_off()
     fig.savefig(figs / f"agreement_{nd}_dswx_{dd}.png", dpi=220)
+    # same map without axes/legend, one pixel per 40 m cell, for the slides (legend drawn there)
+    from PIL import Image
+    rgba = (np.array([cm(k) for k in range(7)]) * 255).astype("uint8")
+    rgba[0, 3] = 0
+    Image.fromarray(rgba[img]).save(figs / f"agreement_raw_{nd}_dswx_{dd}.png", optimize=True)
     plt.close(fig)
     print(f"[4/4] figures: {figs}/nisar_vs_dswx_series.png, agreement_{nd}_dswx_{dd}.png")
 

@@ -14,7 +14,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
-from pantanal_sar.facts import QUALITATIVE, WITHDRAWN, agreement_figure, load_facts  # noqa: E402
+from pantanal_sar.facts import QUALITATIVE, WITHDRAWN, agreement_figure, agreement_pair, load_facts  # noqa: E402
 
 import matplotlib  # noqa: E402
 matplotlib.use("Agg")
@@ -137,7 +137,7 @@ def slide(pdf, n, title, bullets, img=None, draw=None, note=None, legend=None, c
         fig.text(0.06, 0.10, "\n".join(textwrap.wrap(note, width + 14)), fontsize=12, color=MUTED, va="bottom")
     if img:
         im = Image.open(ROOT / img)
-        ax = fig.add_axes([0.52, 0.12 if (legend or caption) else 0.10, 0.44, 0.72])
+        ax = fig.add_axes([0.52, 0.12 if (legend or caption) else 0.10, 0.44, 0.68 if caption else 0.72])
         if bg:
             base = Image.new("RGBA", im.size, bg)
             im = Image.alpha_composite(base, im.convert("RGBA"))
@@ -146,9 +146,10 @@ def slide(pdf, n, title, bullets, img=None, draw=None, note=None, legend=None, c
         if legend:
             from matplotlib.patches import Patch
             fig.legend(handles=[Patch(facecolor=c, edgecolor="#999", label=t) for c, t in legend],
-                       loc="lower center", bbox_to_anchor=(0.72, 0.055), ncol=len(legend), fontsize=10, frameon=False)
+                       loc="lower center", bbox_to_anchor=(0.72, 0.035), ncol=min(len(legend), 3), fontsize=10,
+                       frameon=False)
         if caption:
-            fig.text(0.74, 0.085, caption, fontsize=11, color=MUTED, ha="center")
+            fig.text(0.74, 0.825, caption, fontsize=11, color=MUTED, ha="center", va="center")
     if draw:
         ax = fig.add_axes([0.60, 0.27, 0.32, 0.54])
         draw(ax)
@@ -180,6 +181,24 @@ def title_slide(pdf, stage_plot):
     fig.text(0.95, 0.035, "1 / 7", fontsize=11, color=MUTED, ha="right")
     pdf.savefig(fig)
     plt.close(fig)
+
+
+def slide3_map():
+    b = agreement_pair(ROOT)
+    raw = f"outputs/figures/agreement_raw_{b.nisar_date}_dswx_{b.dswx_date}.png"
+    if not (ROOT / raw).exists():
+        return dict(img=agreement_figure(ROOT))
+    leg = [("#1f4e9c", "both say water"), ("#d62728", "NISAR only"), ("#ff9f1c", "DSWx only"),
+           ("#9ecae1", "DSWx partial water"), ("#efe6cf", "land (both)")]
+    if b.clear_pct < 99.95:
+        leg.append(("#bdbdbd", "cloud (DSWx)"))
+    return dict(img=raw, bg="#ffffff", legend=leg,
+                caption=f"NISAR {fmt_d(b.nisar_date)} vs DSWx-HLS {fmt_d(b.dswx_date)} · IoU {b.iou:.2f}")
+
+
+def fmt_d(s):
+    m = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    return f"{int(s[6:8])} {m[int(s[4:6]) - 1]}"
 
 
 def write_slides():
@@ -270,7 +289,7 @@ def write_slides():
               [f"Precision {S['F07']} against DSWx-HLS on {S['F10']} near-simultaneous dates.",
                f"Recall {S['F08']}; IoU {S['F09']}.",
                f"NISAR recovers {S['F11']} of the optical open-water area on common valid (clear) pixels."],
-              img=agreement_figure(ROOT))
+              **slide3_map())
         slide(pdf, 4, "Open water stable, vegetated water declined",
               [f"DSWx open water: {S['F12']} ({S['F13']} with the river).",
                f"DSWx open + partial water: {S['F14']}, tracking the river ({S['F15']}).",

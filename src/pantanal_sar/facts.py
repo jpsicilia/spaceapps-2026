@@ -212,3 +212,9 @@ def channel_note(F: dict) -> str:
             "thresholds, not channel drying: in the permanent-water zone (JRC occurrence > 90%), "
             f"{F['F40']['shown']} of pixels are classified as non-water on any date "
             f"({F['F39']['shown'].replace('% on', '% classified as water on', 1)}).")
+
+
+def agreement_pair(root: Path):
+    """Row of the pair shown in the agreement map (same rule as 02e: highest clear share)."""
+    agr = pd.read_csv(Path(root) / T / "dswx_agreement_all_pairs.csv", dtype={"nisar_date": str, "dswx_date": str})
+    return agr.sort_values("clear_pct", ascending=False).iloc[0]
