@@ -21,7 +21,7 @@ https://jpsicilia.github.io/spaceapps-2026/
 (Code, data tables and documentation: https://github.com/jpsicilia/spaceapps-2026)
 
 ## Link to Project Demo
-https://github.com/jpsicilia/spaceapps-2026/blob/main/docs/demo/slides.pdf
+https://jpsicilia.github.io/spaceapps-2026/demo/slides.pdf
 
 ## Project Details
 **What it does.** The project turns NISAR GCOV backscatter (HH and HV) into open-water maps for 8 dates
