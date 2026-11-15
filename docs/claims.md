@@ -45,6 +45,9 @@ Every number and claim shown in the README, the web page, the demo slides, the d
 | F38 | Share of the lost area (clear on 19 Jul and 8 Aug) still wet in DSWx on 8 Aug | 96% | 0.9572 | Slide 5; Script | `outputs/tables/jul_aug_loss_dswx_transitions.csv: (columns open + partial) / all cells` |
 | F39 | Permanent-water zone (JRC > 90%) classified as open water, 17 Jul / 21 Oct | 91.6% on 17 Jul, 90.5% on 21 Oct | 91.61, 90.49 | Web change note | `outputs/tables/area_series.csv: ctrl90_water_pct, first and last row` |
 | F40 | Share of permanent-water pixels classified as non-water on any date (range over dates) | 8–12% | 8.127, 12.24 | Web change note | `outputs/tables/area_series.csv: 100 − ctrl90_water_pct (min–max over the 8 dates)` |
+| F41 | Median InSAR coherence (10→22 Aug) by DSWx class: not water / open / partial | 0.55 / 0.25 / 0.32 | 0.5517, 0.2461, 0.3216 | README extension | `outputs/tables/coherence_test.csv: kind=descriptive, median` |
+| F42 | Partial-water F1 without coherence (same pixels, spatial-block CV, 22 Aug) | 0.35 | 0.3499 | README extension; Slide 6 | `outputs/tables/coherence_test.csv: kind=verdict, f1_partial_without` |
+| F43 | Partial-water F1 with coherence (pre-registered target ≥ 0.50) | 0.45 | 0.4487 | README extension; Slide 6 | `outputs/tables/coherence_test.csv: kind=verdict, f1_partial (label=negative)` |
 | F37 | Ladário stage at first / last DSWx date | 253 → 124 cm | 253.1, 123.5 | README 2; Web card 2; Slide 4 | `outputs/tables/dswx_comparison.csv: stage_at_dswx_cm, first and last row` |
 
 ## Qualitative claims
@@ -62,6 +65,7 @@ Every number and claim shown in the README, the web page, the demo slides, the d
 | Q9 | On 2 Sep most of the floodplain has no optical data because no HLS/DSWx product exists for tile 21KVV that day (Sentinel-2B covered the neighbouring tiles); not cloud | F30–F32 | README coverage; Web §2; Slide 2 |
 | Q10 | Full coverage on a fixed schedule | F05, F33, F34 | README coverage; Web card 4, §2 title; Slide 2; Submission |
 | Q11 | Scattered ‘lost’/‘gained’ pixels in the main river channel are most likely classification noise near the thresholds, not channel drying | F39, F40 (pixel-level flips between dates not computed) | Web change note |
+| Q12 | Adding InSAR coherence did not reach the pre-registered target for partial-water mapping (exploratory: one pair, one date, spatial CV) | F41–F43 (criterion in scripts/02j_coherence.py) | README extension; Slide 6 |
 
 ## Method parameters
 

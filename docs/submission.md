@@ -54,6 +54,7 @@ the web page, GitHub Pages for hosting. Pipeline and order: docs/reproduce.md. C
 - NISAR L2 GCOV (NASA/JPL–ISRO, provisional), track 132 ascending, frame 168, HH and HV, 8 dates, via the ASF DAAC —
   main data.
 - OPERA DSWx-HLS v1 (PO.DAAC) — independent optical validation (open and partial surface water).
+- NISAR L2 GUNW (NASA/JPL–ISRO, provisional), pair 10→22 Aug 2026, coherence — exploratory test (partial-water F1 0.35 → 0.45).
 
 ## Use of Space Agency Partner Data
 - Copernicus DEM GLO-30 (ESA / European Union) — floodplain mask and stable reference.

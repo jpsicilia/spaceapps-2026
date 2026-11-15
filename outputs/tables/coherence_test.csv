@@ -1,0 +1,7 @@
+kind,label,n,median,q25,q75,f1_not_water,f1_open,f1_partial,f1_partial_without,target,pair,labels
+descriptive,not water,2715801.0000,0.5517,0.4037,0.6712,,,,,,,
+descriptive,open,221551.0000,0.2461,0.2036,0.2927,,,,,,,
+descriptive,partial,369319.0000,0.3216,0.2562,0.4071,,,,,,,
+test,"backscatter (HH, HV, HH−HV)",3306671.0000,,,,0.7750,0.7501,0.3499,,,,
+test,backscatter + coherence,3306671.0000,,,,0.8634,0.8401,0.4487,,,,
+verdict,negative,,,,,,,0.4487,0.3499,0.5000,20260810-20260822,20260823
