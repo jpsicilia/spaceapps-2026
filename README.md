@@ -75,7 +75,7 @@ Study area: Paraguay River floodplain, Corumbá–Ladário to Mandioré lagoon. 
 
 **2. Open water stayed stable; the water that left was shallow, vegetated water.** On pixels cloud-free in all paired dates (7 dates), DSWx open water went from 257 to 258 km² (r = 0.32 with Ladário stage, p = 0.49), while open + partial surface water fell from 948 to 580 km² and tracks the river (r = 0.90, p = 0.006). Ladário fell from 253 to 124 cm. The river channel and permanent lagoons held their extent; what dried out were marshes and floating or emergent vegetation over shallow water, which an L-band open-water rule does not capture (NISAR open water vs stage: r = 0.25, p = 0.58).
 
-**3. The July→August drop in NISAR open water is not confirmed by DSWx** (DSWx open water did not decrease). We treat it as a limitation of the fixed-threshold rule in that scene, not as a hydrological signal.
+**3. The July→August drop in NISAR open water is not confirmed by DSWx.** Wind check on the JRC permanent-water zone: HH in the permanent-water zone changed only +0.4 dB (HV +0.2 dB) between 17 July and August after removing the stable-reference offset, so wind does not explain it; the drop remains unexplained. Note the 17 July NISAR scene is paired with the only Landsat-9 DSWx-HLS product (19 July); all other pairs are Sentinel-2.
 
 **Radar sees through fire-season smoke and cloud.** On 2026-09-02 only 25% of the floodplain was usable in DSWx-HLS; the NISAR acquisition of 2026-09-03 covered 100% of it.
 
