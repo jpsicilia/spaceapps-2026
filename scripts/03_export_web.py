@@ -108,10 +108,23 @@ def main():
     grid = dict(transform=tr, crs=crs, shape=hh0.shape)
     w = dswx.mosaic(sorted(glob.glob(str(ROOT / f"data/raw/opera_dswx/*_{SEP_D}T*_B01_WTR.tif"))), grid)
     hh3, _, _, _ = load(SEP_N)
-    w[~np.isfinite(hh3)] = 255
-    save(f"dswx_{SEP_D}", palette_rgba(w, {0: (226, 214, 180, 255), 1: (31, 78, 156, 255),
-                                         2: (120, 180, 230, 255), 253: (150, 150, 150, 255),
-                                         252: (150, 150, 150, 255)}), tr, crs, layers)
+    foot = np.isfinite(hh3)
+    # optical coverage on the analysed floodplain: clear / cloud-shadow / not acquired (fill)
+    with rasterio.open(proc / "masks_40m.tif") as m:
+        plain = (m.read(1) == 0) & (m.read(2) == 0) & np.isfinite(m.read(3)) & foot
+    n = plain.sum()
+    cov = dict(date=SEP_D, clear_pct=100 * np.isin(w[plain], (0, 1, 2)).sum() / n,
+               cloud_pct=100 * np.isin(w[plain], (252, 253)).sum() / n,
+               not_acquired_pct=100 * np.isin(w[plain], (254, 255)).sum() / n)
+    pd.DataFrame([cov]).to_csv(ROOT / "outputs/tables/sep_optical_coverage.csv", index=False, float_format="%.1f")
+    print(f"      DSWx {SEP_D} on floodplain: clear {cov['clear_pct']:.0f}% | cloud/shadow {cov['cloud_pct']:.0f}% | "
+          f"not acquired that day {cov['not_acquired_pct']:.0f}%")
+    w[~foot] = 0                                  # outside NISAR footprint -> transparent (code 0 handled below)
+    rgba = palette_rgba(w, {0: (226, 214, 180, 255), 1: (31, 78, 156, 255), 2: (120, 180, 230, 255),
+                            253: (150, 150, 150, 255), 252: (150, 150, 150, 255),
+                            255: (255, 255, 255, 200), 254: (255, 255, 255, 200)})
+    rgba[~foot] = 0
+    save(f"dswx_{SEP_D}", rgba, tr, crs, layers)
 
     # --- classes
     for d in (BEFORE, AFTER):
@@ -191,6 +204,7 @@ def main():
             "cloudy_dswx_date": ymd(cloudy["dswx_date"]), "cloudy_clear_pct": round(cloudy["clear_pct"]),
             "cloudy_nisar_date": ymd(cloudy["nisar_date"]),
             "sep_clear_pct": round(float(agr.loc[agr["dswx_date"] == SEP_D, "clear_pct"].iloc[0])),
+            "sep_cloud_pct": round(cov["cloud_pct"]), "sep_not_acquired_pct": round(cov["not_acquired_pct"]),
         },
         "before": ymd(BEFORE), "after": ymd(AFTER), "sep_nisar": ymd(SEP_N), "sep_dswx": ymd(SEP_D),
         "aoi_bounds": aoi_bounds, "gauge": gauge,

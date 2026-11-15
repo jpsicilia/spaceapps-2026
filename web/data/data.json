@@ -636,7 +636,9 @@
   "cloudy_dswx_date": "2026-09-02",
   "cloudy_clear_pct": 25,
   "cloudy_nisar_date": "2026-09-03",
-  "sep_clear_pct": 25
+  "sep_clear_pct": 25,
+  "sep_cloud_pct": 0,
+  "sep_not_acquired_pct": 73
  },
  "before": "2026-07-17",
  "after": "2026-10-21",

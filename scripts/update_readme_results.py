@@ -105,9 +105,13 @@ def main():
                   "and 10 August falls on DSWx partial water of 19 July, so submerged-vegetation emergence does not "
                   "explain the drop either.)", ""]
     lines += [
-        f"**Radar sees through cloud (and likely smoke) in the fire season.** On {cloudy['dswx_date'][:4]}-{cloudy['dswx_date'][4:6]}-"
-        f"{cloudy['dswx_date'][6:]} only {cloudy['clear_pct']:.0f}% of the floodplain was usable in DSWx-HLS; "
-        f"the NISAR acquisition of {cloudy['nisar_date'][:4]}-{cloudy['nisar_date'][4:6]}-{cloudy['nisar_date'][6:]} "
+        f"**Radar sees what optics cannot in the fire season.** On {cloudy['dswx_date'][:4]}-{cloudy['dswx_date'][4:6]}-"
+        f"{cloudy['dswx_date'][6:]} only {cloudy['clear_pct']:.0f}% of the floodplain was usable in DSWx-HLS"
+        + (lambda c: f" ({c['cloud_pct']:.0f}% cloud or shadow, likely including smoke; {c['not_acquired_pct']:.0f}% "
+                     "not imaged by the optical satellite that day)"
+                     if c is not None and str(int(c["date"])) == str(cloudy["dswx_date"]) else "")(
+            pd.read_csv(T / "sep_optical_coverage.csv").iloc[0] if (T / "sep_optical_coverage.csv").exists() else None)
+        + f"; the NISAR acquisition of {cloudy['nisar_date'][:4]}-{cloudy['nisar_date'][4:6]}-{cloudy['nisar_date'][6:]} "
         "covered 100% of it.",
         "",
         "**Caveats.** Seven to eight dates, consecutive and not independent: p-values are indicative. NISAR products "
