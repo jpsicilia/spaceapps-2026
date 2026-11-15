@@ -50,22 +50,33 @@ def main():
         "**1. NISAR maps open water reliably.** Against DSWx-HLS on near-simultaneous dates (≤ 2 days), "
         f"precision is {fmt_range(agr['precision'])}, recall {fmt_range(agr['recall'])} and IoU "
         f"{fmt_range(agr['iou'])} ({len(agr)} pairs). NISAR recovers on average {100 * ratio:.0f}% of the "
-        "DSWx open-water area on common cloud-free pixels; missed water is mostly along shorelines.",
+        "DSWx open-water area on common cloud-free pixels.",
         "",
-        "**2. Open water stayed stable; the water that left was shallow, vegetated water.** On pixels cloud-free "
+        "**2. Open water stayed stable; the decline is in shallow, partly vegetated water.** On pixels cloud-free "
         f"in all paired dates ({len(ser)} dates), DSWx open water went from {first['series_dswx_open_km2']:.0f} to "
         f"{last['series_dswx_open_km2']:.0f} km² (r = {r_op:.2f} with Ladário stage, p = {p_op:.2f}), while "
         f"open + partial surface water fell from {first['series_dswx_open_partial_km2']:.0f} to "
         f"{last['series_dswx_open_partial_km2']:.0f} km² and tracks the river (r = {r_par:.2f}, p = {p_par:.3f}). "
         f"Ladário fell from {first['stage_at_dswx_cm']:.0f} to {last['stage_at_dswx_cm']:.0f} cm. "
-        "The river channel and permanent lagoons held their extent; what dried out were marshes and floating or "
-        "emergent vegetation over shallow water, which an L-band open-water rule does not capture "
+        "The river channel and permanent lagoons held their extent; the decline is consistent with drying of "
+        "shallow, partly vegetated water (DSWx partial class), which an L-band open-water rule does not capture "
         f"(NISAR open water vs stage: r = {r_nis:.2f}, p = {p_nis:.2f}).",
         "",
     ]
 
+    loss = T / "jul_aug_loss.csv"
     wind = T / "wind_check.csv"
-    if wind.exists():
+    lo = pd.read_csv(loss).iloc[0] if loss.exists() else None
+    if lo is not None and bool(lo["supports"]):
+        lines += ["**3. NISAR captures shallow vegetated water while submerged and loses it as vegetation emerges.** "
+                  f"Of the {lo['lost_km2']:.0f} km² NISAR classified as open water on 17 July but not on 10 August, "
+                  f"{lo['lost_partial_pct']:.0f}% fall on DSWx-HLS partial surface water of 19 July "
+                  f"(x{lo['enrichment']:.1f} the plain-wide share), and {lo['jul_water_on_partial_pct']:.0f}% of all "
+                  "NISAR open water on 17 July lies on DSWx partial water. The July→August drop is therefore a real "
+                  "change in surface condition (vegetation emerging from shallow water), not a hydrological loss of "
+                  "open water — DSWx open water did not decrease."
+                  + (f" Wind is ruled out: {str(pd.read_csv(wind)['verdict'].iloc[0])}" if wind.exists() else ""), ""]
+    elif wind.exists():
         w = pd.read_csv(wind)
         verdict = str(w["verdict"].iloc[0])
         lines += [f"**3. The July→August drop in NISAR open water is not confirmed by DSWx.** "
@@ -80,15 +91,22 @@ def main():
         c = pd.read_csv(clf)
         lines += ["**4. Can NISAR alone see the receding shallow water?** " + str(c["summary"].iloc[0]), ""]
 
+    if lo is not None and not bool(lo["supports"]):
+        lines += [f"(Only {lo['lost_partial_pct']:.0f}% of the {lo['lost_km2']:.0f} km² lost by NISAR between 17 July "
+                  "and 10 August falls on DSWx partial water of 19 July, so submerged-vegetation emergence does not "
+                  "explain the drop either.)", ""]
     lines += [
-        f"**Radar sees through fire-season smoke and cloud.** On {cloudy['dswx_date'][:4]}-{cloudy['dswx_date'][4:6]}-"
+        f"**Radar sees through cloud (and likely smoke) in the fire season.** On {cloudy['dswx_date'][:4]}-{cloudy['dswx_date'][4:6]}-"
         f"{cloudy['dswx_date'][6:]} only {cloudy['clear_pct']:.0f}% of the floodplain was usable in DSWx-HLS; "
         f"the NISAR acquisition of {cloudy['nisar_date'][:4]}-{cloudy['nisar_date'][4:6]}-{cloudy['nisar_date'][6:]} "
         "covered 100% of it.",
         "",
         "**Caveats.** Seven to eight dates, consecutive and not independent: p-values are indicative. NISAR products "
-        "are provisional (CRID P05023). Thresholds come from published L-band values (Evans et al. 2010, Pantanal) "
+        "are provisional (CRID P05023). Thresholds adapted from Evans et al. 2010 (PALSAR sigma0, converted to gamma0) "
         "and were checked, not tuned, against the JRC permanent-water zone. The Copernicus DEM is a surface model.",
+        "",
+        "*Unverified observation:* in late September–October HH over the river (JRC permanent-water zone) drops by "
+        "1.3–2.6 dB while HV stays flat, which would be consistent with less floating vegetation in the channel.",
         "",
         "| Figure | |",
         "|---|---|",
