@@ -27,7 +27,19 @@ WEB = "https://jpsicilia.github.io/spaceapps-2026/"
 REPO = "https://github.com/jpsicilia/spaceapps-2026"
 F = load_facts(ROOT)
 S = {k: v["shown"] for k, v in F.items()}
-COH_LINE = ([f"Exploratory: with InSAR coherence, partial-water F1 {S['F42']} → {S['F43']} (one date)."] if "F43" in F and F["F43"]["source"].endswith("label=success)") else [])
+def _coh_line():
+    """Slide-6 line for the exploratory coherence test (02j), positive or negative; numbers from coherence_test.csv."""
+    if "F43" not in F:
+        return []
+    v = pd.read_csv(ROOT / "outputs/tables/coherence_test.csv").query("kind == 'verdict'").iloc[0]
+    if v.label == "success":
+        return [f"Exploratory: with InSAR coherence, partial-water F1 {S['F42']} → {S['F43']} (one date)."]
+    verb = "raised" if v.f1_partial > v.f1_partial_without else "changed"
+    return [f"Exploratory: adding InSAR coherence {verb} partial-water F1 from {S['F42']} to {S['F43']} "
+            f"(target {v.target:.2f} not met; one date)."]
+
+
+COH_LINE = _coh_line()
 REP = S["F05"].replace("on a ", "").replace(": cycle 026 not available", "")   # "12-day repeat (one 24-day gap, 17 Jul–10 Aug)"
 
 # where each fact is shown (README sections, web elements, slides, script, submission)
@@ -49,8 +61,8 @@ WHERE = {
     "F31": "README coverage; Web card 4, §2 lead and legend; Slide 2; Script; Submission", "F32": "README coverage (only if ≥ 1%); Web §2 lead (only if ≥ 1%)",
     "F33": "README coverage; Web card 4; Slide 2; Submission", "F34": "README coverage; Web §2 lead",
     "F35": "Web change legend (“not detected”); Slide 6", "F36": "Claims only (supports Q2)",
-    "F37": "README 2; Web card 2; Slide 4", "F38": "Slide 5; Script", "F41": "README extension", "F42": "README extension; Slide 6 (only if positive)",
-    "F43": "README extension; Slide 6 (only if positive)", "F39": "Web change note", "F40": "Web change note",
+    "F37": "README 2; Web card 2; Slide 4", "F38": "Slide 5; Script", "F41": "README extension", "F42": "README extension; Slide 6",
+    "F43": "README extension; Slide 6", "F39": "Web change note", "F40": "Web change note",
 }
 QWHERE = {"Q1": "README 1; Web card 1; Slide 3", "Q2": "README 2; Web card 2; Slide 4; Script",
           "Q3": "README 2; Web card 3, chart note; Slide 4; Script; Submission", "Q4": "README 2; Slide 4",
@@ -101,7 +113,7 @@ def write_claims():
                                 "Adding InSAR coherence did not reach the pre-registered target for partial-water mapping "
                                 "(exploratory: one pair, one date, spatial CV)")
                  + " | F41–F43 (criterion in scripts/02j_coherence.py) | README extension"
-                 + ("; Slide 6" if ok else "") + " |")
+                 + "; Slide 6 |")
     L += ["", "## Method parameters", "", "| Parameter | Value | Where set |", "|---|---|---|"]
     L += [f"| {a} | {b} | `{c}` |" for a, b, c in METHOD]
     L += ["", "## Withdrawn or corrected claims", "", "| Earlier wording | Why it changed |", "|---|---|"]
