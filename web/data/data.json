@@ -652,7 +652,14 @@
    -57.3
   ]
  ],
- "gauge": null,
+ "gauge": {
+  "name": "Lad\u00e1rio (Base Naval)",
+  "code": "66825000",
+  "river": "Paraguay",
+  "lat": -19.005,
+  "lon": -57.602,
+  "coord_source": "approximate: Lad\u00e1rio town centre (Wikipedia); gauge is at the Naval Base on the river"
+ },
  "jul_aug_loss": {
   "lost_km2": 107.56,
   "lost_clear_km2": 103.42,

@@ -137,7 +137,8 @@ const LEG = {
   change: [["#00c8ff","open water both dates"],["#ff7f00","open water lost"],["#ff00c8","open water gained"],
            ["rgba(255,255,255,.5)","analysed, no open water"]],
   composite: [["#ff0000","HH"],["#00ff00","HV"],["#0000ff","HH − HV"]],
-  dswx: [["#e2d6b4","not water"],["#1f4e9c","open water"],["#78b4e6","partial surface water"],["#969696","cloud — optical blind"]],
+  dswx: [["#e2d6b4","not water"],["#1f4e9c","open water"],["#78b4e6","partial surface water"],["#969696","cloud — optical blind"],
+         ["rgba(255,255,255,.85)","not imaged by the optical satellite that day"]],
   hvgrey: [["#000","water (smooth, dark)"],["#fff","land / vegetation (bright)"]],
 };
 function legend(el, key){
@@ -154,8 +155,10 @@ function scrollOnClick(map){
 }
 function gaugeMarker(map, G){
   if (!G) return;
+  const approx = String(G.coord_source || "").toLowerCase().startsWith("approximate");
   L.circleMarker([G.lat, G.lon], {radius:7, color:"#fff", weight:2, fillColor:"#d62728", fillOpacity:1})
-   .addTo(map).bindPopup(`<b>${G.name}</b> (ANA ${G.code})<br>River gauge — grey line in the chart`);
+   .addTo(map).bindPopup(`<b>River gauge ${G.name}, ANA ${G.code}</b>${approx ? " — approximate location" : ""}`
+                         + `<br>Grey line in the chart`);
 }
 function basemap(map){
   const esri = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
@@ -183,7 +186,7 @@ Promise.all([fetch("data/data.json").then(r=>r.json()), fetch("data/layers.json"
     [`${M.op_first} → ${M.op_last} km²`, "shallow, vegetated water declined",
      `Open + partial water (DSWx) tracks the river: r = ${fmt(M.r_open_partial)}, p = ${fmt(M.p_open_partial,3)}. The water that left is mostly shallow, vegetated water.`],
     [`${M.sep_clear_pct}% vs 100%`, "usable floodplain, optical vs radar",
-     `On ${dmy(D.sep_dswx)} clouds left ${M.sep_clear_pct}% of the floodplain visible to optics; NISAR (${dmy(D.sep_nisar)}) saw all of it.`],
+     `On ${dmy(D.sep_dswx)} optics had a usable view of only ${M.sep_clear_pct}% of the floodplain (${M.sep_cloud_pct}% cloud or shadow, ${M.sep_not_acquired_pct}% not imaged that day); NISAR (${dmy(D.sep_nisar)}) saw all of it.`],
   ];
   $("#cards").innerHTML = cards.map(([k,t,p]) => `<div class="card"><div class="k">${k}</div><div class="t">${t}</div><p>${p}</p></div>`).join("");
 
@@ -229,7 +232,7 @@ Promise.all([fetch("data/data.json").then(r=>r.json()), fetch("data/layers.json"
       $("#leg2").innerHTML = "<span><b>Left:</b></span>" + tmp.innerHTML;
       legend(tmp, "dswx");
       $("#leg2").insertAdjacentHTML("beforeend", "<span style='margin-left:12px'><b>Right:</b></span>" + tmp.innerHTML);
-      $("#cloudLead").textContent = `In the fire season, clouds left ${M.sep_clear_pct}% of the floodplain visible to optical sensors on ${dmy(D.sep_dswx)}. NISAR, one day later, imaged all of it. Drag the handle.`;
+      $("#cloudLead").textContent = `On ${dmy(D.sep_dswx)}, in the fire season, optical sensors had a usable view of only ${M.sep_clear_pct}% of the floodplain: ${M.sep_cloud_pct}% was under cloud or shadow and ${M.sep_not_acquired_pct}% was not imaged that day. NISAR, one day later, imaged all of it. Drag the handle.`;
     } else {
       l = "composite_" + D.before.replaceAll("-",""); r = "composite_" + D.after.replaceAll("-","");
       tl = `NISAR · ${dmy(D.before)}`; tr = `NISAR · ${dmy(D.after)}`;
