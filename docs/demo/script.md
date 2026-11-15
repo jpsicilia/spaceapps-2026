@@ -2,7 +2,7 @@
 
 Numbers below come from `docs/claims.md` (IDs in brackets). Read at a calm pace (~140 words per minute).
 
-**Slide 1 — The problem (15 s).** Between July and October 2026 the Paraguay River at Ladário fell about
+**Slide 1 — Title and the problem (15 s).** Pantanal 2026: water leaving, seen by radar. Between July and October 2026 the Paraguay River at Ladário fell about
 1.3 metres, from 254 cm to 125 cm [F01–F03]. We asked: where did surface water change on the floodplain,
 and what can NISAR's L-band radar see of it?
 

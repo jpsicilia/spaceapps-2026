@@ -6,9 +6,9 @@ Every number and claim shown in the README, the web page, the demo slides, the d
 
 | ID | Claim | Shown as | Exact value | Where it appears | Source |
 |---|---|---|---|---|---|
-| F01 | Ladário stage on first NISAR date | 254 cm | 254.1 | Slide 1; Script; Submission | `outputs/tables/area_series.csv: stage_cm, row date=2026-07-17` |
-| F02 | Ladário stage on last NISAR date | 125 cm | 125.3 | Slide 1; Script; Submission | `outputs/tables/area_series.csv: stage_cm, row date=2026-10-21` |
-| F03 | River fall between first and last NISAR date | ~1.3 m | 1.287 | Slide 1; Script; Submission | `F01 − F02` |
+| F01 | Ladário stage on first NISAR date | 254 cm | 254.1 | Slide 1 (title); Script; Submission | `outputs/tables/area_series.csv: stage_cm, row date=2026-07-17` |
+| F02 | Ladário stage on last NISAR date | 125 cm | 125.3 | Slide 1 (title); Script; Submission | `outputs/tables/area_series.csv: stage_cm, row date=2026-10-21` |
+| F03 | River fall between first and last NISAR date | ~1.3 m | 1.287 | Slide 1 (title); Script; Submission | `F01 − F02` |
 | F04 | Number of NISAR GCOV dates | 8 | 8 | README Results intro; Web §1 lead; Slide 2; Submission | `outputs/tables/area_series.csv: row count` |
 | F05 | NISAR revisit | on a 12-day repeat (one 24-day gap, 17 Jul–10 Aug: cycle 026 not available) | — | README coverage paragraph; Web card 4, §2 lead; Slide 2; Script; Submission | `outputs/tables/area_series.csv: date (differences); cycle 026 status from docs/data_inventory.md` |
 | F06 | Open-water thresholds | HV < -22 dB and HH < -16 dB | -22, -16 | README Results intro; Web §1 lead; Slide 2; Submission | `config/thresholds.yaml: water_hv_max, water_hh_max` |
