@@ -64,6 +64,8 @@ METHOD = [
     ("Minimum mapping unit", "1 ha (7 px)", "config/thresholds.yaml mmu_px"),
     ("DSWx pairing", "closest date ≤ 5 days (actual ≤ 2)", "scripts/02e_dswx_compare.py MAX_DAYS"),
     ("Common-series filter", "pairs with ≥ 80% clear", "scripts/02e_dswx_compare.py --min-clear"),
+    ("Open-water thresholds", "HV < −22 dB and HH < −16 dB (gamma0), adapted from Evans (2013)",
+     "config/thresholds.yaml; caps in scripts/02b_calibrate.py"),
 ]
 
 
@@ -94,10 +96,23 @@ def write_claims():
     L += [f"| {a} | {b} | `{c}` |" for a, b, c in METHOD]
     L += ["", "## Withdrawn or corrected claims", "", "| Earlier wording | Why it changed |", "|---|---|"]
     L += [f"| {a} | {b} |" for a, b in WITHDRAWN]
-    L += ["", "## Not verified", "",
-          "- Threshold values attributed to Evans et al. (2010): the paper exists (IEEE JSTARS 3(4): 560–575); the dB values "
-          "were provided by the author and should be checked against the paper's tables.",
-          "- Gauge marker position on the web map: approximate (Ladário town centre), not the official station coordinates.",
+    L += ["", "## Verified against external sources", "",
+          "| Claim | Source | Checked by |", "|---|---|---|",
+          "| Median L-band σ0 (ALOS PALSAR, Lower Nhecolândia): brackish lakes without vegetation (salinas) ≈ −23 dB HH "
+          "(flood and dry season) and −30 dB HV (dry season); fresh-water lakes with floating and emergent vegetation "
+          "(baías) ≈ −14 dB HH (flood and dry) and −23 dB HV — basis of the thresholds (F06) | Evans, T. L. (2013), MSc "
+          "thesis, Department of Geography, University of Victoria, ch. 2, section 2.4, pp. 52–53; "
+          "http://hdl.handle.net/1828/4671 | Author and coding assistant, from the thesis text |",
+          "| HH threshold (−16 dB) lies between the two classes; HV threshold (−22 dB) is close to the "
+          "vegetated-lake value | F06 vs the values above; `src/pantanal_sar/classify.py` PHYS_REF, printed by "
+          "`scripts/02b_calibrate.py` | Script |", ""]
+    L += ["## Not verified", "",
+          "- Conversion σ0 → γ0 (+0.5 to 1.5 dB at our incidence angles) used to compare thresholds with Evans (2013): "
+          "an assumption, not taken from that source.",
+          "- Reference value for flooded vegetation (double bounce): none verified; the flooded-vegetation check is "
+          "reported as NOT VERIFIED.",
+          "- Gauge marker position on the web map: approximate (±1 km), taken from Frontiers in Water 2021 "
+          "(doi:10.3389/frwa.2021.639204) by the author; not the official ANA station coordinates.",
           "- “Unverified observation” in the README (river HH drop in late Sep–Oct): interpretation not tested.", ""]
     (ROOT / "docs/claims.md").write_text("\n".join(L))
 
@@ -263,7 +278,7 @@ def write_slides():
                f"series {S['F28']}.",
                f"Flooded vegetation (double bounce) not detected ({S['F35']}).",
                f"Only {S['F04']} dates, {REP}; not independent. Provisional NISAR products.",
-               "Thresholds adapted from published PALSAR values, not tuned."],
+               "Thresholds adapted from Evans (2013) PALSAR values, not tuned."],
               draw=clf_plot)
         slide(pdf, 7, "Explore it",
               [f"Interactive map and charts: {WEB}",
@@ -333,7 +348,10 @@ hydroperiod and time series.
 
 **What it does.** The project turns NISAR GCOV backscatter (HH and HV) into open-water maps for eight dates
 {S['F05']}, measures how open water changed, and tests the result against two independent references: OPERA
-DSWx-HLS (Landsat/Sentinel-2) and the Paraguay River stage at Ladário (ANA station 66825000).
+DSWx-HLS (Landsat/Sentinel-2) and the Paraguay River stage at Ladário (ANA station 66825000). Open water is
+{S['F06']} (gamma0), adapted from Evans (2013), who reports median L-band σ0 of ≈ −23 dB HH / −30 dB HV for brackish lakes without
+vegetation (salinas) and ≈ −14 dB HH / −23 dB HV for fresh-water lakes with floating or emergent vegetation (baías);
+our HH threshold lies between the two classes and our HV threshold is close to the vegetated-lake value.
 
 **Results.**
 - Open water from NISAR agrees with DSWx-HLS: precision {S['F07']}, recall {S['F08']}, IoU {S['F09']} ({S['F10']} pairs).
@@ -361,6 +379,10 @@ the web page, GitHub Pages for hosting. Pipeline and order: `docs/reproduce.md`.
 - Copernicus DEM GLO-30 (ESA/EU) — floodplain mask and stable reference.
 - JRC Global Surface Water (Pekel et al. 2016) — permanent-water control zone.
 - ANA telemetry, station 66825000 — river stage. · OpenStreetMap — urban mask.
+
+## References
+- Evans, T. L. (2013). Habitat mapping of the Brazilian Pantanal using synthetic aperture radar imagery and object
+  based image analysis. MSc thesis, Department of Geography, University of Victoria. http://hdl.handle.net/1828/4671
 - Sentinel-2 data enter through HLS/DSWx (modified Copernicus Sentinel data).
 
 ## Use of artificial intelligence

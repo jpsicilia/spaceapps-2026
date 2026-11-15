@@ -185,6 +185,8 @@ WITHDRAWN = [
     ("“Wind is ruled out”", "Softened to “wind is not supported” (F26 is a test against one rule, not proof)."),
     ("“Not imaged / not acquired that day” (2 Sep)", "Per-file check: the gap is one missing HLS/DSWx tile, 21KVV (F31)."),
     ("“Cloud-free pixels”", "Renamed “valid (clear)”: DSWx codes 0/1/2, which also excludes missing products."),
+    ("“Adapted from Evans et al. 2010”; “flooded forest ≈ −4 dB”; “vegetated ≈ −23 dB” as an HH value",
+     "Values not found as cited; replaced by verified Evans (2013) values for open and vegetated lakes."),
     ("“Only Landsat-9 pair” note in the wind verdict", "After completing the DSWx tiles the 19 Jul pair is L9+S2C; note removed."),
 ]
 

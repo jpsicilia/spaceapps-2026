@@ -37,7 +37,7 @@ Full inventory: [`docs/data_inventory.md`](docs/data_inventory.md)
 1. `scripts/01_preprocess_gcov.py`, `02a_preprocess_all.sh`: clip each GCOV to the study area, multilook 20 → 40 m
    in linear power, Lee filter (5×5, fixed ENL), convert to dB (gamma0).
 2. `02b_calibrate.py`: masks (urban, DEM > 135 m), JRC control zone, open-water thresholds
-   (HV < −22 dB and HH < −16 dB, adapted from Evans et al. 2010 and checked against the JRC zone).
+   (HV < −22 dB and HH < −16 dB, adapted from Evans (2013) and checked against the JRC zone).
 3. `02d_stability.py`, `02c_timeseries.py --normalize`: per-date threshold shift from a stable reference
    (forested hills > 200 m); classification of all dates, 1 ha minimum mapping unit, area series vs Ladário,
    change map 17 Jul → 21 Oct, hydroperiod.
@@ -99,6 +99,9 @@ Data:
 - Paraguay River stage at Ladário: Agência Nacional de Águas e Saneamento Básico (ANA), station 66825000.
 - © OpenStreetMap contributors (ODbL).
 
+References:
+- Evans, T. L. (2013). Habitat mapping of the Brazilian Pantanal using synthetic aperture radar imagery and object based image analysis. MSc thesis, Department of Geography, University of Victoria. http://hdl.handle.net/1828/4671
+
 This project is not endorsed by NASA.
 
 <!-- RESULTS:START -->
@@ -116,7 +119,7 @@ Study area: Paraguay River floodplain, Corumbá–Ladário to Mandioré lagoon. 
 
 **Full coverage on a fixed schedule.** NISAR imaged at least 97.2% of the floodplain on all 8 dates, on a 12-day repeat (one 24-day gap, 17 Jul–10 Aug: cycle 026 not available). On 2 Sep the optical product covered 27.5% of the floodplain: no HLS/DSWx product exists that day for tile 21KVV, although Sentinel-2B covered the neighbouring tiles. NISAR imaged 99.6% of it on 3 Sep.
 
-**Caveats.** Seven to eight dates, consecutive and not independent: p-values are indicative. NISAR products are provisional (CRID P05023). Thresholds adapted from Evans et al. 2010 (PALSAR sigma0, converted to gamma0) and were checked, not tuned, against the JRC permanent-water zone. The Copernicus DEM is a surface model.
+**Caveats.** Seven to eight dates, consecutive and not independent: p-values are indicative. NISAR products are provisional (CRID P05023). Thresholds adapted from Evans (2013), who reports median L-band σ0 of ≈ −23 dB HH / −30 dB HV for brackish lakes without vegetation (salinas) and ≈ −14 dB HH / −23 dB HV for fresh-water lakes with floating or emergent vegetation (baías) (Lower Nhecolândia, ch. 2, pp. 52–53); our gamma0 HH threshold (−16 dB) lies between the two classes and our HV threshold (−22 dB) is close to the vegetated-lake value. They were checked, not tuned, against the JRC permanent-water zone. The Copernicus DEM is a surface model.
 
 *Unverified observation:* in late September–October HH over the river (JRC permanent-water zone) drops by 1.3–2.6 dB while HV stays flat, which would be consistent with less floating vegetation in the channel.
 

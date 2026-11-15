@@ -126,8 +126,8 @@ def main():
         sep_sentence(cloudy),
         "",
         "**Caveats.** Seven to eight dates, consecutive and not independent: p-values are indicative. NISAR products "
-        "are provisional (CRID P05023). Thresholds adapted from Evans et al. 2010 (PALSAR sigma0, converted to gamma0) "
-        "and were checked, not tuned, against the JRC permanent-water zone. The Copernicus DEM is a surface model.",
+        "are provisional (CRID P05023). Thresholds adapted from Evans (2013), who reports median L-band σ0 of ≈ −23 dB HH / −30 dB HV for brackish lakes without vegetation (salinas) and ≈ −14 dB HH / −23 dB HV for fresh-water lakes with floating or emergent vegetation (baías) (Lower Nhecolândia, ch. 2, pp. 52–53); our gamma0 HH threshold (−16 dB) lies between the two classes and our HV threshold (−22 dB) is close to the vegetated-lake value. They "
+        "were checked, not tuned, against the JRC permanent-water zone. The Copernicus DEM is a surface model.",
         "",
         "*Unverified observation:* in late September–October HH over the river (JRC permanent-water zone) drops by "
         "1.3–2.6 dB while HV stays flat, which would be consistent with less floating vegetation in the channel.",

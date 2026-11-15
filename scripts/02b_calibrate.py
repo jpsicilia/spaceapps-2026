@@ -85,7 +85,7 @@ def main():
             dst.set_band_description(i, d)
 
     # ----------------------------------------------------------- thresholds
-    # Water: calibrated on the JRC permanent-water zone (known water), capped by Evans values.
+    # Water: calibrated on the JRC permanent-water zone (known water), capped at HV -22 / HH -16 dB gamma0.
     q = (50, 95, 99)
     php, pvp = np.percentile(hh[perm], q), np.percentile(hv[perm], q)
     print(f"[2/4] Water calibrated on JRC control zone ({perm.sum():,} px):")
@@ -123,7 +123,8 @@ def main():
     )
     (ROOT / "config/thresholds.yaml").write_text(yaml_txt)
 
-    print("      Physical check vs Evans et al. values (as provided; gamma0 ≈ sigma0 + 0.5–1.5 dB):")
+    print("      Physical check vs Evans (2013) L-band sigma0, open vs vegetated lakes "
+          "(assumption: gamma0 = sigma0 + 0.5–1.5 dB):")
     for key, v, ref, flag, note in physical_check(th):
         print(f"        {flag:4} {key:18} = {v:7.2f} dB   expected {ref:16}  {note}")
 

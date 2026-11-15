@@ -123,21 +123,30 @@ def control_water_pct(cls, perm):
     return float(100 * np.mean(cls[z] == WATER)) if z.any() else float("nan")
 
 
-# Physical sanity check (values given by Pablo from Evans et al., PALSAR sigma0;
-# gamma0 expected 0.5-1.5 dB higher). rule: (key, reference, direction, tolerance dB)
+# Physical sanity check against Evans (2013), MSc thesis, Univ. of Victoria, ch. 2 (Lower Nhecolândia), pp. 52-53,
+# median ALOS PALSAR sigma0: brackish lakes without vegetation (salinas) HH -23 / HV -30 dB (HV dry season);
+# fresh-water lakes with floating and emergent vegetation (baias) HH -14 / HV -23 dB. ASSUMPTION (not from Evans): gamma0 = sigma0 + 0.5..1.5 dB at our incidence angles.
+# A water threshold should lie between the open-lake and the vegetated-lake value (gamma0-adjusted).
+SIGMA0_TO_GAMMA0 = (0.5, 1.5)
 PHYS_REF = [
-    ("water_hh_max", -16.0, "<=", 1.5, "HH open water thr ~ -16 dB or lower"),
-    ("water_hv_max", -22.0, "<=", 1.5, "HV open water thr ~ -22 dB or lower (clean lake ~-30, vegetated ~-23)"),
-    ("floodveg_hh_min", -5.0, ">=", 1.5, "flooded veg HH above ~ -5 dB (flooded forest ~-4 dB sigma0)"),
+    # key, open-lake sigma0, vegetated-lake sigma0, note, verified
+    ("water_hh_max", -23.0, -14.0, "HH: salinas -23 dB, baias -14 dB (Evans 2013, median sigma0)", True),
+    ("water_hv_max", -30.0, -23.0, "HV: salinas -30 dB, baias -23 dB (Evans 2013, median sigma0)", True),
+    ("floodveg_hh_min", None, None, "flooded vegetation: no verified reference value", False),
 ]
 
 
 def physical_check(th):
     rows = []
-    for key, ref, op, tol, note in PHYS_REF:
+    lo_off, hi_off = SIGMA0_TO_GAMMA0
+    for key, s_open, s_veg, note, verified in PHYS_REF:
         v = th[key]
-        ok = v <= ref + tol if op == "<=" else v >= ref - tol
-        rows.append((key, v, f"{op} {ref:+.1f} (±{tol})", "OK" if ok else "FAR", note))
+        if not verified:
+            rows.append((key, v, "—", "NOT VERIFIED", note))
+            continue
+        lo, hi = s_open + lo_off, s_veg + hi_off
+        ok = lo <= v <= hi
+        rows.append((key, v, f"[{lo:+.1f}, {hi:+.1f}] γ0", "OK" if ok else "FAR", note))
     return rows
 
 
