@@ -644,7 +644,8 @@
   "nisar_min_pct": 97.2,
   "nisar_n_dates": 8,
   "repeat_text": "on a 12-day repeat (one 24-day gap, 17 Jul\u201310 Aug: cycle 026 not available)",
-  "sep_gap_text": "no HLS/DSWx product exists that day for tile 21KVV, although Sentinel-2B covered the neighbouring tiles"
+  "sep_gap_text": "no HLS/DSWx product exists that day for tile 21KVV, although Sentinel-2B covered the neighbouring tiles",
+  "channel_note": "In the main river channel, scattered \u2018lost\u2019/\u2018gained\u2019 pixels are most likely classification noise near the thresholds, not channel drying: in the permanent-water zone (JRC occurrence > 90%), 8\u201312% of pixels are classified as non-water on any date (91.6% classified as water on 17 Jul, 90.5% on 21 Oct)."
  },
  "before": "2026-07-17",
  "after": "2026-10-21",

@@ -43,6 +43,8 @@ Every number and claim shown in the README, the web page, the demo slides, the d
 | F35 | Flooded vegetation (NISAR rule), maximum over dates | ≤ 1.4 km² | 1.426 | Web change legend (“not detected”); Slide 6 | `outputs/tables/area_series.csv: max(floodveg_km2)` |
 | F36 | Open water on both 17 Jul and 21 Oct (change map) | 269 km² | 268.9 | Claims only (supports Q2) | `outputs/tables/change_20260717_20261021.csv: code 1` |
 | F38 | Share of the lost area (clear on 19 Jul and 8 Aug) still wet in DSWx on 8 Aug | 96% | 0.9572 | Slide 5; Script | `outputs/tables/jul_aug_loss_dswx_transitions.csv: (columns open + partial) / all cells` |
+| F39 | Permanent-water zone (JRC > 90%) classified as open water, 17 Jul / 21 Oct | 91.6% on 17 Jul, 90.5% on 21 Oct | 91.61, 90.49 | Web change note | `outputs/tables/area_series.csv: ctrl90_water_pct, first and last row` |
+| F40 | Share of permanent-water pixels classified as non-water on any date (range over dates) | 8–12% | 8.127, 12.24 | Web change note | `outputs/tables/area_series.csv: 100 − ctrl90_water_pct (min–max over the 8 dates)` |
 | F37 | Ladário stage at first / last DSWx date | 253 → 124 cm | 253.1, 123.5 | README 2; Web card 2; Slide 4 | `outputs/tables/dswx_comparison.csv: stage_at_dswx_cm, first and last row` |
 
 ## Qualitative claims
@@ -59,6 +61,7 @@ Every number and claim shown in the README, the web page, the demo slides, the d
 | Q8 | Radar backscatter alone could not map partial water (negative result) | F27, F28 (pre-registered criteria in scripts/02g_partial_clf.py) | README 4; Web (Validation); Slide 6; Script; Submission |
 | Q9 | On 2 Sep most of the floodplain has no optical data because no HLS/DSWx product exists for tile 21KVV that day (Sentinel-2B covered the neighbouring tiles); not cloud | F30–F32 | README coverage; Web §2; Slide 2 |
 | Q10 | Full coverage on a fixed schedule | F05, F33, F34 | README coverage; Web card 4, §2 title; Slide 2; Submission |
+| Q11 | Scattered ‘lost’/‘gained’ pixels in the main river channel are most likely classification noise near the thresholds, not channel drying | F39, F40 (pixel-level flips between dates not computed) | Web change note |
 
 ## Method parameters
 
