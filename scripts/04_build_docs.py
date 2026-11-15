@@ -27,6 +27,7 @@ WEB = "https://jpsicilia.github.io/spaceapps-2026/"
 REPO = "https://github.com/jpsicilia/spaceapps-2026"
 F = load_facts(ROOT)
 S = {k: v["shown"] for k, v in F.items()}
+COH_LINE = ([f"Exploratory: with InSAR coherence, partial-water F1 {S['F42']} → {S['F43']} (one date)."] if "F43" in F and F["F43"]["source"].endswith("label=success)") else [])
 REP = S["F05"].replace("on a ", "").replace(": cycle 026 not available", "")   # "12-day repeat (one 24-day gap, 17 Jul–10 Aug)"
 
 # where each fact is shown (README sections, web elements, slides, script, submission)
@@ -48,7 +49,8 @@ WHERE = {
     "F31": "README coverage; Web card 4, §2 lead and legend; Slide 2; Script; Submission", "F32": "README coverage (only if ≥ 1%); Web §2 lead (only if ≥ 1%)",
     "F33": "README coverage; Web card 4; Slide 2; Submission", "F34": "README coverage; Web §2 lead",
     "F35": "Web change legend (“not detected”); Slide 6", "F36": "Claims only (supports Q2)",
-    "F37": "README 2; Web card 2; Slide 4", "F38": "Slide 5; Script", "F39": "Web change note", "F40": "Web change note",
+    "F37": "README 2; Web card 2; Slide 4", "F38": "Slide 5; Script", "F41": "README extension", "F42": "README extension; Slide 6 (only if positive)",
+    "F43": "README extension; Slide 6 (only if positive)", "F39": "Web change note", "F40": "Web change note",
 }
 QWHERE = {"Q1": "README 1; Web card 1; Slide 3", "Q2": "README 2; Web card 2; Slide 4; Script",
           "Q3": "README 2; Web card 3, chart note; Slide 4; Script; Submission", "Q4": "README 2; Slide 4",
@@ -92,6 +94,14 @@ def write_claims():
     L += ["", "## Qualitative claims", "", "| ID | Claim | Supported by | Where it appears |", "|---|---|---|---|"]
     for q, c, sup in QUALITATIVE:
         L.append(f"| {q} | {c} | {sup} | {QWHERE.get(q, '')} |")
+    if "F43" in F:
+        ok = F["F43"]["source"].endswith("label=success)")
+        L.append("| Q12 | " + ("Adding InSAR coherence improved partial-water mapping above the pre-registered target "
+                                "(exploratory: one pair, one date, spatial CV)" if ok else
+                                "Adding InSAR coherence did not reach the pre-registered target for partial-water mapping "
+                                "(exploratory: one pair, one date, spatial CV)")
+                 + " | F41–F43 (criterion in scripts/02j_coherence.py) | README extension"
+                 + ("; Slide 6" if ok else "") + " |")
     L += ["", "## Method parameters", "", "| Parameter | Value | Where set |", "|---|---|---|"]
     L += [f"| {a} | {b} | `{c}` |" for a, b, c in METHOD]
     L += ["", "## Withdrawn or corrected claims", "", "| Earlier wording | Why it changed |", "|---|---|"]
@@ -121,18 +131,21 @@ def write_claims():
 NAVY, INK, MUTED, ACC = "#0b2545", "#1b2430", "#5b6675", "#0f766e"
 
 
-def slide(pdf, n, title, bullets, img=None, draw=None, note=None, legend=None, caption=None, bg=None):
+def slide(pdf, n, title, bullets, img=None, draw=None, note=None, legend=None, caption=None, bg=None, compact=False):
     fig = plt.figure(figsize=(13.333, 7.5))
     fig.patch.set_facecolor("white")
     fig.text(0.05, 0.89, title, fontsize=30, fontweight="bold", color=NAVY, va="bottom")
     fig.add_artist(plt.Line2D([0.05, 0.95], [0.875, 0.875], color=ACC, lw=2.5))
     y = 0.80
     width = 40 if draw else (46 if img else 90)
+    fs, step = (15, 0.046) if compact else (17, 0.052)          # compact only for the optional 5th bullet
+    if fs == 15:
+        width += 4
     for b in bullets:
         lines = textwrap.wrap(b, width)
-        fig.text(0.06, y, "•", fontsize=19, color=ACC, va="top")
-        fig.text(0.08, y, "\n".join(lines), fontsize=17, color=INK, va="top", linespacing=1.3)
-        y -= 0.052 * len(lines) + 0.035
+        fig.text(0.06, y, "•", fontsize=fs + 2, color=ACC, va="top")
+        fig.text(0.08, y, "\n".join(lines), fontsize=fs, color=INK, va="top", linespacing=1.3)
+        y -= step * len(lines) + (0.022 if compact else 0.035)
     if note:
         fig.text(0.06, 0.10, "\n".join(textwrap.wrap(note, width + 14)), fontsize=12, color=MUTED, va="bottom")
     if img:
@@ -307,7 +320,7 @@ def write_slides():
                f"series {S['F28']}.",
                f"Flooded vegetation (double bounce) not detected ({S['F35']}).",
                f"Only {S['F04']} dates, {REP}; not independent. Provisional NISAR products.",
-               "Thresholds adapted from Evans (2013) PALSAR values, not tuned."],
+               "Thresholds adapted from Evans (2013) PALSAR values, not tuned."] + COH_LINE, compact=bool(COH_LINE),
               draw=clf_plot)
         slide(pdf, 7, "Explore it",
               [f"Interactive map and charts: {WEB}",
@@ -358,6 +371,8 @@ of every number. Thank you.
 
 # --------------------------------------------------------------------------- submission.md
 def write_submission():
+    GUNW_LINE = ("- NISAR L2 GUNW (NASA/JPL–ISRO, provisional), pair 10→22 Aug 2026, coherence — exploratory test "
+                 f"(partial-water F1 {S['F42']} → {S['F43']}).\n" if "F43" in F else "")
     txt = f"""# Space Apps 2026 — project submission (copy field by field)
 
 > One block per field of the project form, in English. Team members, team name and local event come from the
@@ -414,7 +429,7 @@ the web page, GitHub Pages for hosting. Pipeline and order: docs/reproduce.md. C
 - NISAR L2 GCOV (NASA/JPL–ISRO, provisional), track 132 ascending, frame 168, HH and HV, 8 dates, via the ASF DAAC —
   main data.
 - OPERA DSWx-HLS v1 (PO.DAAC) — independent optical validation (open and partial surface water).
-
+{GUNW_LINE}
 ## Use of Space Agency Partner Data
 - Copernicus DEM GLO-30 (ESA / European Union) — floodplain mask and stable reference.
 - Sentinel-2 (ESA/Copernicus) enters through HLS and DSWx-HLS (modified Copernicus Sentinel data).

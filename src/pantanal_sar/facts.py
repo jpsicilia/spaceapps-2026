@@ -160,6 +160,20 @@ def load_facts(root: Path) -> dict:
     lo, hi = 100 - area["ctrl90_water_pct"].max(), 100 - area["ctrl90_water_pct"].min()
     add("F40", "Share of permanent-water pixels classified as non-water on any date (range over dates)", (lo, hi),
         f"{lo:.0f}–{hi:.0f}%", f"{T}/area_series.csv: 100 − ctrl90_water_pct (min–max over the 8 dates)")
+    ct_path = r / T / "coherence_test.csv"
+    if ct_path.exists():
+        ct = pd.read_csv(ct_path)
+        d = ct[ct.kind == "descriptive"].set_index("label")
+        tst = ct[ct.kind == "test"].set_index("label")
+        v = ct[ct.kind == "verdict"].iloc[0]
+        add("F41", "Median InSAR coherence (10→22 Aug) by DSWx class: not water / open / partial",
+            tuple(d.loc[k, "median"] for k in ("not water", "open", "partial")),
+            " / ".join(f"{d.loc[k, 'median']:.2f}" for k in ("not water", "open", "partial")),
+            f"{T}/coherence_test.csv: kind=descriptive, median")
+        add("F42", "Partial-water F1 without coherence (same pixels, spatial-block CV, 22 Aug)",
+            float(v.f1_partial_without), f"{v.f1_partial_without:.2f}", f"{T}/coherence_test.csv: kind=verdict, f1_partial_without")
+        add("F43", "Partial-water F1 with coherence (pre-registered target ≥ 0.50)", float(v.f1_partial),
+            f"{v.f1_partial:.2f}", f"{T}/coherence_test.csv: kind=verdict, f1_partial (label={v.label})")
     sd0, sd1 = comp.stage_at_dswx_cm.iloc[0], comp.stage_at_dswx_cm.iloc[-1]
     add("F37", "Ladário stage at first / last DSWx date", (sd0, sd1), f"{sd0:.0f} → {sd1:.0f} cm",
         f"{T}/dswx_comparison.csv: stage_at_dswx_cm, first and last row")

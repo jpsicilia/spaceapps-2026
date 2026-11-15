@@ -27,6 +27,7 @@ Exact granules, dates and checks: [`docs/data_inventory.md`](data_inventory.md).
 | `data/external/dem/Copernicus_DSM_COG_10_S{18,19,20}_00_W058_00_DEM.tif` | Copernicus DEM GLO-30 | Copernicus / AWS open data |
 | `data/external/jrc_gsw/occurrence_60W_10Sv1_4_2021.tif` | JRC Global Surface Water occurrence v1.4 | JRC |
 | `data/external/urban_mask/*.geojson` | OSM urban areas and buildings (Corumbá, Ladário, Puerto Suárez) | OpenStreetMap (Overpass) |
+| `data/raw/nisar_gunw/**/*20260810*20260822*.h5` | NISAR L2 GUNW pair 10→22 Aug (coherenceMagnitude), only for the exploratory step 02j | ASF DAAC |
 | `data/external/ladario_gauge/ladario_stage_raw_telemetria.csv` | Ladário stage, 15-min telemetry (`datetime, stage_cm, discharge_m3s`) | ANA (station 66825000) |
 
 Optional check of the NISAR downloads: `python scripts/verificar_descargas.py data/raw/nisar_gcov`.
@@ -44,6 +45,7 @@ The numbers in the file names group the steps; **02d must run before 02c**, beca
 | 5 | `python scripts/02e_dswx_compare.py` | `class_<date>.tif`, DSWx, gauge | `outputs/tables/dswx_agreement_all_pairs.csv`, `dswx_comparison.csv`, figures |
 | 6 | `python scripts/02f_wind_check.py` | GCOV, masks, `stability.csv`, DSWx | `outputs/tables/wind_check.csv`, `wind_check_by_date.csv` |
 | 7 | `python scripts/02g_partial_clf.py` | GCOV, masks, `stability.csv`, DSWx, gauge | `outputs/tables/partial_clf_*.csv`, figures (pre-registered, negative result) |
+| 7b | `python scripts/02j_coherence.py` (exploratory, optional) | GUNW 10→22 Aug, GCOV 22 Aug, masks, `stability.csv`, DSWx 23 Aug | `outputs/tables/coherence_test.csv`, `outputs/figures/coherence_test.png` |
 | 8 | `python scripts/02h_jul_aug_loss.py` | `class_<date>.tif`, DSWx | `outputs/tables/jul_aug_loss.csv`, `jul_aug_loss_dswx_transitions.csv` |
 | 9 | `python scripts/02i_dswx_coverage_check.py` | DSWx 2 Sep, GCOV grid | `outputs/tables/dswx_coverage_files.csv` (per-file audit of the 2 Sep optical coverage) |
 | 10 | `python scripts/03_export_web.py` | all of the above | `web/img/*`, `web/data/*.json`, `outputs/tables/sep_optical_coverage.csv` |

@@ -118,6 +118,23 @@ def main():
         c = pd.read_csv(clf)
         lines += ["**4. Can NISAR alone see the receding shallow water?** " + str(c["summary"].iloc[0]), ""]
 
+    coh = T / "coherence_test.csv"
+    if coh.exists():
+        ct = pd.read_csv(coh)
+        v = ct[ct.kind == "verdict"].iloc[0]
+        d = ct[ct.kind == "descriptive"].set_index("label")
+        med = " / ".join(f"{d.loc[k, 'median']:.2f}" for k in ("not water", "open", "partial"))
+        common = (f"InSAR coherence from the NISAR GUNW pair 10→22 Aug as a fourth feature, same classifier and 5 km "
+                  f"spatial-block cross-validation on 22 Aug (DSWx-HLS 23 Aug labels), same pixels: partial-water F1 "
+                  f"{v.f1_partial_without:.2f} without → {v.f1_partial:.2f} with coherence (pre-registered target "
+                  f"≥ {v.target:.2f}). Median coherence, not water / open / partial: {med}.")
+        if v.label == "success":
+            lines += ["## Extension (exploratory)", "",
+                      common + " One date and one pair only; no transfer to other dates was tested.",
+                      "", "![](outputs/figures/coherence_test.png)", ""]
+        else:
+            lines += ["**Extension (exploratory, negative).** " + common, ""]
+
     if lo is not None and not bool(lo["supports"]):
         lines += [f"(Only {lo['lost_partial_pct']:.0f}% of the {lo['lost_km2']:.0f} km² lost by NISAR between 17 July "
                   "and 10 August falls on DSWx partial water of 19 July, so submerged-vegetation emergence does not "

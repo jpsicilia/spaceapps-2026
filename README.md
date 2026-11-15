@@ -29,7 +29,8 @@ Paraguay River floodplain from Corumbá / Ladário (Brazil) north to Lake Mandio
 | Copernicus DEM GLO-30 | Mask of terrain above the floodplain (> 135 m); stable reference (> 200 m) |
 | OpenStreetMap urban areas and buildings | Urban mask |
 
-Downloaded but not used in this version: NISAR L2 GUNW, Sentinel-1 RTC, NASA FIRMS.
+NISAR L2 GUNW (pair 10→22 Aug) is used only in the exploratory coherence test (`scripts/02j_coherence.py`).
+Downloaded but not used in this version: Sentinel-1 RTC, NASA FIRMS.
 Full inventory: [`docs/data_inventory.md`](docs/data_inventory.md)
 
 ## Method
