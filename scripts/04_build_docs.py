@@ -40,6 +40,16 @@ def _coh_line():
 
 
 COH_LINE = _coh_line()
+
+COH_REFS_TXT = (
+    '- Amani, M., Poncos, V., Brisco, B., Foroughnia, F., DeLancey, E. R., Ranjbar, S. (2021). InSAR coherence analysis for wetlands in Alberta, Canada using time-series Sentinel-1 data. Remote Sensing 13(16), 3315. https://doi.org/10.3390/rs13163315\n'
+    '- Brisco, B., Ahern, F., Murnaghan, K., White, L., Canisus, F., Lancaster, P. (2017). Seasonal change in wetland coherence as an aid to wetland monitoring. Remote Sensing 9(2), 158. https://doi.org/10.3390/rs9020158\n'
+    '- Hübinger, C., Fluet-Chouinard, E., Escobar, D., Jaramillo, F. (2026). Exploring the potential of using L-band InSAR for the mapping of flooded vegetation in tropical wetlands. Remote Sensing of Environment 332, 115086. https://doi.org/10.1016/j.rse.2025.115086\n'
+    '- Mohammadimanesh, F., Salehi, B., Mahdianpari, M., Brisco, B., Motagh, M. (2018). Multi-temporal, multi-frequency, and multi-polarization coherence and SAR backscatter analysis of wetlands. ISPRS Journal of Photogrammetry and Remote Sensing 142, 78–93. https://doi.org/10.1016/j.isprsjprs.2018.05.009\n'
+    '- Touzi, R., Lopes, A., Bruniquel, J., Vachon, P. W. (1999). Coherence estimation for SAR imagery. IEEE Transactions on Geoscience and Remote Sensing 37(1), 135–149. https://doi.org/10.1109/36.739146\n'
+)
+
+
 REP = S["F05"].replace("on a ", "").replace(": cycle 026 not available", "")   # "12-day repeat (one 24-day gap, 17 Jul–10 Aug)"
 
 # where each fact is shown (README sections, web elements, slides, script, submission)
@@ -127,7 +137,24 @@ def write_claims():
           "http://hdl.handle.net/1828/4671 | Author and coding assistant, from the thesis text |",
           "| HH threshold (−16 dB) lies between the two classes; HV threshold (−22 dB) is close to the "
           "vegetated-lake value | F06 vs the values above; `src/pantanal_sar/classify.py` PHYS_REF, printed by "
-          "`scripts/02b_calibrate.py` | Script |", ""]
+          "`scripts/02b_calibrate.py` | Script |"]
+    if "F43" in F:
+        L += ["| Coherence combined with backscatter for wetland classification (L-, C-, X-band, Newfoundland); temporal "
+              "baseline the most influential factor for coherence in herbaceous wetlands | Mohammadimanesh et al. (2018), "
+              "ISPRS J. Photogramm. Remote Sens. 142, 78–93, doi:10.1016/j.isprsjprs.2018.05.009 (abstract) | Coding "
+              "assistant, web search; author to confirm |",
+              "| Shallow open water has the lowest coherence (Sentinel-1, Alberta); lower coherence in the leaf-on season "
+              "| Amani et al. (2021), Remote Sens. 13, 3315, doi:10.3390/rs13163315 (abstract) | Coding assistant, web "
+              "search; author to confirm |",
+              "| Open water without emergent vegetation generally lacks usable coherence; herbaceous wetlands high but "
+              "variable coherence | Brisco et al. (2017), Remote Sens. 9(2), 158, doi:10.3390/rs9020158 (abstract) | "
+              "Coding assistant, web search; author to confirm |",
+              "| Space-averaged sample coherence magnitude is biased toward higher values | Touzi et al. (1999), IEEE TGRS "
+              "37(1), 135–149, doi:10.1109/36.739146 (abstract) | Coding assistant, web search; author to confirm |",
+              "| Combining L-band InSAR with backscatter-based methods can improve flooded-vegetation detection; relevant "
+              "for NISAR | Hübinger et al. (2026), Remote Sens. Environ. 332, 115086, doi:10.1016/j.rse.2025.115086 "
+              "(abstract) | Coding assistant, web search; author to confirm |"]
+    L += [""]
     L += ["## Not verified", "",
           "- Conversion σ0 → γ0 (+0.5 to 1.5 dB at our incidence angles) used to compare thresholds with Evans (2013): "
           "an assumption, not taken from that source.",
@@ -135,7 +162,11 @@ def write_claims():
           "reported as NOT VERIFIED.",
           "- Gauge marker position on the web map: approximate (±1 km), taken from Frontiers in Water 2021 "
           "(doi:10.3389/frwa.2021.639204) by the author; not the official ANA station coordinates.",
-          "- “Unverified observation” in the README (river HH drop in late Sep–Oct): interpretation not tested.", ""]
+          "- “Unverified observation” in the README (river HH drop in late Sep–Oct): interpretation not tested."]
+    if "F43" in F:
+        L += ["- Coherence bias narrowing the gap between open and partial water (README extension): our "
+              "interpretation of Touzi et al. (1999), not tested on our data."]
+    L += [""]
     (ROOT / "docs/claims.md").write_text("\n".join(L))
 
 
@@ -384,7 +415,10 @@ of every number. Thank you.
 # --------------------------------------------------------------------------- submission.md
 def write_submission():
     GUNW_LINE = ("- NISAR L2 GUNW (NASA/JPL–ISRO, provisional), pair 10→22 Aug 2026, coherence — exploratory test "
-                 f"(partial-water F1 {S['F42']} → {S['F43']}).\n" if "F43" in F else "")
+                 f"(partial-water F1 {S['F42']} → {S['F43']}). Limitations: labels are DSWx-HLS “partial” (optical, "
+                 "not field data); one pair and one date; coherence depends on temporal baseline and phenology.\n"
+                 if "F43" in F else "")
+    COH_REFS = COH_REFS_TXT if "F43" in F else ""
     txt = f"""# Space Apps 2026 — project submission (copy field by field)
 
 > One block per field of the project form, in English. Team members, team name and local event come from the
@@ -461,7 +495,7 @@ Data
 Literature
 - Evans, T. L. (2013). Habitat mapping of the Brazilian Pantanal using synthetic aperture radar imagery and object
   based image analysis. MSc thesis, University of Victoria. http://hdl.handle.net/1828/4671
-
+{COH_REFS}
 Software and web
 - Python: numpy, scipy, pandas, h5py, rasterio, pyproj, shapely, geopandas, scikit-learn, matplotlib, Pillow.
 - Leaflet 1.9.4 (BSD-2-Clause), Chart.js 4.4.1 (MIT), GitHub Pages.

@@ -101,7 +101,12 @@ Data:
 - © OpenStreetMap contributors (ODbL).
 
 References:
+- Amani, M., Poncos, V., Brisco, B., Foroughnia, F., DeLancey, E. R., Ranjbar, S. (2021). InSAR coherence analysis for wetlands in Alberta, Canada using time-series Sentinel-1 data. Remote Sensing 13(16), 3315. https://doi.org/10.3390/rs13163315
+- Brisco, B., Ahern, F., Murnaghan, K., White, L., Canisus, F., Lancaster, P. (2017). Seasonal change in wetland coherence as an aid to wetland monitoring. Remote Sensing 9(2), 158. https://doi.org/10.3390/rs9020158
 - Evans, T. L. (2013). Habitat mapping of the Brazilian Pantanal using synthetic aperture radar imagery and object based image analysis. MSc thesis, Department of Geography, University of Victoria. http://hdl.handle.net/1828/4671
+- Hübinger, C., Fluet-Chouinard, E., Escobar, D., Jaramillo, F. (2026). Exploring the potential of using L-band InSAR for the mapping of flooded vegetation in tropical wetlands. Remote Sensing of Environment 332, 115086. https://doi.org/10.1016/j.rse.2025.115086
+- Mohammadimanesh, F., Salehi, B., Mahdianpari, M., Brisco, B., Motagh, M. (2018). Multi-temporal, multi-frequency, and multi-polarization coherence and SAR backscatter analysis of wetlands. ISPRS Journal of Photogrammetry and Remote Sensing 142, 78–93. https://doi.org/10.1016/j.isprsjprs.2018.05.009
+- Touzi, R., Lopes, A., Bruniquel, J., Vachon, P. W. (1999). Coherence estimation for SAR imagery. IEEE Transactions on Geoscience and Remote Sensing 37(1), 135–149. https://doi.org/10.1109/36.739146
 
 This project is not endorsed by NASA.
 

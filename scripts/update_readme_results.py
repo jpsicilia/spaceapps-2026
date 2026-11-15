@@ -128,12 +128,24 @@ def main():
                   f"spatial-block cross-validation on 22 Aug (DSWx-HLS 23 Aug labels), same pixels: partial-water F1 "
                   f"{v.f1_partial_without:.2f} without → {v.f1_partial:.2f} with coherence (pre-registered target "
                   f"≥ {v.target:.2f}). Median coherence, not water / open / partial: {med}.")
+        context = ("Coherence has been combined with backscatter for wetland classification before (L-, C- and X-band, "
+                   "Newfoundland: Mohammadimanesh et al., 2018). Open water shows the lowest coherence in Sentinel-1 data "
+                   "over Alberta (Amani et al., 2021) and generally lacks usable coherence, while herbaceous wetlands show "
+                   "high but variable coherence (Brisco et al., 2017); our open-water median is also the lowest. The sample "
+                   "coherence magnitude is biased toward higher values (Touzi et al., 1999); open and partial water both "
+                   "sit at low coherence here, so this bias may narrow the gap between them (our interpretation, not "
+                   "tested). Combining L-band InSAR with backscatter-based methods has been suggested to improve "
+                   "flooded-vegetation detection with NISAR (Hübinger et al., 2026).")
+        limits = ("Limitations: the labels are DSWx-HLS “partial” surface water, an optical product, not field data; one "
+                  "pair (10→22 Aug) and one date; coherence depends on the temporal baseline and on vegetation "
+                  "phenology (Mohammadimanesh et al., 2018; Amani et al., 2021).")
         if v.label == "success":
             lines += ["## Extension (exploratory)", "",
-                      common + " One date and one pair only; no transfer to other dates was tested.",
+                      common + " One date and one pair only; no transfer to other dates was tested.", "",
+                      context, "", limits,
                       "", "![](outputs/figures/coherence_test.png)", ""]
         else:
-            lines += ["**Extension (exploratory, negative).** " + common, ""]
+            lines += ["**Extension (exploratory, negative).** " + common, "", context, "", limits, ""]
 
     if lo is not None and not bool(lo["supports"]):
         lines += [f"(Only {lo['lost_partial_pct']:.0f}% of the {lo['lost_km2']:.0f} km² lost by NISAR between 17 July "
