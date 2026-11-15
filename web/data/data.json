@@ -36,45 +36,45 @@
  "dswx_common": [
   {
    "date": "2026-07-19",
-   "open_km2": 256.8,
-   "open_partial_km2": 948.4,
-   "nisar_km2": 276.7
+   "open_km2": 269.9,
+   "open_partial_km2": 1001.1,
+   "nisar_km2": 286.0
   },
   {
    "date": "2026-08-08",
-   "open_km2": 275.2,
-   "open_partial_km2": 778.2,
-   "nisar_km2": 209.3
+   "open_km2": 288.7,
+   "open_partial_km2": 822.0,
+   "nisar_km2": 217.2
   },
   {
    "date": "2026-08-23",
-   "open_km2": 247.4,
-   "open_partial_km2": 685.1,
-   "nisar_km2": 192.9
+   "open_km2": 261.0,
+   "open_partial_km2": 716.2,
+   "nisar_km2": 200.3
   },
   {
    "date": "2026-09-17",
-   "open_km2": 249.0,
-   "open_partial_km2": 538.2,
-   "nisar_km2": 210.3
+   "open_km2": 262.4,
+   "open_partial_km2": 562.3,
+   "nisar_km2": 219.8
   },
   {
    "date": "2026-09-27",
-   "open_km2": 266.3,
-   "open_partial_km2": 508.7,
-   "nisar_km2": 214.1
+   "open_km2": 279.1,
+   "open_partial_km2": 532.5,
+   "nisar_km2": 223.0
   },
   {
    "date": "2026-10-07",
-   "open_km2": 242.5,
-   "open_partial_km2": 577.9,
-   "nisar_km2": 229.7
+   "open_km2": 276.6,
+   "open_partial_km2": 631.1,
+   "nisar_km2": 238.4
   },
   {
    "date": "2026-10-22",
-   "open_km2": 257.8,
-   "open_partial_km2": 579.8,
-   "nisar_km2": 220.3
+   "open_km2": 266.8,
+   "open_partial_km2": 602.7,
+   "nisar_km2": 228.0
   }
  ],
  "stage": [
@@ -614,23 +614,23 @@
   ],
   "recall": [
    0.65,
-   0.82
+   0.78
   ],
   "iou": [
    0.62,
-   0.81
+   0.78
   ],
   "n_pairs": 8,
-  "nisar_dswx_ratio": 0.87,
-  "r_open": 0.32,
-  "p_open": 0.487,
-  "r_open_partial": 0.9,
-  "p_open_partial": 0.006,
+  "nisar_dswx_ratio": 0.85,
+  "r_open": 0.11,
+  "p_open": 0.811,
+  "r_open_partial": 0.89,
+  "p_open_partial": 0.008,
   "common_km2": null,
-  "open_first": 257,
-  "open_last": 258,
-  "op_first": 948,
-  "op_last": 580,
+  "open_first": 270,
+  "open_last": 267,
+  "op_first": 1001,
+  "op_last": 603,
   "stage_first": 253,
   "stage_last": 124,
   "cloudy_dswx_date": "2026-09-02",
@@ -668,18 +668,18 @@
  },
  "jul_aug_loss": {
   "lost_km2": 107.56,
-  "lost_clear_km2": 103.42,
-  "lost_partial_pct": 58.11,
-  "lost_open_pct": 39.11,
-  "lost_notwater_pct": 2.78,
-  "jul_water_on_partial_pct": 22.94,
-  "plain_partial_pct": 17.45,
-  "enrichment": 3.33,
+  "lost_clear_km2": 106.56,
+  "lost_partial_pct": 57.5,
+  "lost_open_pct": 39.64,
+  "lost_notwater_pct": 2.86,
+  "jul_water_on_partial_pct": 22.73,
+  "plain_partial_pct": 17.81,
+  "enrichment": 3.23,
   "supports": true
  },
  "classifier": {
-  "summary": "Not with backscatter alone (pre-registered test failed): a classifier on HH, HV and HH\u2212HV trained on DSWx-HLS labels of 23 Aug reached a mean partial-water F1 of 0.25 on other dates (target \u2265 0.5) and its partial-water series gave r = 0.01 with Lad\u00e1rio (target \u2265 0.7). Next steps: texture, coherence (GUNW) and multi-date features.",
-  "f1_partial_mean": 0.2535447712,
+  "summary": "Not with backscatter alone (pre-registered test failed): a classifier on HH, HV and HH\u2212HV trained on DSWx-HLS labels of 23 Aug reached a mean partial-water F1 of 0.26 on other dates (target \u2265 0.5) and its partial-water series gave r = 0.01 with Lad\u00e1rio (target \u2265 0.7). Next steps: texture, coherence (GUNW) and multi-date features.",
+  "f1_partial_mean": 0.256196391,
   "r_partial": 0.0142392171,
   "p_partial": 0.9733050765,
   "success": false
