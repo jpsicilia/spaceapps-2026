@@ -172,6 +172,7 @@ def main():
     import sys
     sys.path.insert(0, str(ROOT / "src"))
     from pantanal_sar.classify import load_ladario_daily
+    from pantanal_sar.facts import repeat_text
     daily, _ = load_ladario_daily(ROOT / "data/external/ladario_gauge/ladario_stage_raw_telemetria.csv",
                                   verbose=False)
     t0 = pd.Timestamp(area["date"].iloc[0]) - pd.Timedelta(days=20)
@@ -218,10 +219,11 @@ def main():
             "cloudy_dswx_date": ymd(cloudy["dswx_date"]), "cloudy_clear_pct": round(cloudy["clear_pct"]),
             "cloudy_nisar_date": ymd(cloudy["nisar_date"]),
             "sep_clear_pct": round(float(agr.loc[agr["dswx_date"] == SEP_D, "clear_pct"].iloc[0])),
-            "sep_cloud_pct": round(cov["cloud_pct"]), "sep_not_acquired_pct": round(cov["not_acquired_pct"]),
-            "sep_clear_cov_pct": round(cov["clear_pct"]),
-            "nisar_sep_pct": round(cov["nisar_sep_pct"]), "nisar_min_pct": round(cov["nisar_min_pct"]),
+            "sep_cloud_pct": round(cov["cloud_pct"], 1), "sep_not_acquired_pct": round(cov["not_acquired_pct"], 1),
+            "sep_clear_cov_pct": round(cov["clear_pct"], 1),
+            "nisar_sep_pct": round(cov["nisar_sep_pct"], 1), "nisar_min_pct": round(cov["nisar_min_pct"], 1),
             "nisar_n_dates": int(cov["nisar_n_dates"]),
+            "repeat_text": repeat_text(area["date"]),
         },
         "before": ymd(BEFORE), "after": ymd(AFTER), "sep_nisar": ymd(SEP_N), "sep_dswx": ymd(SEP_D),
         "aoi_bounds": aoi_bounds, "gauge": gauge,

@@ -41,16 +41,26 @@ Full inventory: [`docs/data_inventory.md`](docs/data_inventory.md)
    change map 17 Jul → 21 Oct, hydroperiod.
 4. `02e_dswx_compare.py`, `02f_wind_check.py`, `02h_jul_aug_loss.py`: validation against DSWx-HLS, wind check,
    July→August loss analysis. `02g_partial_clf.py`: pre-registered partial-water classifier (negative result).
-5. `03_export_web.py`: web layers and data for the GitHub Pages site (`web/`).
-   `update_readme_results.py` writes the Results section below from the output tables.
+5. `02i_dswx_coverage_check.py`: per-file audit of the optical coverage used in the 2 Sep comparison.
+6. `03_export_web.py`: web layers and data for the GitHub Pages site (`web/`).
+   `04_build_docs.py` builds the claims register, demo slides, demo script and submission draft;
+   `update_readme_results.py` writes the Results section below. All numbers come from `outputs/tables/`.
+
+## Documentation
+
+- [`docs/reproduce.md`](docs/reproduce.md) — environment, input data and exact run order.
+- [`docs/claims.md`](docs/claims.md) — every number and claim, where it appears and its exact source.
+- [`docs/demo/slides.pdf`](docs/demo/slides.pdf) and [`docs/demo/script.md`](docs/demo/script.md) — 7-slide demo.
+- [`docs/submission.md`](docs/submission.md) — Space Apps project page draft.
+- [`docs/ai_use.md`](docs/ai_use.md) — how AI was used.
 
 ## Repository structure
 
 ```
 config/      study area, project settings, thresholds
 data/        raw / external / processed (not versioned)
-docs/        plan, data inventory, decisions, logbook, references
-scripts/     processing pipeline (run in numeric order)
+docs/        reproduction, claims register, demo, submission, AI use, plan, data inventory, logbook
+scripts/     processing pipeline (order in docs/reproduce.md)
 src/         reusable processing code (pantanal_sar)
 web/         interactive web application (GitHub Pages)
 outputs/     figures, maps, tables
@@ -100,7 +110,7 @@ Study area: Paraguay River floodplain, Corumbá–Ladário to Mandioré lagoon. 
 
 **4. Can NISAR alone see the receding shallow water?** Not with backscatter alone (pre-registered test failed): a classifier on HH, HV and HH−HV trained on DSWx-HLS labels of 23 Aug reached a mean partial-water F1 of 0.26 on other dates (target ≥ 0.5) and its partial-water series gave r = 0.01 with Ladário (target ≥ 0.7). Next steps: texture, coherence (GUNW) and multi-date features.
 
-**Full coverage on a fixed schedule.** NISAR imaged at least 97% of the floodplain on all 8 dates, every 12 days; on 2 Sep the optical product covered 28% (the rest was not imaged that day).
+**Full coverage on a fixed schedule.** NISAR imaged at least 97.2% of the floodplain on all 8 dates, on a 12-day repeat (one 24-day gap, 17 Jul–10 Aug: cycle 026 not available); on 2 Sep the optical product covered 27.5% (the rest was not imaged that day).
 
 **Caveats.** Seven to eight dates, consecutive and not independent: p-values are indicative. NISAR products are provisional (CRID P05023). Thresholds adapted from Evans et al. 2010 (PALSAR sigma0, converted to gamma0) and were checked, not tuned, against the JRC permanent-water zone. The Copernicus DEM is a surface model.
 

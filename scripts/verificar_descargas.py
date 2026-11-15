@@ -8,7 +8,7 @@ Para cada .h5 de la carpeta revisa:
   - que la grilla cubra el recuadro del proyecto (config/aoi.geojson)
 
 Uso (desde la raiz del proyecto, con el .venv activado):
-    python _practica/verificar_descargas.py data/raw/nisar_gcov
+    python scripts/verificar_descargas.py data/raw/nisar_gcov
 """
 import json
 import re

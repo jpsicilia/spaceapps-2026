@@ -24,18 +24,18 @@ def fmt_range(s, nd=2):
 
 
 def sep_sentence(cloudy):
-    """Same sentence as the web card: coverage on a fixed schedule (no fire/smoke/cloud claims)."""
-    f = T / "sep_optical_coverage.csv"
-    if not f.exists():
-        return ""
-    c = pd.read_csv(f).iloc[0]
-    d = str(int(c["date"]))
-    day = f"{int(d[6:])} {['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][int(d[4:6]) - 1]}"
-    nis = "the whole floodplain" if c["nisar_min_pct"] >= 99.5 else f"at least {c['nisar_min_pct']:.0f}% of the floodplain"
-    rest = "the rest was not imaged that day" if c["cloud_pct"] < 1 else \
-        f"{c['not_acquired_pct']:.0f}% not imaged that day, {c['cloud_pct']:.0f}% cloud or shadow"
-    return (f"**Full coverage on a fixed schedule.** NISAR imaged {nis} on all {int(c['nisar_n_dates'])} dates, "
-            f"every 12 days; on {day} the optical product covered {c['clear_pct']:.0f}% ({rest}).")
+    """Same sentence as the web card; numbers from src/pantanal_sar/facts.py (see docs/claims.md F05, F30–F33)."""
+    import sys
+    sys.path.insert(0, str(ROOT / "src"))
+    from pantanal_sar.facts import load_facts
+    F = load_facts(ROOT)
+    S = {k: v["shown"] for k, v in F.items()}
+    nis = ("the whole floodplain" if F["F33"]["value"] >= 99.95
+           else f"at least {S['F33']} of the floodplain")
+    rest = ("the rest was not imaged that day" if F["F32"]["value"] < 1
+            else f"{S['F31']} not imaged that day, {S['F32']} cloud or shadow")
+    return (f"**Full coverage on a fixed schedule.** NISAR imaged {nis} on all {S['F04']} dates, {S['F05']}; "
+            f"on 2 Sep the optical product covered {S['F30']} ({rest}).")
 
 
 def main():
