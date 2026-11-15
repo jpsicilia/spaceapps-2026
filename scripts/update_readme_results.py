@@ -23,6 +23,21 @@ def fmt_range(s, nd=2):
     return f"{s.min():.{nd}f}–{s.max():.{nd}f}"
 
 
+def sep_sentence(cloudy):
+    """Same sentence as the web card: coverage on a fixed schedule (no fire/smoke/cloud claims)."""
+    f = T / "sep_optical_coverage.csv"
+    if not f.exists():
+        return ""
+    c = pd.read_csv(f).iloc[0]
+    d = str(int(c["date"]))
+    day = f"{int(d[6:])} {['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][int(d[4:6]) - 1]}"
+    nis = "the whole floodplain" if c["nisar_min_pct"] >= 99.5 else f"at least {c['nisar_min_pct']:.0f}% of the floodplain"
+    rest = "the rest was not imaged that day" if c["cloud_pct"] < 1 else \
+        f"{c['not_acquired_pct']:.0f}% not imaged that day, {c['cloud_pct']:.0f}% cloud or shadow"
+    return (f"**Full coverage on a fixed schedule.** NISAR imaged {nis} on all {int(c['nisar_n_dates'])} dates, "
+            f"every 12 days; on {day} the optical product covered {c['clear_pct']:.0f}% ({rest}).")
+
+
 def main():
     agr = pd.read_csv(T / "dswx_agreement_all_pairs.csv", dtype={"nisar_date": str, "dswx_date": str})
     ser = pd.read_csv(T / "dswx_comparison.csv", dtype={"nisar_date": str, "dswx_date": str})
@@ -105,14 +120,7 @@ def main():
                   "and 10 August falls on DSWx partial water of 19 July, so submerged-vegetation emergence does not "
                   "explain the drop either.)", ""]
     lines += [
-        f"**Radar sees what optics cannot in the fire season.** On {cloudy['dswx_date'][:4]}-{cloudy['dswx_date'][4:6]}-"
-        f"{cloudy['dswx_date'][6:]} only {cloudy['clear_pct']:.0f}% of the floodplain was usable in DSWx-HLS"
-        + (lambda c: f" ({c['cloud_pct']:.0f}% cloud or shadow, likely including smoke; {c['not_acquired_pct']:.0f}% "
-                     "not imaged by the optical satellite that day)"
-                     if c is not None and str(int(c["date"])) == str(cloudy["dswx_date"]) else "")(
-            pd.read_csv(T / "sep_optical_coverage.csv").iloc[0] if (T / "sep_optical_coverage.csv").exists() else None)
-        + f"; the NISAR acquisition of {cloudy['nisar_date'][:4]}-{cloudy['nisar_date'][4:6]}-{cloudy['nisar_date'][6:]} "
-        "covered 100% of it.",
+        sep_sentence(cloudy),
         "",
         "**Caveats.** Seven to eight dates, consecutive and not independent: p-values are indicative. NISAR products "
         "are provisional (CRID P05023). Thresholds adapted from Evans et al. 2010 (PALSAR sigma0, converted to gamma0) "

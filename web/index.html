@@ -83,10 +83,10 @@
 </section>
 
 <section>
-  <h2>Radar sees what optics cannot</h2>
+  <h2 id="sepTitle">Full coverage on a fixed schedule</h2>
   <p class="lead" id="cloudLead">Drag the handle. Left: NISAR radar. Right: OPERA DSWx-HLS optical water map.</p>
   <div class="controls">
-    <label><input type="radio" name="sw" value="sep" checked> Fire season: radar 3 Sep vs optical 2 Sep</label>
+    <label><input type="radio" name="sw" value="sep" checked> Radar 3 Sep vs optical 2 Sep</label>
     <label><input type="radio" name="sw" value="ba"> Radar: 17 Jul vs 21 Oct</label>
   </div>
   <div class="swipe-wrap">
@@ -137,8 +137,8 @@ const LEG = {
   change: [["#00c8ff","open water both dates"],["#ff7f00","open water lost"],["#ff00c8","open water gained"],
            ["rgba(255,255,255,.5)","analysed, no open water"]],
   composite: [["#ff0000","HH"],["#00ff00","HV"],["#0000ff","HH − HV"]],
-  dswx: [["#e2d6b4","not water"],["#1f4e9c","open water"],["#78b4e6","partial surface water"],["#969696","cloud — optical blind"],
-         ["rgba(255,255,255,.85)","not imaged by the optical satellite that day"]],
+  dswx: [["#e2d6b4","not water"],["#1f4e9c","open water"],["#78b4e6","partial surface water"],
+         ["#a0a0a0","not imaged by the optical satellite that day"]],
   hvgrey: [["#000","water (smooth, dark)"],["#fff","land / vegetation (bright)"]],
 };
 function legend(el, key){
@@ -177,6 +177,9 @@ const dmy = s => new Date(s+"T12:00:00Z").toLocaleDateString("en-GB",{day:"numer
 Promise.all([fetch("data/data.json").then(r=>r.json()), fetch("data/layers.json").then(r=>r.json())])
 .then(([D, LY]) => {
   const M = D.metrics;
+  $("#sepTitle").textContent = "Full coverage on a fixed schedule";
+  const REST = (M.sep_cloud_pct ?? 0) < 1 ? "the rest was not imaged that day"
+             : `${M.sep_not_acquired_pct}% not imaged that day, ${M.sep_cloud_pct}% cloud or shadow`;
   // ---------- cards
   const cards = [
     [`${fmt(M.precision[0])}–${fmt(M.precision[1])}`, "precision of NISAR open water",
@@ -185,8 +188,8 @@ Promise.all([fetch("data/data.json").then(r=>r.json()), fetch("data/layers.json"
      `River channel and permanent lagoons held their extent while Ladário fell from ${M.stage_first} to ${M.stage_last} cm (r = ${fmt(M.r_open)}).`],
     [`${M.op_first} → ${M.op_last} km²`, "shallow, vegetated water declined",
      `Open + partial water (DSWx) tracks the river: r = ${fmt(M.r_open_partial)}, p = ${fmt(M.p_open_partial,3)}. The water that left is mostly shallow, vegetated water.`],
-    [`${M.sep_clear_pct}% vs 100%`, "usable floodplain, optical vs radar",
-     `On ${dmy(D.sep_dswx)} optics had a usable view of only ${M.sep_clear_pct}% of the floodplain (${M.sep_cloud_pct}% cloud or shadow, ${M.sep_not_acquired_pct}% not imaged that day); NISAR (${dmy(D.sep_nisar)}) saw all of it.`],
+    [`${M.nisar_min_pct >= 100 ? "100%" : "≥" + M.nisar_min_pct + "%"} every 12 days`, "full coverage on a fixed schedule",
+     `NISAR imaged ${M.nisar_min_pct >= 100 ? "the whole floodplain" : "at least " + M.nisar_min_pct + "% of the floodplain"} on all ${M.nisar_n_dates} dates; on ${dmy(D.sep_dswx)} the optical product covered ${M.sep_clear_cov_pct}% (${REST}).`],
   ];
   $("#cards").innerHTML = cards.map(([k,t,p]) => `<div class="card"><div class="k">${k}</div><div class="t">${t}</div><p>${p}</p></div>`).join("");
 
@@ -231,8 +234,9 @@ Promise.all([fetch("data/data.json").then(r=>r.json()), fetch("data/layers.json"
       const tmp = document.createElement("div"); legend(tmp, "hvgrey");
       $("#leg2").innerHTML = "<span><b>Left:</b></span>" + tmp.innerHTML;
       legend(tmp, "dswx");
+      if ((M.sep_cloud_pct ?? 0) > 0) tmp.insertAdjacentHTML("beforeend", '<span><span class="sw" style="background:#464646"></span>cloud / shadow</span>');
       $("#leg2").insertAdjacentHTML("beforeend", "<span style='margin-left:12px'><b>Right:</b></span>" + tmp.innerHTML);
-      $("#cloudLead").textContent = `On ${dmy(D.sep_dswx)}, in the fire season, optical sensors had a usable view of only ${M.sep_clear_pct}% of the floodplain: ${M.sep_cloud_pct}% was under cloud or shadow and ${M.sep_not_acquired_pct}% was not imaged that day. NISAR, one day later, imaged all of it. Drag the handle.`;
+      $("#cloudLead").textContent = `On ${dmy(D.sep_dswx)} the optical product covered ${M.sep_clear_cov_pct}% of the floodplain (${REST}). NISAR imaged ${M.nisar_sep_pct}% of it on ${dmy(D.sep_nisar)}, on its fixed 12-day schedule. Drag the handle.`;
     } else {
       l = "composite_" + D.before.replaceAll("-",""); r = "composite_" + D.after.replaceAll("-","");
       tl = `NISAR · ${dmy(D.before)}`; tr = `NISAR · ${dmy(D.after)}`;
