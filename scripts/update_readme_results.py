@@ -35,7 +35,7 @@ def sep_sentence(cloudy):
            else f"at least {S['F33']} of the floodplain")
     rest = S["F31"] if F["F32"]["value"] < 1 else f"{S['F31']}; {S['F32']} cloud or shadow"
     return (f"**Full coverage on a fixed schedule.** NISAR imaged {nis} on all {S['F04']} dates, {S['F05']}; "
-            f"on 2 Sep the optical product covered {S['F30']} ({rest}).")
+            f"on 2 Sep the optical product covered {S['F30']}: {rest}.")
 
 
 def main():

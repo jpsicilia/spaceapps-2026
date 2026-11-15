@@ -172,7 +172,8 @@ function watch(layer, el){   // make a failed image visible instead of silently 
   layer.on("error", () => el.insertAdjacentHTML("beforeend",
     `<span style="color:#b00020"><b>Layer failed to load:</b> ${layer._url}</span>`));
 }
-const dmy = s => new Date(s+"T12:00:00Z").toLocaleDateString("en-GB",{day:"numeric",month:"short"});
+const MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const dmy = s => { const d = new Date(s+"T12:00:00Z"); return `${d.getUTCDate()} ${MON[d.getUTCMonth()]}`; };
 
 Promise.all([fetch("data/data.json").then(r=>r.json()), fetch("data/layers.json").then(r=>r.json())])
 .then(([D, LY]) => {
@@ -189,7 +190,7 @@ Promise.all([fetch("data/data.json").then(r=>r.json()), fetch("data/layers.json"
     [`${M.op_first} → ${M.op_last} km²`, "shallow, vegetated water declined",
      `Open + partial water (DSWx) tracks the river: r = ${fmt(M.r_open_partial)}, p = ${fmt(M.p_open_partial,3)}. The water that left is mostly shallow, vegetated water.`],
     [`${M.nisar_min_pct >= 100 ? "100%" : "≥ " + M.nisar_min_pct + "%"}`, "of the floodplain imaged on every NISAR pass",
-     `NISAR imaged ${M.nisar_min_pct >= 100 ? "the whole floodplain" : "at least " + M.nisar_min_pct + "% of the floodplain"} on all ${M.nisar_n_dates} dates, ${M.repeat_text}; on ${dmy(D.sep_dswx)} the optical product covered ${M.sep_clear_cov_pct}% (${REST}).`],
+     `NISAR imaged ${M.nisar_min_pct >= 100 ? "the whole floodplain" : "at least " + M.nisar_min_pct + "% of the floodplain"} on all ${M.nisar_n_dates} dates, ${M.repeat_text}; on ${dmy(D.sep_dswx)} the optical product covered ${M.sep_clear_cov_pct}%: ${REST}.`],
   ];
   $("#cards").innerHTML = cards.map(([k,t,p]) => `<div class="card"><div class="k">${k}</div><div class="t">${t}</div><p>${p}</p></div>`).join("");
 
@@ -236,7 +237,7 @@ Promise.all([fetch("data/data.json").then(r=>r.json()), fetch("data/layers.json"
       legend(tmp, "dswx");
       if ((M.sep_cloud_pct ?? 0) > 0) tmp.insertAdjacentHTML("beforeend", '<span><span class="sw" style="background:#464646"></span>cloud / shadow</span>');
       $("#leg2").insertAdjacentHTML("beforeend", "<span style='margin-left:12px'><b>Right:</b></span>" + tmp.innerHTML);
-      $("#cloudLead").textContent = `On ${dmy(D.sep_dswx)} the optical product covered ${M.sep_clear_cov_pct}% of the floodplain (${REST}). NISAR imaged ${M.nisar_sep_pct}% of it on ${dmy(D.sep_nisar)}, ${M.repeat_text}. Drag the handle.`;
+      $("#cloudLead").textContent = `On ${dmy(D.sep_dswx)} the optical product covered ${M.sep_clear_cov_pct}% of the floodplain: ${REST}. NISAR imaged ${M.nisar_sep_pct}% of it on ${dmy(D.sep_nisar)}, ${M.repeat_text}. Drag the handle.`;
     } else {
       l = "composite_" + D.before.replaceAll("-",""); r = "composite_" + D.after.replaceAll("-","");
       tl = `NISAR · ${dmy(D.before)}`; tr = `NISAR · ${dmy(D.after)}`;

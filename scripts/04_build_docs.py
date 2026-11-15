@@ -321,7 +321,7 @@ DSWx-HLS (Landsat/Sentinel-2) and the Paraguay River stage at Ladário (ANA stat
   optics still saw wet in August: consistent with vegetation emerging over shallow water, not with water loss.
   About a third remains unexplained.
 - Full coverage on a fixed schedule: NISAR imaged at least {S['F33']} of the floodplain on all dates, {S['F05']};
-  on 2 Sep the optical product covered {S['F30']} ({S['F31']}).
+  on 2 Sep the optical product covered {S['F30']}: {S['F31']}.
 - Negative result, reported: a pre-registered classifier could not map partial water from backscatter alone
   (F1 {S['F27']}).
 
