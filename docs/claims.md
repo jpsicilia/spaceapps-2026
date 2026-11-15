@@ -35,8 +35,9 @@ Every number and claim shown in the README, the web page, the demo slides, the d
 | F27 | Partial-water classifier: mean F1 on other dates | 0.26 (target ≥ 0.50) | 0.2562 | README 4; Web (Validation); Slide 6; Script; Submission | `outputs/tables/partial_clf_summary.csv: f1_partial_mean` |
 | F28 | Partial-water classifier: series vs Ladário | r = 0.01 (target ≥ 0.70) | 0.01424 | README 4; Slide 6; Submission | `outputs/tables/partial_clf_summary.csv: r_partial` |
 | F29 | Classifier partial F1 by date (range) | 0.18–0.39 | 0.184, 0.387 | Slide 6 | `outputs/tables/partial_clf_metrics.csv: f1_partial_model` |
-| F30 | Optical (DSWx) coverage of the floodplain on 2 Sep | 27.5% | 27.5 | README coverage; Web card 4, §2 lead; Slide 2; Script; Submission | `outputs/tables/sep_optical_coverage.csv: clear_pct` |
-| F31 | Why the rest of the floodplain has no optical data on 2 Sep | no HLS/DSWx product exists that day for tile 21KVV, although Sentinel-2B covered the neighbouring tiles | 72.5 | README coverage; Web card 4, §2 lead and legend; Slide 2; Script; Submission | `outputs/tables/dswx_coverage_files.csv: tiles present T21KUA, T21KUU, T21KUV, T21KVA, T21KVU, no T21KVV; files with valid data: S2B; share of floodplain: outputs/tables/sep_optical_coverage.csv not_acquired_pct = 72.5%` |
+| F30 | Optical (DSWx) valid (clear) share of the analysed floodplain on 2 Sep | 25% | 25.42 | README coverage; Web card 4, §2 lead; Slide 2; Script; Submission | `outputs/tables/dswx_agreement_all_pairs.csv: clear_pct, row dswx_date=20260902 (base: see ‘Bases’ below)` |
+| F47 | Optical (DSWx) valid (clear) share on the other paired dates (range) | 87–100% on 7 of 8 paired dates | 87.29, 100 | README coverage; Web card 4, §2 lead; Slide 2; Script; Submission | `outputs/tables/dswx_agreement_all_pairs.csv: clear_pct min–max without dswx_date=20260902` |
+| F31 | Why the rest of the floodplain has no optical data on 2 Sep | no HLS/DSWx product exists that day for tile 21KVV, although Sentinel-2B covered the neighbouring tiles | T21KVV | README coverage; Web card 4, §2 lead and legend; Slide 2; Script; Submission | `outputs/tables/dswx_coverage_files.csv: tiles present T21KUA, T21KUU, T21KUV, T21KVA, T21KVU, no T21KVV; files with valid data: S2B` |
 | F32 | …cloud or shadow | 0.0% | 0 | README coverage (only if ≥ 1%); Web §2 lead (only if ≥ 1%) | `outputs/tables/sep_optical_coverage.csv: cloud_pct` |
 | F33 | NISAR coverage of the floodplain, minimum over all dates | 97.2% | 97.2 | README coverage; Web card 4; Slide 2; Submission | `outputs/tables/sep_optical_coverage.csv: nisar_min_pct` |
 | F34 | NISAR coverage of the floodplain on 3 Sep | 99.6% | 99.6 | README coverage; Web §2 lead | `outputs/tables/sep_optical_coverage.csv: nisar_sep_pct` |
@@ -46,8 +47,8 @@ Every number and claim shown in the README, the web page, the demo slides, the d
 | F39 | Permanent-water zone (JRC > 90%) classified as open water, 17 Jul / 21 Oct | 91.6% on 17 Jul, 90.5% on 21 Oct | 91.61, 90.49 | Web change note | `outputs/tables/area_series.csv: ctrl90_water_pct, first and last row` |
 | F40 | Share of permanent-water pixels classified as non-water on any date (range over dates) | 8–12% | 8.127, 12.24 | Web change note | `outputs/tables/area_series.csv: 100 − ctrl90_water_pct (min–max over the 8 dates)` |
 | F41 | Median InSAR coherence (10→22 Aug) by DSWx class: not water / open / partial | 0.55 / 0.25 / 0.32 | 0.5517, 0.2461, 0.3216 | README extension | `outputs/tables/coherence_test.csv: kind=descriptive, median` |
-| F42 | Partial-water F1 without coherence (same pixels, spatial-block CV, 22 Aug) | 0.35 | 0.3499 | README extension; Slide 6 | `outputs/tables/coherence_test.csv: kind=verdict, f1_partial_without` |
-| F43 | Partial-water F1 with coherence (pre-registered target ≥ 0.50) | 0.45 | 0.4487 | README extension; Slide 6 | `outputs/tables/coherence_test.csv: kind=verdict, f1_partial (label=negative)` |
+| F42 | Partial-water F1 without coherence (same pixels, spatial-block CV, 22 Aug) | 0.35 | 0.3499 | README extension; Slide 6 (body and takeaway); Web card 5 | `outputs/tables/coherence_test.csv: kind=verdict, f1_partial_without` |
+| F43 | Partial-water F1 with coherence (pre-registered target ≥ 0.50) | 0.45 | 0.4487 | README extension; Slide 6 (body and takeaway); Web card 5 | `outputs/tables/coherence_test.csv: kind=verdict, f1_partial (label=negative)` |
 | F44 | Measured gamma0 − sigma0 offset, 17 Jul floodplain (median, GCOV rtcGammaToSigmaFactor) | +1.1 dB | 1.134 | README caveats | `outputs/tables/gamma_sigma_factor.csv: offset_median_db (−10·log10 factor; scripts/02k_gamma_sigma.py)` |
 | F45 | Measured gamma0 − sigma0 offset, p2–p98 (used in the physical check) | +0.9 to +1.5 dB | 0.8757, 1.456 | README caveats; physical check | `outputs/tables/gamma_sigma_factor.csv: offset_p2_db, offset_p98_db` |
 | F46 | Physical check of the water thresholds vs Evans (2013), measured offset | HH OK, HV OK | HH OK, HV OK | README caveats | `src/pantanal_sar/classify.py physical_check with F45 and config/thresholds.yaml` |
@@ -66,7 +67,7 @@ Every number and claim shown in the README, the web page, the demo slides, the d
 | Q7 | Flooded vegetation (double bounce) not detected | F35 | Web change legend; Slide 6 |
 | Q8 | Radar backscatter alone could not map partial water (negative result) | F27, F28 (pre-registered criteria in scripts/02g_partial_clf.py) | README 4; Web (Validation); Slide 6; Script; Submission |
 | Q9 | On 2 Sep most of the floodplain has no optical data because no HLS/DSWx product exists for tile 21KVV that day (Sentinel-2B covered the neighbouring tiles); not cloud | F30–F32 | README coverage; Web §2; Slide 2 |
-| Q10 | Full coverage on a fixed schedule | F05, F33, F34 | README coverage; Web card 4, §2 title; Slide 2; Submission |
+| Q10 | Radar vs optical: NISAR imaged every date; optics most dates | F05, F30, F33, F34, F47 | README coverage; Web card 4, §2 title; Slide 2; Submission |
 | Q11 | Scattered ‘lost’/‘gained’ pixels in the main river channel are most likely classification noise near the thresholds, not channel drying | F39, F40 (pixel-level flips between dates not computed) | Web change note |
 | Q12 | Adding InSAR coherence did not reach the pre-registered target for partial-water mapping (exploratory: one pair, one date, spatial CV) | F41–F43 (criterion in scripts/02j_coherence.py) | README extension; Slide 6 |
 
@@ -84,6 +85,15 @@ Every number and claim shown in the README, the web page, the demo slides, the d
 | Common-series filter | pairs with ≥ 80% clear | `scripts/02e_dswx_compare.py --min-clear` |
 | Open-water thresholds | HV < −22 dB and HH < −16 dB (gamma0), adapted from Evans (2013) | `config/thresholds.yaml; caps in scripts/02b_calibrate.py` |
 
+## Bases (denominators)
+
+Two floodplain bases are used; each shown number states which. No quantity is shown on both bases.
+
+| Base | Definition | Used for |
+|---|---|---|
+| Analysed floodplain (comparison base) | pixels classified on all 8 NISAR dates (not urban, DEM ≤ 135 m) | F07–F11, F30, F47; scripts/02e_dswx_compare.py |
+| Study-area floodplain (coverage base) | pixels valid on at least one NISAR date (not urban, DEM ≤ 135 m) | F33, F34 (NISAR coverage by date) and the internal table outputs/tables/sep_optical_coverage.csv (its clear_pct = 27.5% for 2 Sep is on this base and is not shown anywhere); scripts/03_export_web.py |
+
 ## Withdrawn or corrected claims
 
 | Earlier wording | Why it changed |
@@ -99,6 +109,8 @@ Every number and claim shown in the README, the web page, the demo slides, the d
 | “Adapted from Evans et al. 2010”; “flooded forest ≈ −4 dB”; “vegetated ≈ −23 dB” as an HH value | Values not found as cited; replaced by verified Evans (2013) values for open and vegetated lakes. |
 | “Shallow, partly vegetated water”; “shallow water”; “vegetated water” for the DSWx partial class | Depth was never measured; replaced by the official DSWx-HLS definition of partial surface water (JPL D-107395 Rev B, Table 4-1). |
 | σ0 → γ0 “+0.5 to 1.5 dB” (assumption) | Replaced by the offset measured from the GCOV rtcGammaToSigmaFactor layer on 17 Jul (F44, F45). |
+| “On 2 Sep the optical product covered 27.5% of the floodplain” | Same date, different base (pixels valid on any NISAR date). Replaced everywhere by 25% on the base of the paired-date comparison (F30), the same base as the 87–100% range (F47). |
+| “Full coverage on a fixed schedule” (section and card title) | Renamed “Radar vs optical: every date vs most dates”. |
 | “Only Landsat-9 pair” note in the wind verdict | After completing the DSWx tiles the 19 Jul pair is L9+S2C; note removed. |
 
 ## Verified against external sources

@@ -5,7 +5,7 @@
 > 2026 Project Submission Guide on the form itself before pasting.
 
 ## Project Title
-Pantanal 2026: Water Leaving, Seen by Radar
+Pantanal 2026: What NISAR Sees — and Misses — as the Water Leaves
 
 ## High-Level Project Summary
 In 2026 the Paraguay River at Ladário fell ~1.3 m between July and October. Using 8 NISAR L-band radar
@@ -39,8 +39,8 @@ value.
 - The July→August drop in NISAR open water concentrates on DSWx partial-water pixels (×3.2 vs the plain), which
   optics still saw wet in August: consistent with vegetation emerging, not with water loss.
   About a third remains unexplained.
-- Full coverage on a fixed schedule: NISAR imaged at least 97.2% of the floodplain on all dates, on a 12-day repeat (one 24-day gap, 17 Jul–10 Aug: cycle 026 not available);
-  on 2 Sep the optical product covered 27.5%: no HLS/DSWx product exists that day for tile 21KVV, although Sentinel-2B covered the neighbouring tiles.
+- Radar vs optical, every date vs most dates: NISAR imaged at least 97.2% of the floodplain on all dates,
+  on a 12-day repeat (one 24-day gap, 17 Jul–10 Aug: cycle 026 not available); optics covered 87–100% on 7 of 8 paired dates, but only 25% on 2 Sep: no HLS/DSWx product exists that day for tile 21KVV, although Sentinel-2B covered the neighbouring tiles.
 - Negative result, reported: a pre-registered classifier could not map partial water from backscatter alone
   (F1 0.26 (target ≥ 0.50)).
 
