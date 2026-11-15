@@ -13,6 +13,7 @@ import pandas as pd
 from scipy import stats
 
 T = "outputs/tables"
+EXPECTED_TILES = ["T21KUA", "T21KUU", "T21KUV", "T21KVA", "T21KVU", "T21KVV"]   # docs/data_inventory.md (6 MGRS tiles)
 MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
 
@@ -96,7 +97,7 @@ def load_facts(root: Path) -> dict:
     r_n, p_n = stats.pearsonr(comp.stage_at_dswx_cm, comp.series_nisar_km2)
     add("F16", "NISAR open water vs Ladário (Pearson)", (r_n, p_n), f"r = {r_n:.2f}, p = {p_n:.2f}",
         f"{T}/dswx_comparison.csv: pearsonr(stage_at_dswx_cm, series_nisar_km2)")
-    add("F17", "Number of dates in the common cloud-free series", len(comp), f"{len(comp)}",
+    add("F17", "Number of dates in the common valid (clear) series", len(comp), f"{len(comp)}",
         f"{T}/dswx_comparison.csv: row count (pairs with ≥ 80% clear)")
     w0, w1 = area["water_km2"].iloc[0], area["water_km2"].iloc[1]
     add("F18", "NISAR open water 17 Jul → 10 Aug", (w0, w1), f"{w0:.0f} → {w1:.0f} km²",
@@ -126,8 +127,19 @@ def load_facts(root: Path) -> dict:
         f"{clfm.f1_partial_model.min():.2f}–{clfm.f1_partial_model.max():.2f}", f"{T}/partial_clf_metrics.csv: f1_partial_model")
     add("F30", "Optical (DSWx) coverage of the floodplain on 2 Sep", cov.clear_pct, f"{cov.clear_pct:.1f}%",
         f"{T}/sep_optical_coverage.csv: clear_pct")
-    add("F31", "…not imaged that day", cov.not_acquired_pct, f"{cov.not_acquired_pct:.1f}%",
-        f"{T}/sep_optical_coverage.csv: not_acquired_pct (DSWx code 255/254); per-file check: {T}/dswx_coverage_files.csv")
+    files = pd.read_csv(r / T / "dswx_coverage_files.csv")
+    present = sorted(set(files["tile"]))
+    missing = [t_ for t_ in EXPECTED_TILES if t_ not in present]
+    sensors = sorted(set(files.loc[files["valid_km2"] > 0, "sensor"]))
+    if len(missing) != 1 or sensors != ["S2B"]:
+        raise ValueError(f"2 Sep tile check changed: missing={missing}, sensors with valid data={sensors}; "
+                         "update the F31 wording")
+    gap = (f"no HLS/DSWx product exists for tile {missing[0][1:]} on 2 Sep "
+           f"(Sentinel-2B covered the neighbouring tiles)")
+    add("F31", "Why the rest of the floodplain has no optical data on 2 Sep", cov.not_acquired_pct, gap,
+        f"{T}/dswx_coverage_files.csv: tiles present {', '.join(present)}, no {missing[0]}; files with valid data: "
+        f"{', '.join(sensors)}; share of floodplain: {T}/sep_optical_coverage.csv not_acquired_pct = "
+        f"{cov.not_acquired_pct:.1f}%")
     add("F32", "…cloud or shadow", cov.cloud_pct, f"{cov.cloud_pct:.1f}%", f"{T}/sep_optical_coverage.csv: cloud_pct")
     add("F33", "NISAR coverage of the floodplain, minimum over all dates", cov.nisar_min_pct, f"{cov.nisar_min_pct:.1f}%",
         f"{T}/sep_optical_coverage.csv: nisar_min_pct")
@@ -138,6 +150,9 @@ def load_facts(root: Path) -> dict:
         f"{T}/area_series.csv: max(floodveg_km2)")
     add("F36", "Open water on both 17 Jul and 21 Oct (change map)", chg.loc[1, "km2"], f"{chg.loc[1, 'km2']:.0f} km²",
         f"{T}/change_20260717_20261021.csv: code 1")
+    wet = float(trans[["open", "partial"]].sum().sum()) / float(trans.sum().sum())
+    add("F38", "Share of the lost area (clear on 19 Jul and 8 Aug) still wet in DSWx on 8 Aug", wet, f"{100 * wet:.0f}%",
+        f"{T}/jul_aug_loss_dswx_transitions.csv: (columns open + partial) / all cells")
     sd0, sd1 = comp.stage_at_dswx_cm.iloc[0], comp.stage_at_dswx_cm.iloc[-1]
     add("F37", "Ladário stage at first / last DSWx date", (sd0, sd1), f"{sd0:.0f} → {sd1:.0f} cm",
         f"{T}/dswx_comparison.csv: stage_at_dswx_cm, first and last row")
@@ -150,12 +165,13 @@ QUALITATIVE = [
     ("Q3", "The decline is in shallow, partly vegetated water (DSWx partial class)", "F14, F15"),
     ("Q4", "An L-band open-water rule does not capture that decline", "F16"),
     ("Q5", "The 17 Jul → 10 Aug NISAR drop is not water loss; consistent with vegetation emerging over shallow water",
-     "F19–F24 (pre-registered rule in scripts/02h_jul_aug_loss.py: > 50% on partial)"),
+     "F19–F24, F38 (pre-registered rule in scripts/02h_jul_aug_loss.py: > 50% on partial)"),
     ("Q6", "About a third of that drop remains unexplained; wind is not supported", "F25, F26"),
     ("Q7", "Flooded vegetation (double bounce) not detected", "F35"),
     ("Q8", "Radar backscatter alone could not map partial water (negative result)",
      "F27, F28 (pre-registered criteria in scripts/02g_partial_clf.py)"),
-    ("Q9", "On 2 Sep most of the floodplain was not imaged by the optical satellites that day (not cloud)", "F30–F32"),
+    ("Q9", "On 2 Sep most of the floodplain has no optical data because no HLS/DSWx product exists for tile 21KVV "
+           "that day (Sentinel-2B covered the neighbouring tiles); not cloud", "F30–F32"),
     ("Q10", "Full coverage on a fixed schedule", "F05, F33, F34"),
 ]
 
@@ -166,4 +182,14 @@ WITHDRAWN = [
     ("“Every 12 days”", "One 24-day gap (F05)."),
     ("“What dried out were marshes…” (causal wording)", "Softened to “consistent with drying of shallow, partly vegetated water”."),
     ("“Wind is ruled out”", "Softened to “wind is not supported” (F26 is a test against one rule, not proof)."),
+    ("“Not imaged / not acquired that day” (2 Sep)", "Per-file check: the gap is one missing HLS/DSWx tile, 21KVV (F31)."),
+    ("“Cloud-free pixels”", "Renamed “valid (clear)”: DSWx codes 0/1/2, which also excludes missing products."),
+    ("“Only Landsat-9 pair” note in the wind verdict", "After completing the DSWx tiles the 19 Jul pair is L9+S2C; note removed."),
 ]
+
+
+def agreement_figure(root: Path) -> str:
+    """Same rule as scripts/02e_dswx_compare.py: the pair with the highest clear share."""
+    agr = pd.read_csv(Path(root) / T / "dswx_agreement_all_pairs.csv", dtype={"nisar_date": str, "dswx_date": str})
+    b = agr.sort_values("clear_pct", ascending=False).iloc[0]
+    return f"outputs/figures/agreement_{b.nisar_date}_dswx_{b.dswx_date}.png"

@@ -18,14 +18,16 @@ if grep -q "\[ALERT\]" /tmp/coverage_check.txt; then
   echo "STOP: the per-file check contradicts the mosaic; do not publish the coverage claim."; exit 2
 fi
 
-echo "== 3/6 regenerate web, documents and README from the tables"
+echo "== 3/6 regenerate wind check, web, documents and README from the tables"
+python scripts/02f_wind_check.py | tail -2
 python scripts/03_export_web.py
 python scripts/04_build_docs.py
 python scripts/update_readme_results.py > /dev/null
 
 echo "== 4/6 withdrawn wording must be gone from public texts"
-if grep -niE "smoke|fire season|every 12 days|drop is real|ruled out|along shorelines|\{\{PYTHON" \
-     README.md web/index.html docs/demo/script.md docs/submission.md docs/reproduce.md; then
+if grep -niE "smoke|fire season|every 12 days|drop is real|ruled out|along shorelines|not imaged|not acquired|cloud-free|only Landsat|\{\{PYTHON" \
+     README.md web/index.html docs/demo/script.md docs/submission.md docs/reproduce.md docs/ai_use.md \
+     outputs/tables/wind_check.csv; then
   echo "STOP: withdrawn wording found (lines above)."; exit 3
 fi
 

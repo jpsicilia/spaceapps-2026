@@ -2,7 +2,7 @@
   "name": "Ladário (Base Naval)",
   "code": "66825000",
   "river": "Paraguay",
-  "lat": -19.005,
-  "lon": -57.602,
-  "coord_source": "approximate: Ladário town centre (Wikipedia); gauge is at the Naval Base on the river"
+  "lat": -19.0,
+  "lon": -57.6,
+  "coord_source": "approximate (±1 km): Ladário gauge site 19.00°S 57.60°W, Frontiers in Water 2021, doi:10.3389/frwa.2021.639204"
 }

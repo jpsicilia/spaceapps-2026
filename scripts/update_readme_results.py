@@ -9,6 +9,7 @@ Run from the repo root:  python scripts/update_readme_results.py
 from __future__ import annotations
 
 import glob
+import sys
 from pathlib import Path
 
 import pandas as pd
@@ -32,8 +33,7 @@ def sep_sentence(cloudy):
     S = {k: v["shown"] for k, v in F.items()}
     nis = ("the whole floodplain" if F["F33"]["value"] >= 99.95
            else f"at least {S['F33']} of the floodplain")
-    rest = ("the rest was not imaged that day" if F["F32"]["value"] < 1
-            else f"{S['F31']} not imaged that day, {S['F32']} cloud or shadow")
+    rest = S["F31"] if F["F32"]["value"] < 1 else f"{S['F31']}; {S['F32']} cloud or shadow"
     return (f"**Full coverage on a fixed schedule.** NISAR imaged {nis} on all {S['F04']} dates, {S['F05']}; "
             f"on 2 Sep the optical product covered {S['F30']} ({rest}).")
 
@@ -49,8 +49,9 @@ def main():
     ratio = (ser["series_nisar_km2"] / ser["series_dswx_open_km2"]).mean()
     first, last = ser.iloc[0], ser.iloc[-1]
     cloudy = agr.sort_values("clear_pct").iloc[0]
-    agree_fig = sorted(glob.glob(str(ROOT / "outputs/figures/agreement_*.png")))
-    agree_rel = Path(agree_fig[0]).relative_to(ROOT).as_posix() if agree_fig else ""
+    sys.path.insert(0, str(ROOT / "src"))
+    from pantanal_sar.facts import agreement_figure
+    agree_rel = agreement_figure(ROOT) if (ROOT / agreement_figure(ROOT)).exists() else ""
 
     lines = [
         START,
@@ -65,9 +66,9 @@ def main():
         "**1. NISAR maps open water reliably.** Against DSWx-HLS on near-simultaneous dates (≤ 2 days), "
         f"precision is {fmt_range(agr['precision'])}, recall {fmt_range(agr['recall'])} and IoU "
         f"{fmt_range(agr['iou'])} ({len(agr)} pairs). NISAR recovers on average {100 * ratio:.0f}% of the "
-        "DSWx open-water area on common cloud-free pixels.",
+        "DSWx open-water area on common valid (clear) pixels.",
         "",
-        "**2. Open water stayed stable; the decline is in shallow, partly vegetated water.** On pixels cloud-free "
+        "**2. Open water stayed stable; the decline is in shallow, partly vegetated water.** On pixels valid (clear) "
         f"in all paired dates ({len(ser)} dates), DSWx open water went from {first['series_dswx_open_km2']:.0f} to "
         f"{last['series_dswx_open_km2']:.0f} km² (r = {r_op:.2f} with Ladário stage, p = {p_op:.2f}), while "
         f"open + partial surface water fell from {first['series_dswx_open_partial_km2']:.0f} to "
@@ -96,7 +97,7 @@ def main():
                   "The July→August drop in NISAR open water concentrates on DSWx partial-water pixels "
                   f"(×{lo['enrichment']:.1f} vs the plain), which DSWx still classifies as wet in August "
                   f"(partial→partial {pp:.0f} km², open→open {oo:.0f} km² of the {lo['lost_clear_km2']:.0f} km² "
-                  "lost on cloud-free pixels): consistent with vegetation emerging over shallow water and raising "
+                  "lost on valid (clear) pixels): consistent with vegetation emerging over shallow water and raising "
                   "L-band backscatter, not with water loss. "
                   f"About a third of the drop ({oo:.0f} km², {third:.0f}%) falls on water that DSWx kept as open "
                   "and remains unexplained." + wtxt, ""]

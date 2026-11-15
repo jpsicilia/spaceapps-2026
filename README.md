@@ -92,6 +92,8 @@ Data:
   and its long-term changes. Nature 540, 418–422. (JRC Global Surface Water)
 - Copernicus DEM GLO-30: produced using Copernicus WorldDEM-30 © DLR e.V. 2010–2014 and © Airbus Defence and
   Space GmbH 2014–2018 provided under COPERNICUS by the European Union and ESA; all rights reserved.
+  The organisations in charge of the Copernicus programme by law or by delegation do not incur any liability for
+  any use of the Copernicus WorldDEM-30.
 - Paraguay River stage at Ladário: Agência Nacional de Águas e Saneamento Básico (ANA), station 66825000.
 - © OpenStreetMap contributors (ODbL).
 
@@ -102,15 +104,15 @@ This project is not endorsed by NASA.
 
 Study area: Paraguay River floodplain, Corumbá–Ladário to Mandioré lagoon. NISAR L2 GCOV (L-band, HH+HV), 8 acquisitions from 2026-07-17 to 2026-10-21, 40 m, Lee-filtered. Open water = HV < −22 dB and HH < −16 dB (gamma0), thresholds fixed for all dates and shifted per date by the backscatter change of a stable reference (forested hills > 200 m). Validation against OPERA DSWx-HLS (optical, independent) and the Paraguay River stage at Ladário (ANA 66825000, daily mean).
 
-**1. NISAR maps open water reliably.** Against DSWx-HLS on near-simultaneous dates (≤ 2 days), precision is 0.92–1.00, recall 0.65–0.78 and IoU 0.62–0.78 (8 pairs). NISAR recovers on average 85% of the DSWx open-water area on common cloud-free pixels.
+**1. NISAR maps open water reliably.** Against DSWx-HLS on near-simultaneous dates (≤ 2 days), precision is 0.92–1.00, recall 0.65–0.78 and IoU 0.62–0.78 (8 pairs). NISAR recovers on average 85% of the DSWx open-water area on common valid (clear) pixels.
 
-**2. Open water stayed stable; the decline is in shallow, partly vegetated water.** On pixels cloud-free in all paired dates (7 dates), DSWx open water went from 270 to 267 km² (r = 0.11 with Ladário stage, p = 0.81), while open + partial surface water fell from 1001 to 603 km² and tracks the river (r = 0.89, p = 0.008). Ladário fell from 253 to 124 cm. The river channel and permanent lagoons held their extent; the decline is consistent with drying of shallow, partly vegetated water (DSWx partial class), which an L-band open-water rule does not capture (NISAR open water vs stage: r = 0.25, p = 0.59).
+**2. Open water stayed stable; the decline is in shallow, partly vegetated water.** On pixels valid (clear) in all paired dates (7 dates), DSWx open water went from 270 to 267 km² (r = 0.11 with Ladário stage, p = 0.81), while open + partial surface water fell from 1001 to 603 km² and tracks the river (r = 0.89, p = 0.008). Ladário fell from 253 to 124 cm. The river channel and permanent lagoons held their extent; the decline is consistent with drying of shallow, partly vegetated water (DSWx partial class), which an L-band open-water rule does not capture (NISAR open water vs stage: r = 0.25, p = 0.59).
 
-**3. The July→August drop is not water loss.** The July→August drop in NISAR open water concentrates on DSWx partial-water pixels (×3.2 vs the plain), which DSWx still classifies as wet in August (partial→partial 42 km², open→open 36 km² of the 107 km² lost on cloud-free pixels): consistent with vegetation emerging over shallow water and raising L-band backscatter, not with water loss. About a third of the drop (36 km², 34%) falls on water that DSWx kept as open and remains unexplained. Wind is not supported: in the permanent-water zone HH changed +0.4 dB (HV +0.2 dB) after removing the stable-reference offset.
+**3. The July→August drop is not water loss.** The July→August drop in NISAR open water concentrates on DSWx partial-water pixels (×3.2 vs the plain), which DSWx still classifies as wet in August (partial→partial 42 km², open→open 36 km² of the 107 km² lost on valid (clear) pixels): consistent with vegetation emerging over shallow water and raising L-band backscatter, not with water loss. About a third of the drop (36 km², 34%) falls on water that DSWx kept as open and remains unexplained. Wind is not supported: in the permanent-water zone HH changed +0.4 dB (HV +0.2 dB) after removing the stable-reference offset.
 
 **4. Can NISAR alone see the receding shallow water?** Not with backscatter alone (pre-registered test failed): a classifier on HH, HV and HH−HV trained on DSWx-HLS labels of 23 Aug reached a mean partial-water F1 of 0.26 on other dates (target ≥ 0.5) and its partial-water series gave r = 0.01 with Ladário (target ≥ 0.7). Next steps: texture, coherence (GUNW) and multi-date features.
 
-**Full coverage on a fixed schedule.** NISAR imaged at least 97.2% of the floodplain on all 8 dates, on a 12-day repeat (one 24-day gap, 17 Jul–10 Aug: cycle 026 not available); on 2 Sep the optical product covered 27.5% (the rest was not imaged that day).
+**Full coverage on a fixed schedule.** NISAR imaged at least 97.2% of the floodplain on all 8 dates, on a 12-day repeat (one 24-day gap, 17 Jul–10 Aug: cycle 026 not available); on 2 Sep the optical product covered 27.5% (no HLS/DSWx product exists for tile 21KVV on 2 Sep (Sentinel-2B covered the neighbouring tiles)).
 
 **Caveats.** Seven to eight dates, consecutive and not independent: p-values are indicative. NISAR products are provisional (CRID P05023). Thresholds adapted from Evans et al. 2010 (PALSAR sigma0, converted to gamma0) and were checked, not tuned, against the JRC permanent-water zone. The Copernicus DEM is a surface model.
 
@@ -119,7 +121,7 @@ Study area: Paraguay River floodplain, Corumbá–Ladário to Mandioré lagoon. 
 | Figure | |
 |---|---|
 | Open water NISAR vs DSWx-HLS vs Ladário | ![](outputs/figures/nisar_vs_dswx_series.png) |
-| Agreement map | ![](outputs/figures/agreement_20260822_dswx_20260823.png) |
+| Agreement map | ![](outputs/figures/agreement_20261009_dswx_20261007.png) |
 | NISAR area vs stage | ![](outputs/figures/area_vs_stage.png) |
 | Hydroperiod (dates as open water) | ![](outputs/figures/hydroperiod.png) |
 

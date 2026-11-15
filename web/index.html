@@ -100,7 +100,7 @@
 
 <section>
   <h2>Area versus river stage</h2>
-  <p class="lead">Areas on pixels cloud-free in all optical dates, so the series are comparable through time.
+  <p class="lead">Areas on pixels valid (clear) in all optical dates, so the series are comparable through time.
     Grey line: Paraguay River stage at Ladário (daily mean, right axis).</p>
   <div class="chartbox"><canvas id="chart"></canvas></div>
   <p class="note" id="chartNote"></p>
@@ -138,7 +138,7 @@ const LEG = {
            ["rgba(255,255,255,.5)","analysed, no open water"]],
   composite: [["#ff0000","HH"],["#00ff00","HV"],["#0000ff","HH − HV"]],
   dswx: [["#e2d6b4","not water"],["#1f4e9c","open water"],["#78b4e6","partial surface water"],
-         ["#a0a0a0","not imaged by the optical satellite that day"]],
+         ["#a0a0a0","no HLS/DSWx product (tile 21KVV)"]],
   hvgrey: [["#000","water (smooth, dark)"],["#fff","land / vegetation (bright)"]],
 };
 function legend(el, key){
@@ -178,8 +178,8 @@ Promise.all([fetch("data/data.json").then(r=>r.json()), fetch("data/layers.json"
 .then(([D, LY]) => {
   const M = D.metrics;
   $("#sepTitle").textContent = "Full coverage on a fixed schedule";
-  const REST = (M.sep_cloud_pct ?? 0) < 1 ? "the rest was not imaged that day"
-             : `${M.sep_not_acquired_pct}% not imaged that day, ${M.sep_cloud_pct}% cloud or shadow`;
+  const REST = (M.sep_cloud_pct ?? 0) < 1 ? M.sep_gap_text
+             : `${M.sep_gap_text}; ${M.sep_cloud_pct}% cloud or shadow`;
   // ---------- cards
   const cards = [
     [`${fmt(M.precision[0])}–${fmt(M.precision[1])}`, "precision of NISAR open water",

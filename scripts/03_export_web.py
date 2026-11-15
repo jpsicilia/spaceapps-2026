@@ -132,7 +132,7 @@ def main():
     print("      NISAR coverage of floodplain by date: " + " ".join(f"{d[4:]}:{v:.0f}%" for d, v in nisar_cov.items()))
     pd.DataFrame([cov]).to_csv(ROOT / "outputs/tables/sep_optical_coverage.csv", index=False, float_format="%.1f")
     print(f"      DSWx {SEP_D} on floodplain: clear {cov['clear_pct']:.0f}% | cloud/shadow {cov['cloud_pct']:.0f}% | "
-          f"not acquired that day {cov['not_acquired_pct']:.0f}% | NISAR {SEP_N}: {cov['nisar_sep_pct']:.0f}%")
+          f"no product {cov['not_acquired_pct']:.0f}% | NISAR {SEP_N}: {cov['nisar_sep_pct']:.0f}%")
     w[~foot] = 0                                  # outside NISAR footprint -> transparent (code 0 handled below)
     rgba = palette_rgba(w, {0: (226, 214, 180, 255), 1: (31, 78, 156, 255), 2: (120, 180, 230, 255),
                             253: (70, 70, 70, 255), 252: (70, 70, 70, 255),
@@ -172,7 +172,7 @@ def main():
     import sys
     sys.path.insert(0, str(ROOT / "src"))
     from pantanal_sar.classify import load_ladario_daily
-    from pantanal_sar.facts import repeat_text
+    from pantanal_sar.facts import load_facts, repeat_text
     daily, _ = load_ladario_daily(ROOT / "data/external/ladario_gauge/ladario_stage_raw_telemetria.csv",
                                   verbose=False)
     t0 = pd.Timestamp(area["date"].iloc[0]) - pd.Timedelta(days=20)
@@ -224,6 +224,7 @@ def main():
             "nisar_sep_pct": round(cov["nisar_sep_pct"], 1), "nisar_min_pct": round(cov["nisar_min_pct"], 1),
             "nisar_n_dates": int(cov["nisar_n_dates"]),
             "repeat_text": repeat_text(area["date"]),
+            "sep_gap_text": load_facts(ROOT)["F31"]["shown"],
         },
         "before": ymd(BEFORE), "after": ymd(AFTER), "sep_nisar": ymd(SEP_N), "sep_dswx": ymd(SEP_D),
         "aoi_bounds": aoi_bounds, "gauge": gauge,

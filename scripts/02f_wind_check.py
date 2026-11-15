@@ -4,7 +4,7 @@
 Decision rule fixed BEFORE looking (Pablo, 15 Nov):
   "wind" if Aug (10 Aug, 22 Aug) HH is >= 1.0 dB brighter than 17 Jul in the JRC zone after removing the
   hills (stable) offset, AND the HH increase is larger than the HV increase (roughening hits co-pol more).
-  Otherwise "unexplained" (and we note that the 19 Jul DSWx pair is the only Landsat-9 one).
+  Otherwise "unexplained".
 Also reported: the same medians restricted to pixels DSWx calls open water on the paired date (cleaner zone).
 Run from the repo root:  python scripts/02f_wind_check.py
 """
@@ -86,8 +86,7 @@ def main():
     else:
         verdict = (f"HH in the permanent-water zone changed only {dhh:+.1f} dB (HV {dhv:+.1f} dB) between "
                    "17 July and August after removing the stable-reference offset, so wind does not explain it; "
-                   "the drop remains unexplained. Note the 17 July NISAR scene is paired with the only "
-                   "Landsat-9 DSWx-HLS product (19 July); all other pairs are Sentinel-2.")
+                   "the drop remains unexplained.")
     print(f"[2/2] rule: wind if mean Aug ΔHH_corr >= {MIN_DB} dB and ΔHH > ΔHV  ->  "
           f"ΔHH={dhh:+.2f}, ΔHV={dhv:+.2f}  =>  {'WIND' if wind else 'UNEXPLAINED'}")
     print(f"      README text: {verdict}")
