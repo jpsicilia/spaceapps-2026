@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# AI-assisted: written with Claude (Anthropic) from the author’s specifications; reviewed and run by the author. See docs/ai_use.md
 """Step 4: build the audit and demo documents from the versioned tables (no raw data needed).
 
 Writes docs/claims.md, docs/demo/slides.pdf, docs/demo/script.md, docs/submission.md.
@@ -30,7 +31,7 @@ REP = S["F05"].replace("on a ", "").replace(": cycle 026 not available", "")   #
 
 # where each fact is shown (README sections, web elements, slides, script, submission)
 WHERE = {
-    "F01": "Slide 1; Script; Submission", "F02": "Slide 1; Script; Submission", "F03": "Slide 1; Script; Submission",
+    "F01": "Slide 1 (title); Script; Submission", "F02": "Slide 1 (title); Script; Submission", "F03": "Slide 1 (title); Script; Submission",
     "F04": "README Results intro; Web §1 lead; Slide 2; Submission",
     "F05": "README coverage paragraph; Web card 4, §2 lead; Slide 2; Script; Submission",
     "F06": "README Results intro; Web §1 lead; Slide 2; Submission",
@@ -133,6 +134,30 @@ def slide(pdf, n, title, bullets, img=None, draw=None, note=None):
     plt.close(fig)
 
 
+def title_slide(pdf, stage_plot):
+    """Slide 1 = title + hook (the official guide counts the title slide within the 7)."""
+    fig = plt.figure(figsize=(13.333, 7.5))
+    fig.patch.set_facecolor("white")
+    fig.add_artist(plt.Rectangle((0, 0.70), 1, 0.30, color=NAVY, transform=fig.transFigure, zorder=0))
+    fig.text(0.05, 0.875, "Pantanal 2026: Water Leaving, Seen by Radar", fontsize=34, fontweight="bold",
+             color="white", va="center")
+    fig.text(0.05, 0.795, "Team Pantanal — José Pablo Pérez Cicilia", fontsize=18, color="white", va="center")
+    fig.text(0.05, 0.745, "NASA Space Apps 2026 · Dancing with the SARs", fontsize=15, color="#b9d6f2", va="center")
+    y = 0.60
+    for b in [f"The Paraguay River at Ladário fell {S['F03']}: {S['F01']} on 17 Jul → {S['F02']} on 21 Oct 2026.",
+              "Where, and how much, did surface water change on the floodplain — and what can L-band NISAR see of it?"]:
+        lines = textwrap.wrap(b, 44)
+        fig.text(0.06, y, "•", fontsize=19, color=ACC, va="top")
+        fig.text(0.08, y, "\n".join(lines), fontsize=18, color=INK, va="top", linespacing=1.3)
+        y -= 0.055 * len(lines) + 0.05
+    fig.text(0.06, 0.12, "Corumbá–Ladário to the Mandioré lagoon (Brazil–Bolivia)", fontsize=13, color=MUTED)
+    ax = fig.add_axes([0.58, 0.12, 0.36, 0.50])
+    stage_plot(ax)
+    fig.text(0.95, 0.035, "1 / 7", fontsize=11, color=MUTED, ha="right")
+    pdf.savefig(fig)
+    plt.close(fig)
+
+
 def write_slides():
     area = pd.read_csv(ROOT / "outputs/tables/area_series.csv")
     trans = pd.read_csv(ROOT / "outputs/tables/jul_aug_loss_dswx_transitions.csv", index_col=0)
@@ -208,11 +233,7 @@ def write_slides():
         ax.legend(h1 + h2, l1 + l2, fontsize=FS - 2, frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.12), ncol=2)
 
     with PdfPages(out, metadata={"CreationDate": None, "ModDate": None}) as pdf:   # byte-reproducible
-        slide(pdf, 1, "The Paraguay River fell ~1.3 m",
-              [f"Ladário gauge: {S['F01']} on 17 Jul → {S['F02']} on 21 Oct 2026 ({S['F03']}).",
-               "Question: where, and how much, did surface water change on the floodplain, "
-               "and what can L-band NISAR see of it?",
-               "Study area: Corumbá–Ladário to the Mandioré lagoon (Brazil–Bolivia)."], draw=stage_plot)
+        title_slide(pdf, stage_plot)
         slide(pdf, 2, "Data and method",
               [f"NISAR L2 GCOV (provisional), HH + HV, {S['F04']} dates, {REP}.",
                f"40 m, Lee filter, gamma0. Open water: {S['F06']}, same for all dates; urban areas and terrain > 135 m masked.",
@@ -258,7 +279,7 @@ def write_script():
 
 Numbers below come from `docs/claims.md` (IDs in brackets). Read at a calm pace (~140 words per minute).
 
-**Slide 1 — The problem (15 s).** Between July and October 2026 the Paraguay River at Ladário fell about
+**Slide 1 — Title and the problem (15 s).** Pantanal 2026: water leaving, seen by radar. Between July and October 2026 the Paraguay River at Ladário fell about
 1.3 metres, from {S['F01']} to {S['F02']} [F01–F03]. We asked: where did surface water change on the floodplain,
 and what can NISAR's L-band radar see of it?
 

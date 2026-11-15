@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# AI-assisted: written with Claude (Anthropic) from the author’s specifications; reviewed and run by the author. See docs/ai_use.md
 """Step 2e: independent check of NISAR open water against OPERA DSWx-HLS (optical, 30 m).
 
 DSWx-HLS B01_WTR codes: 0 not water, 1 open water, 2 partial surface water,

@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# AI-assisted: written with Claude (Anthropic) from the author’s specifications; reviewed and run by the author. See docs/ai_use.md
 """Step 2i (audit): independent per-file check of DSWx-HLS coverage on a given date (default 2 Sep).
 
 For every DSWx file of that date, in its OWN grid (no mosaic, no reprojection of the data):

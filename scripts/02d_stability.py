@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# AI-assisted: written with Claude (Anthropic) from the author’s specifications; reviewed and run by the author. See docs/ai_use.md
 """Step 2d: is the water-area series driven by scene brightness? Stable-zone diagnostic.
 
 1) Per-date median HH/HV in a STABLE zone (hills, DEM > 200 m: forest that never floods)

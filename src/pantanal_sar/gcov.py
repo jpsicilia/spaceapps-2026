@@ -1,3 +1,4 @@
+# AI-assisted: written with Claude (Anthropic) from the author’s specifications; reviewed and run by the author. See docs/ai_use.md
 """NISAR L2 GCOV preprocessing: read -> clip to AOI -> multilook -> Lee filter -> dB.
 
 All filtering is done in linear power (gamma0); dB conversion is the last step.

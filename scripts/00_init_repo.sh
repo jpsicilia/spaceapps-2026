@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# AI-assisted: written with Claude (Anthropic) from the author’s specifications; reviewed and run by the author. See docs/ai_use.md
 # Step 1a: create the public GitHub repo from the prepared skeleton.
 # Run from the repo root:  bash scripts/00_init_repo.sh
 set -euo pipefail

@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# AI-assisted: written with Claude (Anthropic) from the author’s specifications; reviewed and run by the author. See docs/ai_use.md
 """Step 3a: export web assets (Leaflet overlays in EPSG:3857 + data.json) into web/.
 
 Overlays (PNG with transparency, bounds in lat/lon):

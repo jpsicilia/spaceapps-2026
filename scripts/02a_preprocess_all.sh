@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# AI-assisted: written with Claude (Anthropic) from the author’s specifications; reviewed and run by the author. See docs/ai_use.md
 # Step 2a: preprocess all GCOV dates with the SAME settings (fixed ENL -> comparable time series),
 # then print a stack check (grid alignment + basic stats per date).
 # Run from the repo root:  bash scripts/02a_preprocess_all.sh

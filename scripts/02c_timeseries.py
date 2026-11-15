@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# AI-assisted: written with Claude (Anthropic) from the author’s specifications; reviewed and run by the author. See docs/ai_use.md
 """Step 2c: classify all dates with the FIXED thresholds, area series vs Ladário,
 change map 17 Jul -> 21 Oct, hydroperiod.
 

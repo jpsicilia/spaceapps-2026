@@ -5,6 +5,8 @@ Local event: Ciudad del Este, Paraguay · Team: Pantanal
 
 **Interactive map and charts:** https://jpsicilia.github.io/spaceapps-2026/
 
+**AI use:** the code and texts in this repository were written with AI assistance (Claude, Anthropic) from the author’s specifications, and reviewed and run by the author — see [`docs/ai_use.md`](docs/ai_use.md).
+
 ## Question
 
 Where, and how much, did surface water change on the Paraguay River floodplain between July and October 2026,

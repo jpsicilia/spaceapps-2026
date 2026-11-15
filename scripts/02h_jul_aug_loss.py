@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# AI-assisted: written with Claude (Anthropic) from the author’s specifications; reviewed and run by the author. See docs/ai_use.md
 """Step 2h: where does the NISAR open-water loss 17 Jul -> 10 Aug fall in DSWx-HLS 19 Jul?
 
 Hypothesis (Pablo): in July NISAR saw submerged grass (very dark HH) as water; as vegetation emerged, HH rose

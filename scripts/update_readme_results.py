@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# AI-assisted: written with Claude (Anthropic) from the author’s specifications; reviewed and run by the author. See docs/ai_use.md
 """Write/refresh the "Results" section of README.md from the output tables (numbers never typed by hand).
 
 Inserts between <!-- RESULTS:START --> and <!-- RESULTS:END --> (appends the block if the markers are missing).

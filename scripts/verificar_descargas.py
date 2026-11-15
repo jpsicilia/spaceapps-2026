@@ -1,3 +1,4 @@
+# AI-assisted: written with Claude (Anthropic) from the author’s specifications; reviewed and run by the author. See docs/ai_use.md
 """
 Verificacion de descargas NISAR GCOV (preparacion, NO procesa datos).
 

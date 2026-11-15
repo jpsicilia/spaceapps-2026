@@ -1,3 +1,4 @@
+# AI-assisted: written with Claude (Anthropic) from the author’s specifications; reviewed and run by the author. See docs/ai_use.md
 """Single source of every number shown in README, web, slides, script and submission.
 
 Each fact = value (raw), shown (as displayed), source (file + column/row or script).

@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# AI-assisted: written with Claude (Anthropic) from the author’s specifications; reviewed and run by the author. See docs/ai_use.md
 """Step 2b: masks (urban OSM + DEM height) + threshold calibration on 2026-07-17 + Ladário check.
 
 Writes:

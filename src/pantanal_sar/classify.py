@@ -1,3 +1,4 @@
+# AI-assisted: written with Claude (Anthropic) from the author’s specifications; reviewed and run by the author. See docs/ai_use.md
 """Masks, threshold calibration and 3-class classification (open water / flooded vegetation / land)."""
 from __future__ import annotations
 

@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# AI-assisted: written with Claude (Anthropic) from the author’s specifications; reviewed and run by the author. See docs/ai_use.md
 """Step 2g (time-boxed to 14:45): can NISAR alone map DSWx "partial surface water"?
 
 Labels : DSWx-HLS 23 Aug (0 not water, 1 open water, 2 partial surface water), mosaicked to the 40 m grid.
