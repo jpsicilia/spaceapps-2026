@@ -72,6 +72,7 @@ Every number and claim shown in the README, the web page, the demo slides, the d
 | Minimum mapping unit | 1 ha (7 px) | `config/thresholds.yaml mmu_px` |
 | DSWx pairing | closest date ≤ 5 days (actual ≤ 2) | `scripts/02e_dswx_compare.py MAX_DAYS` |
 | Common-series filter | pairs with ≥ 80% clear | `scripts/02e_dswx_compare.py --min-clear` |
+| Open-water thresholds | HV < −22 dB and HH < −16 dB (gamma0), adapted from Evans (2013) | `config/thresholds.yaml; caps in scripts/02b_calibrate.py` |
 
 ## Withdrawn or corrected claims
 
@@ -85,10 +86,19 @@ Every number and claim shown in the README, the web page, the demo slides, the d
 | “Wind is ruled out” | Softened to “wind is not supported” (F26 is a test against one rule, not proof). |
 | “Not imaged / not acquired that day” (2 Sep) | Per-file check: the gap is one missing HLS/DSWx tile, 21KVV (F31). |
 | “Cloud-free pixels” | Renamed “valid (clear)”: DSWx codes 0/1/2, which also excludes missing products. |
+| “Adapted from Evans et al. 2010”; “flooded forest ≈ −4 dB”; “vegetated ≈ −23 dB” as an HH value | Values not found as cited; replaced by verified Evans (2013) values for open and vegetated lakes. |
 | “Only Landsat-9 pair” note in the wind verdict | After completing the DSWx tiles the 19 Jul pair is L9+S2C; note removed. |
+
+## Verified against external sources
+
+| Claim | Source | Checked by |
+|---|---|---|
+| Median L-band σ0 (ALOS PALSAR, Lower Nhecolândia): brackish lakes without vegetation (salinas) ≈ −23 dB HH (flood and dry season) and −30 dB HV (dry season); fresh-water lakes with floating and emergent vegetation (baías) ≈ −14 dB HH (flood and dry) and −23 dB HV — basis of the thresholds (F06) | Evans, T. L. (2013), MSc thesis, Department of Geography, University of Victoria, ch. 2, section 2.4, pp. 52–53; http://hdl.handle.net/1828/4671 | Author and coding assistant, from the thesis text |
+| HH threshold (−16 dB) lies between the two classes; HV threshold (−22 dB) is close to the vegetated-lake value | F06 vs the values above; `src/pantanal_sar/classify.py` PHYS_REF, printed by `scripts/02b_calibrate.py` | Script |
 
 ## Not verified
 
-- Threshold values attributed to Evans et al. (2010): the paper exists (IEEE JSTARS 3(4): 560–575); the dB values were provided by the author and should be checked against the paper's tables.
-- Gauge marker position on the web map: approximate (Ladário town centre), not the official station coordinates.
+- Conversion σ0 → γ0 (+0.5 to 1.5 dB at our incidence angles) used to compare thresholds with Evans (2013): an assumption, not taken from that source.
+- Reference value for flooded vegetation (double bounce): none verified; the flooded-vegetation check is reported as NOT VERIFIED.
+- Gauge marker position on the web map: approximate (±1 km), taken from Frontiers in Water 2021 (doi:10.3389/frwa.2021.639204) by the author; not the official ANA station coordinates.
 - “Unverified observation” in the README (river HH drop in late Sep–Oct): interpretation not tested.

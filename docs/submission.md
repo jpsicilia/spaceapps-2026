@@ -22,7 +22,10 @@ hydroperiod and time series.
 
 **What it does.** The project turns NISAR GCOV backscatter (HH and HV) into open-water maps for eight dates
 on a 12-day repeat (one 24-day gap, 17 Jul–10 Aug: cycle 026 not available), measures how open water changed, and tests the result against two independent references: OPERA
-DSWx-HLS (Landsat/Sentinel-2) and the Paraguay River stage at Ladário (ANA station 66825000).
+DSWx-HLS (Landsat/Sentinel-2) and the Paraguay River stage at Ladário (ANA station 66825000). Open water is
+HV < -22 dB and HH < -16 dB (gamma0), adapted from Evans (2013), who reports median L-band σ0 of ≈ −23 dB HH / −30 dB HV for brackish lakes without
+vegetation (salinas) and ≈ −14 dB HH / −23 dB HV for fresh-water lakes with floating or emergent vegetation (baías);
+our HH threshold lies between the two classes and our HV threshold is close to the vegetated-lake value.
 
 **Results.**
 - Open water from NISAR agrees with DSWx-HLS: precision 0.92–1.00, recall 0.65–0.78, IoU 0.62–0.78 (8 pairs).
@@ -50,6 +53,10 @@ the web page, GitHub Pages for hosting. Pipeline and order: `docs/reproduce.md`.
 - Copernicus DEM GLO-30 (ESA/EU) — floodplain mask and stable reference.
 - JRC Global Surface Water (Pekel et al. 2016) — permanent-water control zone.
 - ANA telemetry, station 66825000 — river stage. · OpenStreetMap — urban mask.
+
+## References
+- Evans, T. L. (2013). Habitat mapping of the Brazilian Pantanal using synthetic aperture radar imagery and object
+  based image analysis. MSc thesis, Department of Geography, University of Victoria. http://hdl.handle.net/1828/4671
 - Sentinel-2 data enter through HLS/DSWx (modified Copernicus Sentinel data).
 
 ## Use of artificial intelligence
