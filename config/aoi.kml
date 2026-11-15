@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>AOI Pantanal 2026 - Corumba/Ladario to Lake Mandiore</name>
+    <Placemark>
+      <name>AOI</name>
+      <Polygon>
+        <outerBoundaryIs>
+          <LinearRing>
+            <coordinates>
+              -57.95,-19.08,0 -57.30,-19.08,0 -57.30,-17.95,0 -57.95,-17.95,0 -57.95,-19.08,0
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+  </Document>
+</kml>

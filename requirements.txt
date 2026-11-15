@@ -1,0 +1,25 @@
+# Data access
+asf_search
+earthaccess
+# HDF5 / arrays
+h5py
+h5netcdf
+netCDF4
+xarray
+numpy
+scipy
+pandas
+# Geospatial
+rioxarray
+rasterio
+geopandas
+shapely
+pyproj
+# Image processing
+scikit-image
+# Config / env
+pyyaml
+python-dotenv
+# Plots / notebooks
+matplotlib
+jupyterlab

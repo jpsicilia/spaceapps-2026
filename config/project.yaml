@@ -1,0 +1,56 @@
+# Project settings — single source of truth for paths, area and dates
+
+project: pantanal-2026-nisar
+challenge: "NASA Space Apps 2026 - Dancing with the SARs"
+
+aoi:
+  file: config/aoi.geojson
+  wkt: "POLYGON((-57.95 -19.08, -57.30 -19.08, -57.30 -17.95, -57.95 -17.95, -57.95 -19.08))"
+  working_resolution_m: 40        # downsample from native to fit 16 GB RAM
+
+nisar:
+  track: 132
+  direction: ASCENDING
+  frame: 168
+  frequency: frequencyA
+  polarizations: [HHHH, HVHV]
+  product_maturity: PROVISIONAL
+  crid: P05023
+  native_epsg: 32721        # UTM 21S (verified in all 8 GCOV)
+  native_pixel_m: 20
+  gcov_dates:
+    - 2026-07-17
+    - 2026-08-10
+    - 2026-08-22
+    - 2026-09-03
+    - 2026-09-15
+    - 2026-09-27
+    - 2026-10-09
+    - 2026-10-21
+    # - 2026-11-02   # add if published before the hackathon
+  excluded_dates:
+    2026-07-05: "partial acquisition, does not cover AOI"
+  gunw_pairs:
+    - [2026-07-17, 2026-08-10]
+    - [2026-08-10, 2026-08-22]
+    - [2026-08-22, 2026-09-03]
+    - [2026-09-03, 2026-09-15]
+    - [2026-09-15, 2026-09-27]
+    - [2026-09-27, 2026-10-09]
+    - [2026-10-09, 2026-10-21]
+
+gauge:
+  name: "Rio Paraguai em Ladario (Base Naval)"
+  ana_code: 66825000
+  file: data/external/ladario_gauge/ladario_stage_daily.csv
+
+masks:
+  urban: data/external/urban_mask/urban_areas.geojson
+  stable_reference_area: "dry forest, west of AOI (Bolivia) - define on day 1"
+
+paths:
+  raw: data/raw
+  external: data/external
+  interim: data/interim
+  processed: data/processed
+  outputs: outputs

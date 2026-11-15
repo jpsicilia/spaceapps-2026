@@ -1,0 +1,28 @@
+# Environment
+.venv/
+.env
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Data (never versioned — large files)
+data/**
+!data/**/
+!data/**/.gitkeep
+
+# Heavy outputs
+*.h5
+*.hdf5
+*.tif
+*.tiff
+*.nc
+*.zip
+
+# OS / editors
+.DS_Store
+.vscode/
+.idea/
+
+# Practice material before the hackathon (not part of the project)
+_practica/
+data/
