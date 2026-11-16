@@ -1,4 +1,4 @@
-# Space Apps 2026 — project submission (copy field by field)
+# Space Apps 2026 — project submission
 
 > One block per field of the project form, in English. Team members, team name and local event come from the
 > Space Apps team page, not from this text. Every number is in `docs/claims.md`. Check the field names against the
