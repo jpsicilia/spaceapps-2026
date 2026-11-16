@@ -1,3 +1,5 @@
+> **Pre-hackathon inventory (12 Nov 2026).** Some plans and checks recorded here changed during the hackathon (e.g. 2 Sep DSWx coverage: tile 21KVV has no product that day; DSWx-S1, Sentinel-1 RTC and FIRMS were downloaded but not used; the stable reference is forested hills > 200 m). The final data, method and results are in README.md, docs/reproduce.md and docs/claims.md.
+
 # Data inventory
 
 Checked in ASF Vertex on 2026-11-12. Status: ✅ verified · ⏳ pending · ❌ unusable
